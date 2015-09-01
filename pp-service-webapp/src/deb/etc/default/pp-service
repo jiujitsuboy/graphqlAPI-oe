@@ -1,0 +1,27 @@
+#
+# PP-SERVICE defaults
+#
+
+PP_SERVICE_HOME_DIR=/opt/open-english/pp-service
+LOGGING_CONFIG_FILE="/$PP_SERVICE_HOME_DIR/config/logback.xml"
+PP_SERVICE_LOG_DIR=$PP_SERVICE_HOME_DIR/logs
+PP_SERVICE_BOOT_LOG=$PP_SERVICE_LOG_DIR/pp-service-boot.log
+
+
+PP_SERVICE_SUB_DOMAIN=%SUB_DOMAIN%
+PP_SERVICE_HOST_NAME=pp-service$PP_SERVICE_SUB_DOMAIN.openenglish.com
+PP_SERVICE_PORT=8090
+PP_SERVICE_WEB_SERVICE=$PP_SERVICE_HOST_NAME:$PP_SERVICE_PORT
+
+JAVA_MAX_MEM=%JAVA_MAX_MEM%
+JAVA_MAX_PERM=%JAVA_MAX_PERM%
+
+JAVA_OPTS="-Djava.awt.headless=true -Duser.timezone=UTC $JAVA_MAX_MEM
+         $JAVA_MAX_PERM -XX:+UseConcMarkSweepGC
+         -server -d64 -Djava.net.preferIPv4Stack=true
+         -Dcom.sun.management.jmxremote
+         -Dcom.sun.management.jmxremote.local.only=true
+        -Dcom.sun.management.jmxremote.ssl=false
+        -Dcom.sun.management.jmxremote.authenticate=false
+        -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockDiagnosticVMOptions -XX:+LogVMOutput
+        $JAVA_MAX_MEM $JAVA_MAX_PERM -Dlogging.config=$LOGGING_CONFIG_FILE -Dserver.port=$PP_SERVICE_PORT"

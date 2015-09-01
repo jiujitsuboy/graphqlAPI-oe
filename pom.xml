@@ -1,0 +1,91 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>pp-service</artifactId>
+    <groupId>com.openenglish.pp</groupId>
+    <packaging>pom</packaging>
+    <version>FIXED-SNAPSHOT</version>
+    <name>pp-service</name>
+
+    <parent>
+        <groupId>com.openenglish</groupId>
+        <artifactId>oe-substrate-springboot-parent</artifactId>
+        <version>1.0.8</version>
+    </parent>
+
+    <modules>
+        <module>pp-service-common</module>
+        <module>pp-service-client</module>
+        <module>pp-service-persistence</module>
+        <module>pp-service-service</module>
+        <module>pp-service-webapp</module>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>integration</id>
+            <modules>
+                <module>pp-service-integration-test</module>
+            </modules>
+        </profile>
+    </profiles>
+
+    <properties>
+        <pp.global.config.version>2.1.2</pp.global.config.version>
+        <oe.substrate.version>3.0.31</oe.substrate.version>
+        <!--<oe.substrate.springboot.version>1.0.8</oe.substrate.springboot.version>-->
+        <build-properties.file>${user.home}/pp-service.properties</build-properties.file>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <!--Excluding this in the parent pom and remvove this -->
+                <groupId>com.openenglish</groupId>
+                <artifactId>oe-substrate-core</artifactId>
+                <version>${oe.substrate.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>1.1.0.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jadira.usertype</groupId>
+                <artifactId>usertype.core</artifactId>
+                <version>4.0.0.GA</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.openenglish.pp</groupId>
+            <artifactId>pp-global-config</artifactId>
+            <version>${pp.global.config.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
