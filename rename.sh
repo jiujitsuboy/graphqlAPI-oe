@@ -1,6 +1,7 @@
 #!/bin/bash
 
 projectName=$1
+debug=$2
 
 #
 # Validate user input
@@ -9,7 +10,7 @@ if [ "$projectName" = "" ]; then
     echo "you need to provide the new project prefix, exiting..."
     echo
     echo "Usage:"
-    echo "  rename.sh oe-some-new-project-prefix"
+    echo "  rename.sh oe-some-new-project-prefix [-d]"
     echo
     exit
 fi
@@ -22,7 +23,13 @@ function moveFile() {
     newName=$1
 
     if [ "$newName" != "." ]; then
-        echo "git move $file $newName"
+        cmd="git move $file $newName"
+    fi
+
+    if [ "$debug" = "" ]; then
+        echo "hello"
+    else
+        $cmd
     fi
 }
 
@@ -33,8 +40,17 @@ function moveFile() {
 function updatePom() {
     pomFile=$1
 
+    if [ "$pomFile" = ".pom.xml" ]; then
+        pomFile="pom.xml"
+    fi
+
     if test "$pom"; then
-        echo "  sed -i -e 's/pp-service/${projectName}/g'" $pomFile
+        if [ "$debug" = "" ]; then
+            sed -e 's/pp-service/${projectName}/g' $pomFile
+        else
+            echo "  sed -i -e 's/pp-service/${projectName}/g'" $pomFile
+        fi
+
     fi
 }
 
