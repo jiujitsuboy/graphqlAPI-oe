@@ -27,9 +27,9 @@ function moveFile() {
     fi
 
     if [ "$debug" = "" ]; then
-        echo "hello"
-    else
         $cmd
+    else
+        echo "hello"
     fi
 }
 
@@ -46,7 +46,7 @@ function updatePom() {
 
     if test "$pom"; then
         if [ "$debug" = "" ]; then
-            sed -e 's/pp-service/${projectName}/g' $pomFile
+            sed -i -e 's/pp-service/${projectName}/g' $pomFile
         else
             echo "  sed -i -e 's/pp-service/${projectName}/g'" $pomFile
         fi
