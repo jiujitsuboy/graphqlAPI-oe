@@ -27,10 +27,10 @@ function moveFile() {
     fi
 
     if [ "$debug" = "" ]; then
-        echo "$cmd"
+        echo $cmd
         $cmd
     else
-        echo "$cmd"
+        echo $cmd
     fi
 }
 
@@ -50,10 +50,10 @@ function updatePom() {
 
     if test "$pom"; then
         if [ "$debug" = "" ]; then
-            echo "$cmd"
+            echo $cmd
             $cmd
         else
-            echo "$cmd"
+            echo $cmd
         fi
 
     fi
