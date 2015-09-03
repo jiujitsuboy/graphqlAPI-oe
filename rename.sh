@@ -2,6 +2,7 @@
 
 projectName=$1
 debug=$2
+origProjectName=pp-service
 
 #
 # Validate user input
@@ -45,23 +46,14 @@ function updatePom() {
         pomFile="pom.xml"
     fi
 
-    pomFileBkp=$pomFile.BKP
-    cmd="cp $pomFile $pomFileBkp; cat $pomFileBkp | sed 's/pp-service/${projectName}/g' > $pomFile"
-
-    if test "$pom"; then
-        if [ "$debug" = "" ]; then
-            echo $cmd
-            $cmd
-        else
-            echo $cmd
-        fi
-
-    fi
+    cp $pomFile $pomFile.BKP; cat $pomFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $pomFile
+    
 }
 
+#for file in `ls -d  .`
 for file in `ls -d */ .`
 do
-    newName=`echo $file | sed -e "s/pp-service/${projectName}/g"`
+    newName=`echo $file | sed -e "s/${pp-service}/${projectName}/g"`
     pom=${newName}pom.xml
 
     moveFile $newName
