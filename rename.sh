@@ -1,13 +1,51 @@
 #!/bin/bash
-#sed -i  "s/%SUB_DOMAIN%/$FINAL_ENV/g" /etc/default/pp-service
-for file in `ls .`
-do
-    if [ "$file" != "." ]; then
-        echo "Renaming file : $file"
-        mv "$file" "${file//pp-service/pp-lead}";  # hard code for now
+
+projectName=$1
+
+#
+# Validate user input
+#
+if [ "$projectName" = "" ]; then
+    echo "you need to provide the new project prefix, exiting..."
+    echo
+    echo "Usage:"
+    echo "  rename.sh oe-some-new-project-prefix"
+    echo
+    exit
+fi
+
+
+#
+# Rename directories
+#
+function moveFile() {
+    newName=$1
+
+    if [ "$newName" != "." ]; then
+        echo "git move $file $newName"
     fi
+}
+
+
+#
+# update the pom file
+#
+function updatePom() {
+    pomFile=$1
+
+    if test "$pom"; then
+        echo "  sed -i -e 's/pp-service/${projectName}/g'" $pomFile
+    fi
+}
+
+for file in `ls -d */ .`
+do
+    newName=`echo $file | sed -e "s/pp-service/${projectName}/g"`
+    pom=${newName}pom.xml
+
+    moveFile $newName
+
+    updatePom $pom
 done
 
-#Change all pp-service, 0-pp-service Service recursively
-#Replace all pp-service, pp_service and PP-SERVICE and PP_SERVICE in all files
 
