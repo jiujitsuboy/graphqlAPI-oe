@@ -44,11 +44,13 @@ function updatePom() {
         pomFile="pom.xml"
     fi
 
+    cmd="sed -i 's/pp-service/${projectName}/g' $pomFile"
+
     if test "$pom"; then
         if [ "$debug" = "" ]; then
-            sed -i 's/pp-service/${projectName}/g' $pomFile
+            $cmd
         else
-            echo "  sed -i -e 's/pp-service/${projectName}/g'" $pomFile
+            echo "$cmd"
         fi
 
     fi
