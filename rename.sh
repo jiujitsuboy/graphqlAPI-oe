@@ -53,7 +53,7 @@ function updatePom() {
 #for file in `ls -d  .`
 for file in `ls -d */ .`
 do
-    newName=`echo $file | sed -e "s/${pp-service}/${projectName}/g"`
+    newName=`echo $file | sed -e "s/${origProjectName}/${projectName}/g"`
     pom=${newName}pom.xml
 
     moveFile $newName
