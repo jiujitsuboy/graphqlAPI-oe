@@ -23,7 +23,7 @@ function moveFile() {
     newName=$1
 
     if [ "$newName" != "." ]; then
-        cmd="git move $file $newName"
+        cmd="git mv $file $newName"
     fi
 
     if [ "$debug" = "" ]; then
