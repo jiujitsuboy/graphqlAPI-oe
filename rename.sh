@@ -46,7 +46,7 @@ function updatePom() {
 
     if test "$pom"; then
         if [ "$debug" = "" ]; then
-            sed -i -e 's/pp-service/${projectName}/g' $pomFile
+            sed -i 's/pp-service/${projectName}/g' $pomFile
         else
             echo "  sed -i -e 's/pp-service/${projectName}/g'" $pomFile
         fi
