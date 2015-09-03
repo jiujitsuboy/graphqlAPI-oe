@@ -4,23 +4,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>pp-service-integration-test</artifactId>
     <parent>
         <groupId>com.openenglish.pp</groupId>
         <artifactId>pp-service</artifactId>
         <version>FIXED-SNAPSHOT</version>
     </parent>
 
+    <artifactId>pp-service-integration-test</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>com.openenglish.pp</groupId>
             <artifactId>pp-service-webapp</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.openenglish.pp</groupId>
             <artifactId>pp-service-client</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <!--Testing dependencies-->
         <dependency>

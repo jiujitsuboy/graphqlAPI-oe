@@ -4,14 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>pp-service-service</artifactId>
-    <version>FIXED-SNAPSHOT</version>
-
     <parent>
         <groupId>com.openenglish.pp</groupId>
         <artifactId>pp-service</artifactId>
         <version>FIXED-SNAPSHOT</version>
     </parent>
+
+    <artifactId>pp-service-service</artifactId>
+
     <properties>
     </properties>
 
@@ -22,8 +22,7 @@
         </dependency>
         <dependency>
             <groupId>com.openenglish.pp</groupId>
-            <artifactId>pp-service-persistence</artifactId>
-            <version>${project.version}</version>
+            <artifactId>pp-service-model</artifactId>
         </dependency>
 
         <dependency>
