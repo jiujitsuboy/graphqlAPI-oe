@@ -29,7 +29,7 @@ function moveFile() {
     if [ "$debug" = "" ]; then
         $cmd
     else
-        echo "hello"
+        echo "$cmd"
     fi
 }
 
