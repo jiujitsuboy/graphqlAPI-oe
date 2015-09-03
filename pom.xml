@@ -9,23 +9,23 @@
     </parent>
 
     <groupId>com.openenglish.pp</groupId>
-    <artifactId>pp-service</artifactId>
+    <artifactId>oe-system-three-reference</artifactId>
     <version>FIXED-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>pp-service-common</module>
-        <module>pp-service-client</module>
-        <module>pp-service-model</module>
-        <module>pp-service-service</module>
-        <module>pp-service-webapp</module>
+        <module>oe-system-three-reference-common</module>
+        <module>oe-system-three-reference-client</module>
+        <module>oe-system-three-reference-model</module>
+        <module>oe-system-three-reference-service</module>
+        <module>oe-system-three-reference-webapp</module>
     </modules>
 
     <profiles>
         <profile>
             <id>integration</id>
             <modules>
-                <module>pp-service-integration-test</module>
+                <module>oe-system-three-reference-integration-test</module>
             </modules>
         </profile>
     </profiles>
@@ -34,7 +34,7 @@
         <pp.global.config.version>2.1.2</pp.global.config.version>
         <oe.substrate.version>3.0.31</oe.substrate.version>
         <!--<oe.substrate.springboot.version>1.0.8</oe.substrate.springboot.version>-->
-        <build-properties.file>${user.home}/pp-service.properties</build-properties.file>
+        <build-properties.file>${user.home}/oe-system-three-reference.properties</build-properties.file>
     </properties>
 
     <dependencyManagement>
@@ -42,22 +42,27 @@
             <!-- project modules -->
             <dependency>
                 <groupId>com.openenglish.pp</groupId>
-                <artifactId>pp-service-common</artifactId>
+                <artifactId>oe-system-three-reference-common</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.openenglish.pp</groupId>
-                <artifactId>pp-service-client</artifactId>
+                <artifactId>oe-system-three-reference-client</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.openenglish.pp</groupId>
-                <artifactId>pp-service-model</artifactId>
+                <artifactId>oe-system-three-reference-model</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.openenglish.pp</groupId>
-                <artifactId>pp-service-service</artifactId>
+                <artifactId>oe-system-three-reference-service</artifactId>
+                <version>FIXED-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.openenglish.pp</groupId>
+                <artifactId>oe-system-three-reference-webapp</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
 

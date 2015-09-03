@@ -6,36 +6,37 @@
 
     <parent>
         <groupId>com.openenglish.pp</groupId>
-        <artifactId>pp-service</artifactId>
+        <artifactId>oe-system-three-reference</artifactId>
         <version>FIXED-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pp-service-service</artifactId>
-
-    <properties>
-    </properties>
+    <artifactId>oe-system-three-reference-common</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-logging</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.openenglish.pp</groupId>
-            <artifactId>pp-service-model</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
 
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
         </dependency>
         <dependency>
             <groupId>org.pojomatic</groupId>
@@ -54,5 +55,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>

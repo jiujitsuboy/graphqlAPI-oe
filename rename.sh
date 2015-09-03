@@ -2,7 +2,7 @@
 
 projectName=$1
 debug=$2
-origProjectName=pp-service
+origProjectName=oe-system-three-reference
 
 #
 # Validate user input

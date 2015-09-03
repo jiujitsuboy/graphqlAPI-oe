@@ -6,14 +6,14 @@
 
     <parent>
         <groupId>com.openenglish.pp</groupId>
-        <artifactId>pp-service</artifactId>
+        <artifactId>oe-system-three-reference</artifactId>
         <version>FIXED-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pp-service-webapp</artifactId>
+    <artifactId>oe-system-three-reference-webapp</artifactId>
 
     <properties>
-        <pp.service.base.dir>/opt/open-english/pp-service</pp.service.base.dir>
+        <pp.service.base.dir>/opt/open-english/oe-system-three-reference</pp.service.base.dir>
     </properties>
 
     <dependencies>
@@ -32,11 +32,11 @@
 
         <dependency>
             <groupId>com.openenglish.pp</groupId>
-            <artifactId>pp-service-common</artifactId>
+            <artifactId>oe-system-three-reference-common</artifactId>
         </dependency>
         <dependency>
             <groupId>com.openenglish.pp</groupId>
-            <artifactId>pp-service-service</artifactId>
+            <artifactId>oe-system-three-reference-service</artifactId>
         </dependency>
         <dependency>
             <groupId>com.openenglish</groupId>

@@ -6,11 +6,11 @@
 
     <parent>
         <groupId>com.openenglish.pp</groupId>
-        <artifactId>pp-service</artifactId>
+        <artifactId>oe-system-three-reference</artifactId>
         <version>FIXED-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pp-service-client</artifactId>
+    <artifactId>oe-system-three-reference-client</artifactId>
 
     <dependencies>
         <dependency>

@@ -6,42 +6,23 @@
 
     <parent>
         <groupId>com.openenglish.pp</groupId>
-        <artifactId>pp-service</artifactId>
+        <artifactId>oe-system-three-reference</artifactId>
         <version>FIXED-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pp-service-model</artifactId>
+    <artifactId>oe-system-three-reference-service</artifactId>
+
+    <properties>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-logging</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.pojomatic</groupId>
-            <artifactId>pojomatic</artifactId>
+            <groupId>com.openenglish.pp</groupId>
+            <artifactId>oe-system-three-reference-model</artifactId>
         </dependency>
 
         <dependency>
@@ -49,8 +30,16 @@
             <artifactId>joda-time</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jadira.usertype</groupId>
-            <artifactId>usertype.core</artifactId>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.pojomatic</groupId>
+            <artifactId>pojomatic</artifactId>
         </dependency>
 
         <!--Testing dependencies-->
@@ -60,19 +49,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.springtestdbunit</groupId>
-            <artifactId>spring-test-dbunit</artifactId>
-            <version>1.1.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.dbunit</groupId>
-            <artifactId>dbunit</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
 </project>
