@@ -6,7 +6,7 @@ projectShortName=$2
 debug=$3
 origProjectName=oe-system-three-reference
 projectShortShortName="SERVICE"
-origProjectProperties="pp-service.properties"
+origProjectProperties="oe-system-three-reference.properties"
 
 if [ "$#" -lt 2 ]; then
     echo "Wrong number of arguments."
