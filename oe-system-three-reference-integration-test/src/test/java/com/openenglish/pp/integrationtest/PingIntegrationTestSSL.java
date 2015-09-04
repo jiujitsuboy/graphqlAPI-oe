@@ -18,8 +18,6 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {ServiceApplication.class, ServiceClientConfig.class})
-//@ContextConfiguration(classes = {prop2Config.class,ServiceClientConfig.class})
-//@WebIntegrationTest({"server.port=8888","SERVICE_HOST:http://pp-service.dev.openenglish.com:8888"})
 @WebIntegrationTest({"SERVICE_ACCEPT_ALL_SSL_CERTS=true","server.port=8888","SERVICE_HOST:http://pp-service.dev.openenglish.com:8888"})
 public class PingIntegrationTestSSL {
 
