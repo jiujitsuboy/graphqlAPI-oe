@@ -8,9 +8,6 @@ origProjectName=oe-system-three-reference
 projectShortShortName="SERVICE"
 origProjectProperties="pp-service.properties"
 
-
-echo "number of args: $#"
-
 if [ "$#" -lt 2 ]; then
     echo "Wrong number of arguments."
     echo
