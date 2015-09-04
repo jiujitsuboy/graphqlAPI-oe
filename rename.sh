@@ -2,9 +2,26 @@
 
 projectName=$1
 projectNameProperties="$projectName.properties"
-debug=$2
+projectShortName=$2
+debug=$3
 origProjectName=oe-system-three-reference
+projectShortShortName="SERVICE"
 origProjectProperties="pp-service.properties"
+
+
+echo "number of args: $#"
+
+if [ "$#" -lt 2 ]; then
+    echo "Wrong number of arguments."
+    echo
+    echo "Usage:"
+    echo "  rename.sh your-project short-name [-d]"
+    echo
+    echo "  your-project -> the name of your project, e.g. oe-sync"
+    echo "  short-name   -> project name for logback.xml, e.g. SYNC"
+    echo
+    exit
+fi
 
 #
 # Validate user input
@@ -59,7 +76,7 @@ function updatePom() {
 
 }
 
-function updateAllFiles() {
+function updateJavaFiles() {
 
     for file in `find . -name \*.java`
     do
@@ -70,6 +87,24 @@ function updateAllFiles() {
         if [ "$debug" = "" ]; then
             echo $cmd
             cp $file $file.BKP; cat $file.BKP | sed "s/${origProjectProperties}/${projectNameProperties}/g" > $file
+        else
+            echo $cmd
+        fi
+
+    done
+}
+
+function updateLogbackFiles() {
+
+    for file in `find . -name logback.xml`
+    do
+        echo "processing file: $file"
+
+        cmd="cp $file $file.BKP; cat $file.BKP | sed 's/${projectShortShortName}/${projectShortName}/g' > $file"
+
+        if [ "$debug" = "" ]; then
+            echo $cmd
+            cp $file $file.BKP; cat $file.BKP | sed "s/${projectShortShortName}/${projectShortName}/g" > $file
         else
             echo $cmd
         fi
@@ -97,7 +132,10 @@ do
 done
 
 echo "**** replacing properties file names"
-updateAllFiles
+updateJavaFiles
+
+echo "**** updating logback.xml files"
+updateLogbackFiles
 
 echo
 echo
