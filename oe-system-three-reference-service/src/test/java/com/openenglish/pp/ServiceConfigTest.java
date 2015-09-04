@@ -12,7 +12,7 @@ public class ServiceConfigTest {
 //    @Bean
 //    public static EnvironmentPropertyConfigurer environmentConfigurer(){
 //        EnvironmentPropertyConfigurer environmentPropertyConfigurer = new EnvironmentPropertyConfigurer();
-//        environmentPropertyConfigurer.setPropFileName("pp-service.properties");
+//        environmentPropertyConfigurer.setPropFileName("oe-system-three-reference.properties");
 //        environmentPropertyConfigurer.setOrder(1);
 //        return environmentPropertyConfigurer;
 //    }

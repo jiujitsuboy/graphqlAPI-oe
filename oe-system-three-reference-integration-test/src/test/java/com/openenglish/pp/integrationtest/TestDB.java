@@ -1,8 +1,5 @@
 package com.openenglish.pp.integrationtest;
 
-import com.openenglish.pp.PaymentPlatformServiceApplication;
-import com.openenglish.pp.client.ServiceClient;
-import com.openenglish.pp.client.configuration.ServiceClientConfig;
 import com.openenglish.substrate.database.DatabaseConfig;
 import com.openenglish.substrate.environment.EnvironmentPropertyConfigurer;
 
@@ -10,31 +7,18 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.client.RestTemplate;
 
-import java.sql.*;
-import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Date;
 
 import javax.sql.DataSource;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {propConfig.class, DatabaseConfig.class})
@@ -120,7 +104,7 @@ class propConfig{
   @Bean
   public static EnvironmentPropertyConfigurer envPropertyPlaceholderConfigurer(){
     EnvironmentPropertyConfigurer environmentPropertyConfigurer = new EnvironmentPropertyConfigurer();
-    environmentPropertyConfigurer.setPropFileName("pp-service.properties");
+    environmentPropertyConfigurer.setPropFileName("oe-system-three-reference.properties");
     environmentPropertyConfigurer.setOrder(1);
     return environmentPropertyConfigurer;
   }

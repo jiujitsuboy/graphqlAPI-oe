@@ -9,7 +9,7 @@ Update your `/etc/hosts` file with the following (resolve most OE DNS entries to
 127.0.0.1	pp-service.dev.openenglish.com
 ```
 
-<a name="properties"></a>Make sure you have `pp-service.properties` located in your home directory,
+<a name="properties"></a>Make sure you have `oe-system-three-reference.properties` located in your home directory,
  it should look like this (with your local postgres connection info), note the `jdbc.url` value:
 
 ```
@@ -81,10 +81,10 @@ not mapped the DNS entry to your local box instead of hitting prod or stg.
 
 To connect to the database, the VM needs access to YOUR database settings. The VM will use the 
 version of Postgres installed on your local machine, or another instance of Postgres, either way
-the VM will need acceess to your `~/pp-service.properties` file. The contents of the file
+the VM will need acceess to your `~/oe-system-three-reference.properties` file. The contents of the file
 [should be similar to the file above](#properties).
  
-How do we get your `~/pp-service.properties` file into the VM? If you look at the `Vagrant` file
+How do we get your `~/oe-system-three-reference.properties` file into the VM? If you look at the `Vagrant` file
 located in this directory you'll see these lines:
 
 ```
@@ -95,7 +95,7 @@ pp-service.vm.synced_folder "~", "/home/vagrant/user-home"
 These two lines, create mount points in the VM. The above entries tell you the `target` directory 
 in `pp-service-webapp` is mounted to `/home/vagrant/target` in the VM and that your host OS
 home directory `~` is mounted to `/home/vagrant/user-home`. Now that your home directory is available
-to the VM, we can just copy your `~/pp-service.properties` in the VM.
+to the VM, we can just copy your `~/oe-system-three-reference.properties` in the VM.
 
 ##Standard directory layout
 
@@ -108,7 +108,7 @@ installs when deploying your `deb` files to production. Here is the `oe standard
 /opt/open-english/setup
 /opt/open-english/setup/CONFIGDATA
 /opt/open-english/setup/dev
-/opt/open-english/setup/dev/pp-service.properties
+/opt/open-english/setup/dev/oe-system-three-reference.properties
 ```
 
 All OE boxes that follow the deploy process, will have an `/opt/open-english` directory. The `setup` 
@@ -124,8 +124,8 @@ env dev
 
 The `/opt/open-english/setup/dev` directory matches the `env dev` name at the end of the `CONFIGDATA`
 file. This path is used by [`EnvironmentPropertyConfigurer`](https://github.com/openenglish/oe-substrate/blob/master/src/main/java/com/openenglish/substrate/environment/EnvironmentPropertyConfigurer.java#L112-119)
-to load env specific JDBC connection data. When the VM is started, your `~/pp-service.properties` file
-is copied to `/opt/open-english/setup/dev/pp-service.properties`. This file is then read by
+to load env specific JDBC connection data. When the VM is started, your `~/oe-system-three-reference.properties` file
+is copied to `/opt/open-english/setup/dev/oe-system-three-reference.properties`. This file is then read by
 `pp-service` at startup and a connect made to your database.
 
  

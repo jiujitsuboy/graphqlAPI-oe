@@ -39,7 +39,7 @@ public class ServiceApplication extends SpringBootServletInitializer {
     public static EnvironmentPropertyConfigurer envPropertyPlaceholderConfigurer(){
         EnvironmentPropertyConfigurer environmentPropertyConfigurer = new EnvironmentPropertyConfigurer();
       environmentPropertyConfigurer.setGlobalFileName("pp-global-config.properties");
-        environmentPropertyConfigurer.setPropFileName("pp-service.properties");
+        environmentPropertyConfigurer.setPropFileName("oe-system-three-reference.properties");
         environmentPropertyConfigurer.setOrder(1);
         return environmentPropertyConfigurer;
     }

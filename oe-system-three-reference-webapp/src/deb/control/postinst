@@ -23,7 +23,7 @@ fi
 # --- install oe-activemq
 if [ "$OE_ENV" = "dev" ]; then
     tar zxf /opt/open-english/install/oe-active-mq/oe-activemq-*-bin.tar.gz -C / --strip 1
-    sh /opt/open-english/install/oe-active-mq/install-oe-activemq.sh pp-service.properties
+    sh /opt/open-english/install/oe-active-mq/install-oe-activemq.sh oe-system-three-reference.properties
 fi
 
 

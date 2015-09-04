@@ -18,7 +18,7 @@ EOF
 #
 DEV_ENV_DIR=/opt/open-english/setup/dev
 mkdir -p $DEV_ENV_DIR
-cp /home/vagrant/user-home/pp-service.properties $DEV_ENV_DIR/pp-service.properties
+cp /home/vagrant/user-home/oe-system-three-reference.properties $DEV_ENV_DIR/oe-system-three-reference.properties
 
 #
 # copy the SSL files to the correct place in the VM, accessed by apache

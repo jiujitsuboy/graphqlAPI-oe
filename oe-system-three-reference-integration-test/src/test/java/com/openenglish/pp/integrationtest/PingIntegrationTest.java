@@ -1,6 +1,6 @@
 package com.openenglish.pp.integrationtest;
 
-import com.openenglish.pp.PaymentPlatformServiceApplication;
+import com.openenglish.pp.ServiceApplication;
 import com.openenglish.pp.client.ServiceClient;
 import com.openenglish.pp.client.configuration.ServiceClientConfig;
 
@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {PaymentPlatformServiceApplication.class, ServiceClientConfig.class})
+@SpringApplicationConfiguration(classes = {ServiceApplication.class, ServiceClientConfig.class})
 @WebIntegrationTest({"SERVICE_ACCEPT_ALL_SSL_CERTS=true","server.port=8888","SERVICE_HOST:http://localhost:8888"})
 public class PingIntegrationTest {
   @Value("${local.server.port}")

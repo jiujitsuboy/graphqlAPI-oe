@@ -1,6 +1,6 @@
 package com.openenglish.pp.integrationtest;
 
-import com.openenglish.pp.PaymentPlatformServiceApplication;
+import com.openenglish.pp.ServiceApplication;
 import com.openenglish.pp.client.ServiceClient;
 import com.openenglish.pp.client.configuration.ServiceClientConfig;
 
@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {PaymentPlatformServiceApplication.class, ServiceClientConfig.class})
+@SpringApplicationConfiguration(classes = {ServiceApplication.class, ServiceClientConfig.class})
 //@ContextConfiguration(classes = {prop2Config.class,ServiceClientConfig.class})
 //@WebIntegrationTest({"server.port=8888","SERVICE_HOST:http://pp-service.dev.openenglish.com:8888"})
 @WebIntegrationTest({"SERVICE_ACCEPT_ALL_SSL_CERTS=true","server.port=8888","SERVICE_HOST:http://pp-service.dev.openenglish.com:8888"})
