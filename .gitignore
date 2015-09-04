@@ -150,3 +150,6 @@ velocity.log.*
 
 # Vagrant 
 .vagrant
+
+# Backup files
+*.BKP

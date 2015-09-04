@@ -1,0 +1,114 @@
+#!/bin/bash
+
+# --- oe deploy data ---
+
+# This file is available on all machines in ALL environments
+USERDATA=`cat /opt/open-english/setup/CONFIGDATA`
+if ! test "$USERDATA"
+then
+        echo "Cannot find /opt/oe/CONFIGDATA... cant install... exiting"
+        exit 1
+fi
+# get the 8th value, which is our ENV
+set $USERDATA; OE_ENV=$8
+
+# if we don't have the OE_ENV, bail
+if [ "$OE_ENV" = "" ]; then
+    echo "OE env var OE_ENV not set, app will not find database config!"
+    printenv
+    exit 1;
+fi
+
+
+# --- install oe-activemq
+if [ "$OE_ENV" = "dev" ]; then
+    tar zxf /opt/open-english/install/oe-active-mq/oe-activemq-*-bin.tar.gz -C / --strip 1
+    sh /opt/open-english/install/oe-active-mq/install-oe-activemq.sh oe-system-three-reference.properties
+fi
+
+
+# --- FROM HERE WE NEED TO FOLLOW THESE STEPS: https://openenglish.hackpad.com/OE-ActiveMQ-IJ5AoWpYhPC ---
+
+
+
+# REMOVE ALL OF THIS FOR NOW, not relevant to activemq
+# --- file permissions ---
+
+mkdir -p /opt/open-english/pp-service/logs
+# update permissions on the directory
+chmod 775 /opt/open-english/pp-service/logs
+
+# ---Switching from console to file in log4j.xml ---
+CONSOLE_REF="<appender-ref ref=\"STDOUT\"\/>"
+FILE_REF="<appender-ref ref=\"DAILYFILE\"\/>"
+
+sed -i "s/${CONSOLE_REF}/${FILE_REF}/g" /opt/open-english/pp-service/config/logback.xml
+
+USERNAME=oe
+# create the oe user and group
+adduser --system --group --disabled-password --shell /bin/sh $USERNAME
+chown -R $USERNAME.$USERNAME /opt/open-english/pp-service
+
+# update permissions on the directory
+chmod 775 /opt/open-english/pp-service/logs
+chmod 755 /etc/init.d/pp-service
+
+# --- DNS ---
+FINAL_ENV=".$OE_ENV"
+if [ "$OE_ENV" = "prod" ]; then
+    FINAL_ENV=
+fi
+
+# --- set env specific values ---
+sed -i  "s/%SUB_DOMAIN%/$FINAL_ENV/g" /etc/default/pp-service
+
+# --- MEMORY ---
+JAVA_MAX_MEM="-Xmx3g"
+JAVA_MAX_PERM="-XX:MaxPermSize=512m"
+if [ "$OE_ENV" = "dev" ]; then
+    JAVA_MAX_MEM=
+    JAVA_MAX_PERM=
+fi
+
+DNS_NAME=pp-service$FINAL_ENV.openenglish.com
+
+# --- set env specific values ---
+sed -i  "s/%JAVA_MAX_MEM%/$JAVA_MAX_MEM/g" /etc/default/pp-service
+sed -i  "s/%JAVA_MAX_PERM%/$JAVA_MAX_PERM/g" /etc/default/pp-service
+
+# --- add to the system ---
+update-rc.d -f pp-service remove
+update-rc.d pp-service defaults
+
+
+# --- apache setup ---
+# enable the pp-service site for apache
+a2ensite 0-pp-service
+a2ensite 0-pp-service-ssl
+a2enmod proxy
+a2enmod proxy_http
+a2enmod rewrite
+a2enmod ssl
+
+# update the apache config files
+SSL_CHAIN=
+
+if [ "$OE_ENV" = "dev" ]; then
+    SSL_CHAIN="#"
+fi
+
+sed -i  "s/%SERVER_DNS%/$DNS_NAME/g" /etc/apache2/sites-available/0-pp-service.conf
+# we need to use $OE_ENV here because it does not have a dot in the name, $FINAL_ENV adds a dot to $OE_ENV
+sed -i  "s/%ENV%/$OE_ENV/g" /etc/apache2/sites-available/0-pp-service.conf
+sed -i  "s/%SSL_CHAIN%/$SSL_CHAIN/g" /etc/apache2/sites-available/0-pp-service.conf
+sed -i  "s/%COOKIE%/$FINAL_ENV/g" /etc/apache2/sites-available/0-pp-service.conf
+
+sed -i  "s/%SERVER_DNS%/$DNS_NAME/g" /etc/apache2/sites-available/0-pp-service-ssl.conf
+sed -i  "s/%ENV%/$OE_ENV/g" /etc/apache2/sites-available/0-pp-service-ssl.conf
+sed -i  "s/%SSL_CHAIN%/$SSL_CHAIN/g" /etc/apache2/sites-available/0-pp-service-ssl.conf
+sed -i  "s/%COOKIE%/$FINAL_ENV/g" /etc/apache2/sites-available/0-pp-service-ssl.conf
+
+# --- restart servers ---
+service pp-service start
+service apache2 restart
+

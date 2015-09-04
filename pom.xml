@@ -1,11 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>pp-service</artifactId>
-    <groupId>com.openenglish.pp</groupId>
-    <packaging>pom</packaging>
-    <version>FIXED-SNAPSHOT</version>
-    <name>pp-service</name>
 
     <parent>
         <groupId>com.openenglish</groupId>
@@ -13,19 +8,24 @@
         <version>1.0.8</version>
     </parent>
 
+    <groupId>com.openenglish.pp</groupId>
+    <artifactId>oe-system-three-reference</artifactId>
+    <version>FIXED-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
     <modules>
-        <module>pp-service-common</module>
-        <module>pp-service-client</module>
-        <module>pp-service-persistence</module>
-        <module>pp-service-service</module>
-        <module>pp-service-webapp</module>
+        <module>oe-system-three-reference-common</module>
+        <module>oe-system-three-reference-client</module>
+        <module>oe-system-three-reference-model</module>
+        <module>oe-system-three-reference-service</module>
+        <module>oe-system-three-reference-webapp</module>
     </modules>
 
     <profiles>
         <profile>
             <id>integration</id>
             <modules>
-                <module>pp-service-integration-test</module>
+                <module>oe-system-three-reference-integration-test</module>
             </modules>
         </profile>
     </profiles>
@@ -33,17 +33,60 @@
     <properties>
         <pp.global.config.version>2.1.2</pp.global.config.version>
         <oe.substrate.version>3.0.31</oe.substrate.version>
+        <oe.substrate.spring-boot.version>1.0.8</oe.substrate.spring-boot.version>
         <!--<oe.substrate.springboot.version>1.0.8</oe.substrate.springboot.version>-->
-        <build-properties.file>${user.home}/pp-service.properties</build-properties.file>
+        <build-properties.file>${user.home}/oe-system-three-reference.properties</build-properties.file>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- project modules -->
             <dependency>
-                <!--Excluding this in the parent pom and remvove this -->
+                <groupId>com.openenglish.pp</groupId>
+                <artifactId>oe-system-three-reference-common</artifactId>
+                <version>FIXED-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.openenglish.pp</groupId>
+                <artifactId>oe-system-three-reference-client</artifactId>
+                <version>FIXED-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.openenglish.pp</groupId>
+                <artifactId>oe-system-three-reference-model</artifactId>
+                <version>FIXED-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.openenglish.pp</groupId>
+                <artifactId>oe-system-three-reference-service</artifactId>
+                <version>FIXED-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.openenglish.pp</groupId>
+                <artifactId>oe-system-three-reference-webapp</artifactId>
+                <version>FIXED-SNAPSHOT</version>
+            </dependency>
+
+            <!-- other dependencies -->
+            <dependency>
                 <groupId>com.openenglish</groupId>
                 <artifactId>oe-substrate-core</artifactId>
                 <version>${oe.substrate.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.openenglish</groupId>
+                <artifactId>oe-substrate-springboot-core</artifactId>
+                <version>${oe.substrate.spring-boot.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.slf4j</groupId>
