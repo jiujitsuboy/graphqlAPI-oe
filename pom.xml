@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.openenglish</groupId>
         <artifactId>oe-substrate-springboot-parent</artifactId>
-        <version>1.0.8</version>
+        <version>1.0.9</version>
     </parent>
 
     <groupId>com.openenglish.pp</groupId>
@@ -31,10 +31,9 @@
     </profiles>
 
     <properties>
-        <pp.global.config.version>2.1.2</pp.global.config.version>
-        <oe.substrate.version>3.0.31</oe.substrate.version>
-        <oe.substrate.spring-boot.version>1.0.8</oe.substrate.spring-boot.version>
-        <!--<oe.substrate.springboot.version>1.0.8</oe.substrate.springboot.version>-->
+        <pp.global.config.version>2.1.7</pp.global.config.version>
+        <oe.substrate.version>3.0.34</oe.substrate.version>
+        <oe.substrate.spring-boot.version>1.0.9</oe.substrate.spring-boot.version>
         <build-properties.file>${user.home}/oe-system-three-reference.properties</build-properties.file>
     </properties>
 

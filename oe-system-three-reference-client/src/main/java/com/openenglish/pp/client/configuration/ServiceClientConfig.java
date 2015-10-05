@@ -1,5 +1,6 @@
 package com.openenglish.pp.client.configuration;
 
+import com.openenglish.substrate.calltraceid.RestTemplateCallTraceIdInterceptor;
 import com.openenglish.substrate.rest.RestTemplateBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
+@Import(RestTemplateCallTraceIdInterceptor.class)
 @ComponentScan("com.openenglish.pp.client")
 public class ServiceClientConfig {
 
@@ -35,9 +38,12 @@ public class ServiceClientConfig {
   @Autowired
   private ApplicationContext applicationContext;
 
+  @Autowired
+  private RestTemplateCallTraceIdInterceptor restTemplateCallTraceIdInterceptor;
+
   @Bean
   public RestTemplate serviceRestTemplate() {
-    return RestTemplateBuilder.create(this.applicationContext)
+    return RestTemplateBuilder.create(this.applicationContext, this.restTemplateCallTraceIdInterceptor)
         .setDefaultMaxPerRouteConnections(defaultMaxPerRouteConnections)
         .setMaxTotalConnections(maxTotalConnections)
         .setConnectionTimeout(connectionTimeout)
