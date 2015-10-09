@@ -75,6 +75,7 @@ DNS_NAME=${APP_NAME}${FINAL_ENV}.openenglish.com
 # --- set env specific values ---
 sed -i  "s/%JAVA_MAX_MEM%/$JAVA_MAX_MEM/g" ${APP_DEFAULTS}
 sed -i  "s/%JAVA_MAX_PERM%/$JAVA_MAX_PERM/g" ${APP_DEFAULTS}
+sed -i  "s/%APP_NAME%/$APP_NAME/g" ${APP_DEFAULTS}
 
 # --- add to the system ---
 update-rc.d -f ${APP_NAME} remove
@@ -97,15 +98,11 @@ if [ "$OE_ENV" = "dev" ]; then
 fi
 
 sed -i  "s/%SERVER_DNS%/$DNS_NAME/g" ${HTTP_SERVICE_CONFIG}
-# we need to use $OE_ENV here because it does not have a dot in the name, $FINAL_ENV adds a dot to $OE_ENV
-sed -i  "s/%ENV%/$OE_ENV/g" ${HTTP_SERVICE_CONFIG}
-sed -i  "s/%SSL_CHAIN%/$SSL_CHAIN/g" ${HTTP_SERVICE_CONFIG}
-sed -i  "s/%COOKIE%/$FINAL_ENV/g" ${HTTP_SERVICE_CONFIG}
+sed -i  "s/%APP_NAME%/$APP_NAME/g" ${HTTP_SERVICE_CONFIG}
 
-sed -i  "s/%SERVER_DNS%/$DNS_NAME/g" ${HTTPS_SERVICE_CONFIG}
 # we need to use $OE_ENV here because it does not have a dot in the name, $FINAL_ENV adds a dot to $OE_ENV
 sed -i  "s/%ENV%/$OE_ENV/g" ${HTTPS_SERVICE_CONFIG}
-sed -i  "s/%SSL_CHAIN%/$SSL_CHAIN/g" ${HTTPS_SERVICE_CONFIG}
+sed -i  "s/%APP_NAME%/$APP_NAME/g" ${HTTPS_SERVICE_CONFIG}
 sed -i  "s/%COOKIE%/$FINAL_ENV/g" ${HTTPS_SERVICE_CONFIG}
 
 # --- restart servers ---

@@ -132,12 +132,14 @@ function vagrantUpdates() {
     vagrantFile=`find . -name Vagrantfile`
     madnessFile=`find . -name mad\*`
     wtestFile=`find . -name w-tes\*`
+    postinstFile=`find . -name postinst`
 
     if [ "$debug" = "" ]; then
 	    cp $vagrantFile $vagrantFile.BKP; cat $vagrantFile.BKP | sed "s/${origName}/${newName}/g" > $vagrantFile
 	    cp $vagrantFile $vagrantFile.BKP; cat $vagrantFile.BKP | sed "s/${origPort}/${projectPortPrefix}/g" > $vagrantFile
 	    cp $madnessFile $madnessFile.BKP; cat $madnessFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $madnessFile
-	    cp $wtestFile $wtestFile.BKP; cat $wtestFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $madnessFile
+	    cp $wtestFile $wtestFile.BKP; cat $wtestFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $wtestFile
+	    cp $postinstFile $postinstFile.BKP; cat $postinstFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $postinstFile
     else
         echo "updating Vagrantfile"
 	    echo "updating madness.sh"
