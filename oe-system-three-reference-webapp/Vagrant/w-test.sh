@@ -1,9 +1,9 @@
 #!/bin/bash
 
-echo "==> testing pp-service..."
 APP_NAME=oe-system-three-reference
 LOCAL_PORT=8743
 CURL_ARGS="-L -k -i"
+echo "==> testing ${APP_NAME} ..."
 
 case "$1" in
     stg)
