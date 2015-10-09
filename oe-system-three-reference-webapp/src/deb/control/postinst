@@ -3,7 +3,7 @@
 # ---
 # --- THE ONLY SETTING YOU NEED TO MAKE, PROVIDE THE NAME OF YOUR APPLICATION
 # ---
-APP_NAME=oe-sync-service
+APP_NAME=oe-system-three-reference
 
 
 # --- general server setup ---
@@ -50,7 +50,7 @@ sed -i "s/${CONSOLE_REF}/${FILE_REF}/g" ${APP_INSTALL_DIR}/config/logback.xml
 # --- create the oe user and group ---
 USERNAME=oe
 adduser --system --group --disabled-password --shell /bin/sh $USERNAME
-chown -R $USERNAME.$USERNAME /opt/open-english/oe-sync-service
+chown -R $USERNAME.$USERNAME /opt/open-english/${APP_NAME}
 
 
 # --- DNS ---

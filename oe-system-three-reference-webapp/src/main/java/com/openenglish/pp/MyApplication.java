@@ -19,7 +19,7 @@ import javax.servlet.Filter;
 
 @SpringBootApplication
 @Import({ServiceConfig.class, SubstrateConfig.class, Swagger2Config.class})
-public class ServiceApplication extends SpringBootServletInitializer {
+public class MyApplication extends SpringBootServletInitializer {
 
     /**
      * https://groups.google.com/forum/#!topic/javamelody/65xJeM-ozms
@@ -45,8 +45,8 @@ public class ServiceApplication extends SpringBootServletInitializer {
     }
 
 
-    final static Logger logger = LoggerFactory.getLogger(ServiceApplication.class);
+    final static Logger logger = LoggerFactory.getLogger(MyApplication.class);
     public static void main(String[] args) throws Exception {
-        SpringApplication.run(ServiceApplication.class, args);
+        SpringApplication.run(MyApplication.class, args);
     }
 }

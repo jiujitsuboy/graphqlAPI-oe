@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "==> testing pp-service..."
+APP_NAME=oe-system-three-reference
 CURL_ARGS="-L -k -i"
 
 case "$1" in
