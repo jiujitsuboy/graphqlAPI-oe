@@ -4,7 +4,7 @@ projectName=$1
 projectNameProperties="$projectName.properties"
 projectShortName=$2
 projectPortPrefix=$3
-debug=$3
+debug=$4
 origProjectName=oe-system-three-reference
 projectShortShortName="SERVICE"
 origProjectProperties="oe-system-three-reference.properties"
@@ -130,11 +130,17 @@ function vagrantUpdates() {
     origPort=87
     newName=`echo $projectName | sed -e "s/-/_/g"`
     vagrantFile=`find . -name Vagrantfile`
+    madnessFile=`find . -name mad\*`
 
-    cp $vagrantFile $vagrantFile.BKP; cat $vagrantFile.BKP | sed "s/${origName}/${newName}/g" > $vagrantFile
-    cp $vagrantFile $vagrantFile.BKP; cat $vagrantFile.BKP | sed "s/${origPort}/${projectPortPrefix}/g" > $vagrantFile
+    if [ "$debug" = "" ]; then
+	    cp $vagrantFile $vagrantFile.BKP; cat $vagrantFile.BKP | sed "s/${origName}/${newName}/g" > $vagrantFile
+	    cp $vagrantFile $vagrantFile.BKP; cat $vagrantFile.BKP | sed "s/${origPort}/${projectPortPrefix}/g" > $vagrantFile
+	    cp $madnessFile $madnessFile.BKP; cat $madnessFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $madnessFile
+    else
+        echo "updating Vagrantfile"
+	    echo "updating madness.sh"
+    fi
 }
-
 function cleanup() {
     find . -name \*.BKP -exec rm {} +
 }
