@@ -28,27 +28,27 @@ APP_USER=oe
 case "$1" in
 start)
     su $APP_USER -c $APP_HOME/$APP_NAME-run.sh
-    echo "Starting OE_SYNC_SERVICE Server."
+    echo "Starting #$APP_NAME Server."
     ;;
 stop)
     su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-stop.sh"
-    echo "Stopping OE_SYNC_SERVICE Server."
+    echo "Stopping #$APP_NAME Server."
     ;;
 restart)
     su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-stop.sh"
-    echo "Stopping OE_SYNC_SERVICE Server."
+    echo "Stopping #$APP_NAME Server."
     su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-run.sh"
-    echo "Restarting OE_SYNC_SERVICE Server."
+    echo "Restarting #$APP_NAME Server."
     ;;
 force-reload)
     su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-stop.sh"
-    echo "Stopping OE_SYNC_SERVICE Server."
+    echo "Stopping #$APP_NAME Server."
     su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-run.sh"
-    echo "Restarting OE_SYNC_SERVICE Server."
-    echo "Force reload of OE_SYNC_SERVICE Server."
+    echo "Restarting #$APP_NAME Server."
+    echo "Force reload of #$APP_NAME Server."
     ;;
 status)
-    echo "Status of OE_SYNC_SERVICE Server..."
+    echo "Status of #$APP_NAME Server..."
     su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-status.sh"
     ;;
 *)

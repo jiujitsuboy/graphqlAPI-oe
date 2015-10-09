@@ -4,6 +4,10 @@
 #    %APP_NAME%  -- the application name
 #
 
+APP_NAME=%APP_NAME%
+APP_NAME_WEBAPP=${APP_NAME}-webapp
+APP_HOME_DIR=/opt/open-english/%APP_NAME%
+APP_BOOT_FILE=${APP_HOME_DIR}/logs/${APP_NAME}-boot.log
 APP_LOG_CONFIG_FILE=/opt/open-english/%APP_NAME%/config/logback.xml
 JAVA_MAX_MEM=%JAVA_MAX_MEM%
 JAVA_MAX_PERM=%JAVA_MAX_PERM%

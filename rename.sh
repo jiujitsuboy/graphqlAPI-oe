@@ -130,9 +130,13 @@ function vagrantUpdates() {
     origPort=87
     newName=`echo $projectName | sed -e "s/-/_/g"`
     vagrantFile=`find . -name Vagrantfile`
+    vminitFile=`find . -name vminit\*`
     madnessFile=`find . -name mad\*`
     wtestFile=`find . -name w-tes\*`
     postinstFile=`find . -name postinst`
+    runFile=`find . -name \*run.sh`
+    statusFile=`find . -name \*status.sh`
+    stopFile=`find . -name \*stop.sh`
 
     if [ "$debug" = "" ]; then
 	    cp $vagrantFile $vagrantFile.BKP; cat $vagrantFile.BKP | sed "s/${origName}/${newName}/g" > $vagrantFile
@@ -140,9 +144,14 @@ function vagrantUpdates() {
 	    cp $madnessFile $madnessFile.BKP; cat $madnessFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $madnessFile
 	    cp $wtestFile $wtestFile.BKP; cat $wtestFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $wtestFile
 	    cp $postinstFile $postinstFile.BKP; cat $postinstFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $postinstFile
+	    cp $vminitFile $vminitFile.BKP; cat $vminitFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $vminitFile
+	    cp $runFile $runFile.BKP; cat $runFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $runFile
+	    cp $statusFile $statusFile.BKP; cat $statusFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $statusFile
+	    cp $stopFile $stopFile.BKP; cat $stopFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $stopFile
     else
         echo "updating Vagrantfile"
 	    echo "updating madness.sh"
+	    echo "updating other system specific files"
     fi
 }
 function cleanup() {
