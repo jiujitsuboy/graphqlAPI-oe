@@ -148,20 +148,34 @@ function cleanup() {
 function createLocalProperties() {
 
     userProperties=~/${projectName}.properties
-
+    tryAgain=true
     if ! [ -e ${userProperties} ]; then
-        echo "Please enter the name of a file to base ${userProperties} on:"
-        read sourceFile
+        while $tryAgain; do
+            echo "Please enter the name of a file to base ${userProperties} on:"
+            read sourceFile
 
-        homeSourceFile=~/$sourceFile
+            homeSourceFile=~/$sourceFile
+            homeSourceFileProperties=~/$sourceFile.properties
 
-        if [ -e $sourceFile ]; then
-            cp $sourceFile $userProperties
-        elif [ -e $homeSourceFile ]; then
-            cp $homeSourceFile $userProperties
-        else
-            echo "I could not find $sourceFile, I also checked ($homeSourceFile)"
-        fi
+            if [ -e $sourceFile ]; then
+                cp $sourceFile $userProperties
+            elif [ -e $homeSourceFile ]; then
+                cp $homeSourceFile $userProperties
+            elif [ -e $homeSourceFileProperties ]; then
+                cp $homeSourceFileProperties $userProperties
+            else
+                echo "I could not find $sourceFile, I also checked ($homeSourceFile and $homeSourceFileProperties)"
+                echo "would you like to enter the name again? [y|n]"
+                read doItAgain
+
+                if [ "$doItAgain" = "y" -o "$doItAgain" = "Y" ]; then
+                    tryAgain=true
+                    continue
+                fi
+            fi
+            # set tryAgain to false by default, only if we have an issue will we loop again
+            tryAgain=false
+        done
     fi
 }
 
