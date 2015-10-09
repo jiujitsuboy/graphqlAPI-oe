@@ -3,19 +3,23 @@
 projectName=$1
 projectNameProperties="$projectName.properties"
 projectShortName=$2
+projectPortPrefix=$3
 debug=$3
 origProjectName=oe-system-three-reference
 projectShortShortName="SERVICE"
 origProjectProperties="oe-system-three-reference.properties"
 
-if [ "$#" -lt 2 ]; then
+if [ "$#" -lt 3 ]; then
     echo "Wrong number of arguments."
     echo
     echo "Usage:"
-    echo "  rename.sh your-project short-name [-d]"
+    echo "  rename.sh your-project short-name port-number [-d]"
     echo
     echo "  your-project -> the name of your project, e.g. oe-sync"
     echo "  short-name   -> project name for logback.xml, e.g. SYNC"
+    echo "  port-number  -> port number PREFIX for your Vagrant instance, e.g. 88"
+    echo
+    echo "See the hackpad (Vagrant Ports): https://openenglish.hackpad.com/Vagrant-Ports-EYFdItONvzT"
     echo
     exit
 fi
@@ -111,7 +115,7 @@ function updateLogbackFiles() {
 }
 
 function updateProjectSpecificFiles() {
-    for file in `find . -name oe-system-three-reference\*`
+    for file in `find . -name \*oe-system-three-reference\*`
     do
         echo "processing file: $file"
 
@@ -122,12 +126,13 @@ function updateProjectSpecificFiles() {
 }
 
 function vagrantUpdates() {
-    origNane=oe_system_three_reference
+    origName=oe_system_three_reference
+    origPort=87
     newName=`echo $projectName | sed -e "s/-/_/g"`
     vagrantFile=`find . -name Vagrantfile`
 
-    cmd="mv $vagrantFile $vagrantFile.BKP; cat $vagrantFile.BKP | sed 's/${origName}/${newName}/g' > $vagrantFile"
-
+    cp $vagrantFile $vagrantFile.BKP; cat $vagrantFile.BKP | sed "s/${origName}/${newName}/g" > $vagrantFile
+    cp $vagrantFile $vagrantFile.BKP; cat $vagrantFile.BKP | sed "s/${origPort}/${projectPortPrefix}/g" > $vagrantFile
 }
 
 function cleanup() {
@@ -160,6 +165,9 @@ updateLogbackFiles
 
 echo "**** setting up project specific files"
 updateProjectSpecificFiles
+
+echo "**** updating Vagrant file"
+vagrantUpdates
 
 echo "**** cleaning up BK files"
 cleanup
