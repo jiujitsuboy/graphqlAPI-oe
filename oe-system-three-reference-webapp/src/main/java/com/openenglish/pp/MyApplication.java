@@ -38,7 +38,6 @@ public class MyApplication extends SpringBootServletInitializer {
     @Bean
     public static EnvironmentPropertyConfigurer envPropertyPlaceholderConfigurer(){
         EnvironmentPropertyConfigurer environmentPropertyConfigurer = new EnvironmentPropertyConfigurer();
-      environmentPropertyConfigurer.setGlobalFileName("pp-global-config.properties");
         environmentPropertyConfigurer.setPropFileName("oe-system-three-reference.properties");
         environmentPropertyConfigurer.setOrder(1);
         return environmentPropertyConfigurer;

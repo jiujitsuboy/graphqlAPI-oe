@@ -107,6 +107,7 @@ function updateLogbackFiles() {
         if [ "$debug" = "" ]; then
             echo $cmd
             cp $file $file.BKP; cat $file.BKP | sed "s/${projectShortShortName}/${projectShortName}/g" > $file
+            cp $file $file.BKP; cat $file.BKP | sed "s/${origProjectName}/${projectName}/g" > $file
         else
             echo $cmd
         fi
@@ -248,11 +249,11 @@ updateProjectSpecificFiles
 echo "**** updating Vagrant file"
 vagrantUpdates
 
-echo "**** cleaning up BK files"
-cleanup
-
 echo "**** creating local properties"
 createLocalProperties
+
+echo "**** cleaning up BK files"
+cleanup
 
 echo "**** git updates"
 gitReset
