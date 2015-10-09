@@ -1,0 +1,21 @@
+# Variables used in the file:
+#    %JAVA_MAX_MEM%     -- Max memory for the Java VM
+#    %JAVA_MAX_PERM%    -- Max memory for Java Perm gen
+#    %APP_NAME%  -- the application name
+#
+
+APP_LOG_CONFIG_FILE=/opt/open-english/%APP_NAME%/config/logback.xml
+JAVA_MAX_MEM=%JAVA_MAX_MEM%
+JAVA_MAX_PERM=%JAVA_MAX_PERM%
+
+APP_PORT=8090
+
+JAVA_OPTS="-Djava.awt.headless=true -Duser.timezone=UTC $JAVA_MAX_MEM
+         $JAVA_MAX_PERM -XX:+UseConcMarkSweepGC
+         -server -d64 -Djava.net.preferIPv4Stack=true
+         -Dcom.sun.management.jmxremote
+         -Dcom.sun.management.jmxremote.local.only=true
+         -Dcom.sun.management.jmxremote.ssl=false
+         -Dcom.sun.management.jmxremote.authenticate=false
+         -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockDiagnosticVMOptions -XX:+LogVMOutput
+         -Dlogging.config=$APP_LOG_CONFIG_FILE -Dserver.port=$APP_PORT"

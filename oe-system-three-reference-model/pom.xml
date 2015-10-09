@@ -12,6 +12,11 @@
 
     <artifactId>oe-system-three-reference-model</artifactId>
 
+    <properties>
+        <pp-liquidbase-changelog>src/main/liquibase/masterChangeLog.xml</pp-liquidbase-changelog>
+        <pp-sql-file></pp-sql-file>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

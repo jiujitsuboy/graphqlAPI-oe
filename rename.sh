@@ -37,10 +37,11 @@ fi
 # Rename directories
 #
 function moveFile() {
-    newName=$1
+    origName=$1
+    newName=$2
 
     if [ "$newName" != "." ]; then
-        cmd="git mv $file $newName"
+        cmd="git mv $origName $newName"
     fi
 
     if [ "$debug" = "" ]; then
@@ -109,12 +110,35 @@ function updateLogbackFiles() {
     done
 }
 
+function updateProjectSpecificFiles() {
+    for file in `find . -name oe-system-three-reference\*`
+    do
+        echo "processing file: $file"
+
+        newName=`echo $file | sed -e "s/${origProjectName}/${projectName}/g"`
+        moveFile $file $newName
+
+    done
+}
+
+function vagrantUpdates() {
+    origNane=oe_system_three_reference
+    newName=`echo $projectName | sed -e "s/-/_/g"`
+    vagrantFile=`find . -name Vagrantfile`
+
+    cmd="mv $vagrantFile $vagrantFile.BKP; cat $vagrantFile.BKP | sed 's/${origName}/${newName}/g' > $vagrantFile"
+
+}
+
+function cleanup() {
+    find . -name \*.BKP -exec rm {} +
+}
 
 if [ "$debug" != "" ]; then
     echo "***** DEBUG MODE ******"
 fi
 
-#for file in `ls -d .`
+# rename all directories....
 for file in `ls -d */ .`
 do
     echo "**** processing directory: $file"
@@ -122,7 +146,7 @@ do
     newName=`echo $file | sed -e "s/${origProjectName}/${projectName}/g"`
     pom=${newName}pom.xml
 
-    moveFile $newName
+    moveFile $file $newName
 
     updatePom $pom
 
@@ -134,11 +158,15 @@ updateJavaFiles
 echo "**** updating logback.xml files"
 updateLogbackFiles
 
+echo "**** setting up project specific files"
+updateProjectSpecificFiles
+
+echo "**** cleaning up BK files"
+cleanup
+
 echo
 echo
 echo "All done, for more info, check out the hackpad: "
 echo "      https://openenglish.hackpad.com/oe-system-reference-reference-madness-qVpdoVWfcVN"
 echo
-echo "once you have verified your proejct, you can remove all BKP files with this command:"
-echo "      find . -name \*.BKP -exec rm {} +"
 echo

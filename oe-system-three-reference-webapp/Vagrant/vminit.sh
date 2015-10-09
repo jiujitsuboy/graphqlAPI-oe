@@ -8,7 +8,7 @@
 mkdir -p /opt/open-english/setup
 cat <<EOF >/opt/open-english/setup/CONFIGDATA
 groupId com.openenglish.pp
-artifactId pp-service
+artifactId oe-system-three-reference
 version FIXED-SNAPSHOT
 env dev
 EOF
@@ -25,8 +25,8 @@ cp /home/vagrant/user-home/oe-system-three-reference.properties $DEV_ENV_DIR/oe-
 #
 SSL_DIR=$DEV_ENV_DIR/ssl
 mkdir -p $SSL_DIR
-cp /vagrant/pp-service.crt $SSL_DIR
-cp /vagrant/pp-service.key $SSL_DIR
+cp /vagrant/oe-system-three-reference.crt $SSL_DIR
+cp /vagrant/oe-system-three-reference.key $SSL_DIR
 
 # fetch global properties from github
 cat <<EOF >/usr/local/sbin/oe-refresh-global-config.sh
@@ -47,14 +47,14 @@ sh /usr/local/sbin/oe-refresh-global-config.sh
 # create script to fetch updated global config from github
 #
 
-# update the vagrant box /etc/hosts to look at the host machine for pp-service.
-# At some point, pp-service will be in a vagrant box too, so this will need to
+# update the vagrant box /etc/hosts to look at the host machine for oe-system-three-reference.
+# At some point, oe-system-three-reference will be in a vagrant box too, so this will need to
 # be updated.
 ETC_HOSTS=/etc/hosts
 HOST_OS_IP=10.0.2.2
 LOCAL_HOST_IP=127.0.0.1
 POSTGRES_NAME="postgres.dev.openenglish.com"
-HOSTS_APP_NAME="pp-service.dev.openenglish.com"
+HOSTS_APP_NAME="oe-system-three-reference.dev.openenglish.com"
 
 if ! grep -q "$POSTGRES_NAME" "$ETC_HOSTS"; then
     # update the VM /etc/hosts file
