@@ -145,6 +145,52 @@ function cleanup() {
     find . -name \*.BKP -exec rm {} +
 }
 
+function createLocalProperties() {
+
+    userProperties=~/${projectName}.properties
+
+    if ! [ -e ${userProperties} ]; then
+        echo "Please enter the name of a file to base ${userProperties} on:"
+        read sourceFile
+
+        homeSourceFile=~/$sourceFile
+
+        if [ -e $sourceFile ]; then
+            cp $sourceFile $userProperties
+        elif [ -e $homeSourceFile ]; then
+            cp $homeSourceFile $userProperties
+        else
+            echo "I could not find $sourceFile, I also checked ($homeSourceFile)"
+        fi
+    fi
+}
+
+function gitReset() {
+
+    echo "process git updates, includes commit and changing remote repo? [y|n]"
+    read updateGit
+
+    updateGit=`echo $updateGit | awk '{print toupper($0)}'`
+
+    if [ "$updateGit" = "Y" ]; then
+        # commit all of our changes
+        echo "committing all changes"
+        git commit -a -m "system-three app gen, initial commit"
+
+        echo "enter remote git URL"
+        read remoteGitUrl
+
+        echo "updating origin..."
+        git remote rm origin
+        git remote add origin ${remoteGitUrl}
+
+        echo "remote origin added, to push your changes to the remote repo use:"
+        echo
+        echo "git push -u origin master"
+    fi
+
+}
+
 if [ "$debug" != "" ]; then
     echo "***** DEBUG MODE ******"
 fi
@@ -177,6 +223,12 @@ vagrantUpdates
 
 echo "**** cleaning up BK files"
 cleanup
+
+echo "**** creating local properties"
+createLocalProperties
+
+echo "**** git updates"
+gitReset
 
 echo
 echo
