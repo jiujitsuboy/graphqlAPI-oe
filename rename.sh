@@ -144,6 +144,7 @@ function vagrantUpdates() {
 	    cp $vagrantFile $vagrantFile.BKP; cat $vagrantFile.BKP | sed "s/${origPort}/${projectPortPrefix}/g" > $vagrantFile
 	    cp $madnessFile $madnessFile.BKP; cat $madnessFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $madnessFile
 	    cp $wtestFile $wtestFile.BKP; cat $wtestFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $wtestFile
+	    cp $wtestFile $wtestFile.BKP; cat $wtestFile.BKP | sed "s/${origPort}/${projectPortPrefix}/g" > $wtestFile
 	    cp $postinstFile $postinstFile.BKP; cat $postinstFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $postinstFile
 	    cp $vminitFile $vminitFile.BKP; cat $vminitFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $vminitFile
 	    cp $runFile $runFile.BKP; cat $runFile.BKP | sed "s/${origProjectName}/${projectName}/g" > $runFile
@@ -260,7 +261,13 @@ gitReset
 
 echo
 echo
-echo "All done, for more info, check out the hackpad: "
+echo "All done: "
+echo "    * make sure you added ${projectName}.dev.openenglish.com to your /etc/hosts file"
+echo " "
+echo "          127.0.0.1       ${projectName}.dev.openenglish.com"
+echo " "
+echo " "
+echo "    * for more info, check out the hackpad: "
 echo "      https://openenglish.hackpad.com/oe-system-reference-reference-madness-qVpdoVWfcVN"
 echo
 echo
