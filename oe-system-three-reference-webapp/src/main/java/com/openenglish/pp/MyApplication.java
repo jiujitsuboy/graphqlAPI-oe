@@ -19,7 +19,7 @@ import javax.servlet.Filter;
 
 @SpringBootApplication
 @Import({ServiceConfig.class, SubstrateConfig.class, Swagger2Config.class})
-public class ServiceApplication extends SpringBootServletInitializer {
+public class MyApplication extends SpringBootServletInitializer {
 
     /**
      * https://groups.google.com/forum/#!topic/javamelody/65xJeM-ozms
@@ -38,15 +38,14 @@ public class ServiceApplication extends SpringBootServletInitializer {
     @Bean
     public static EnvironmentPropertyConfigurer envPropertyPlaceholderConfigurer(){
         EnvironmentPropertyConfigurer environmentPropertyConfigurer = new EnvironmentPropertyConfigurer();
-      environmentPropertyConfigurer.setGlobalFileName("pp-global-config.properties");
         environmentPropertyConfigurer.setPropFileName("oe-system-three-reference.properties");
         environmentPropertyConfigurer.setOrder(1);
         return environmentPropertyConfigurer;
     }
 
 
-    final static Logger logger = LoggerFactory.getLogger(ServiceApplication.class);
+    final static Logger logger = LoggerFactory.getLogger(MyApplication.class);
     public static void main(String[] args) throws Exception {
-        SpringApplication.run(ServiceApplication.class, args);
+        SpringApplication.run(MyApplication.class, args);
     }
 }

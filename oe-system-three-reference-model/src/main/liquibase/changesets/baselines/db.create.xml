@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-  <changeSet author="abc" id="db.create" context="" logicalFilePath="">
+    <!--
+    you will want to set logicalFilePath to something, perhaps the same as id, either way
+    you need a value here, a unique one, because this replaces the actual file path
+    in the databasechangelog table. Using this attribute enables us to move these changeset
+    files around in the filesystem.
+    -->
+  <changeSet author="abc" id="db.create" context="" logicalFilePath="databaseCreate">
     <sqlFile path="sql/db.create.sql" splitStatements="false" relativeToChangelogFile="true" stripComments="false"/>
   </changeSet>
 

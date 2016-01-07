@@ -1,0 +1,60 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          $APP_NAME
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start daemon at boot time
+# Description:       Enable service provided by daemon.
+### END INIT INFO
+
+#
+# see this for above info:
+# http://danilodellaquila.com/blog/how-to-install-lotus-domino-8.5-on-ubuntu-part-ii
+#
+
+# Variables used in the file:
+#    %APP_NAME% -- identifies the URL for this server
+#
+
+# --- Copied from the BB init script ---
+
+PATH=$PATH:/bin:/usr/bin		# FOR su
+APP_NAME=%APP_NAME%
+APP_HOME=/opt/open-english/$APP_NAME
+APP_USER=oe
+
+case "$1" in
+start)
+    su $APP_USER -c $APP_HOME/$APP_NAME-run.sh
+    echo "Starting #$APP_NAME Server."
+    ;;
+stop)
+    su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-stop.sh"
+    echo "Stopping #$APP_NAME Server."
+    ;;
+restart)
+    su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-stop.sh"
+    echo "Stopping #$APP_NAME Server."
+    su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-run.sh"
+    echo "Restarting #$APP_NAME Server."
+    ;;
+force-reload)
+    su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-stop.sh"
+    echo "Stopping #$APP_NAME Server."
+    su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-run.sh"
+    echo "Restarting #$APP_NAME Server."
+    echo "Force reload of #$APP_NAME Server."
+    ;;
+status)
+    echo "Status of #$APP_NAME Server..."
+    su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-status.sh"
+    ;;
+*)
+    echo "Usage: $0 {start|stop|restart|force-reload|status}"
+    exit 1
+    ;;
+esac
+
+exit 0
