@@ -4,6 +4,7 @@
 # --- THE ONLY SETTING YOU NEED TO MAKE, PROVIDE THE NAME OF YOUR APPLICATION
 # ---
 APP_NAME=oe-system-three-reference
+APP_PORT=8090
 
 
 # --- general server setup ---
@@ -11,7 +12,6 @@ APP_INSTALL_DIR=/opt/open-english/${APP_NAME}
 APP_DEFAULTS=/etc/default/${APP_NAME}
 APP_INITD=/etc/init.d/${APP_NAME}
 LOG_DIR=${APP_INSTALL_DIR}/logs
-APP_PORT=8090
 
 HTTP_SERVICE=0-${APP_NAME}
 HTTPS_SERVICE=0-${APP_NAME}-ssl
