@@ -1,7 +1,9 @@
 # Variables used in the file:
 #    %JAVA_MAX_MEM%     -- Max memory for the Java VM
 #    %JAVA_MAX_PERM%    -- Max memory for Java Perm gen
-#    %APP_NAME%  -- the application name
+#    %APP_NAME%         -- the application name
+#    $SPRING_PROFILE%   -- the Spring profile to make active
+#    %APP_PORT%         -- the port to start the app on
 #
 
 APP_NAME=%APP_NAME%
@@ -11,8 +13,10 @@ APP_BOOT_FILE=${APP_HOME_DIR}/logs/${APP_NAME}-boot.log
 APP_LOG_CONFIG_FILE=/opt/open-english/%APP_NAME%/config/logback.xml
 JAVA_MAX_MEM=%JAVA_MAX_MEM%
 JAVA_MAX_PERM=%JAVA_MAX_PERM%
+ACTIVE_PROFILE=%SPRING_PROFILE%
 
-APP_PORT=8090
+
+APP_PORT=%APP_PORT%
 
 JAVA_OPTS="-Djava.awt.headless=true -Duser.timezone=UTC $JAVA_MAX_MEM
          $JAVA_MAX_PERM -XX:+UseConcMarkSweepGC
@@ -22,4 +26,5 @@ JAVA_OPTS="-Djava.awt.headless=true -Duser.timezone=UTC $JAVA_MAX_MEM
          -Dcom.sun.management.jmxremote.ssl=false
          -Dcom.sun.management.jmxremote.authenticate=false
          -XX:+HeapDumpOnOutOfMemoryError -XX:+UnlockDiagnosticVMOptions -XX:+LogVMOutput
-         -Dlogging.config=$APP_LOG_CONFIG_FILE -Dserver.port=$APP_PORT"
+         -Dlogging.config=$APP_LOG_CONFIG_FILE -Dserver.port=$APP_PORT
+         -Dspring.profiles.active=$ACTIVE_PROFILE"
