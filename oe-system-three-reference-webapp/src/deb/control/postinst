@@ -18,6 +18,10 @@ HTTPS_SERVICE=0-${APP_NAME}-ssl
 HTTP_SERVICE_CONFIG=/etc/apache2/sites-available/${HTTP_SERVICE}.conf
 HTTPS_SERVICE_CONFIG=/etc/apache2/sites-available/${HTTPS_SERVICE}.conf
 
+JVM_FOLDER=/usr/jvm
+JDK9_FOLDER=jdk-9.0.4
+JDK9_HOME=${JVM_FOLDER}/${JDK9_FOLDER}
+
 # --- oe deploy data ---
 
 # This file is available on all machines in ALL environments
@@ -36,6 +40,16 @@ if [ "$OE_ENV" = "" ]; then
     printenv
     exit 1;
 fi
+
+# -----install jdk9 ---
+#Check if jdk9 folder exists
+if [ ! -d "$JDK9_HOME" ]; then
+    wget https://download.java.net/java/GA/jdk9/9.0.4/binaries/openjdk-9.0.4_linux-x64_bin.tar.gz
+    tar -zxvf openjdk-9.0.4_linux-x64_bin.tar.gz 
+    mkdir -p $JVM_FOLDER
+    mv $JDK9_FOLDER /usr/jvm/
+fi
+
 
 # --- install oe-activemq ONLY IF NEEDED
 #if [ "$OE_ENV" = "dev" ]; then
@@ -81,9 +95,13 @@ fi
 DNS_NAME=${APP_NAME}${FINAL_ENV}.openenglish.com
 
 # --- set env specific values ---
+JDK9_HOME_ESCAPE=$(echo $JDK9_HOME | sed 's_/_\\/_g')
+sed -i  "s/%JDK9_HOME%/$JDK9_HOME_ESCAPE/g" ${APP_DEFAULTS}
 sed -i  "s/%JAVA_MAX_MEM%/$JAVA_MAX_MEM/g" ${APP_DEFAULTS}
 sed -i  "s/%APP_NAME%/$APP_NAME/g" ${APP_DEFAULTS}
 sed -i  "s/%SPRING_PROFILE%/$SPRING_PROFILE/g" ${APP_DEFAULTS}
+sed -i  "s/%APP_PORT%/$APP_PORT/g" ${APP_DEFAULTS}
+
 
 sed -i "s/%APP_NAME%/$APP_NAME/g" ${APP_INITD}
 

@@ -13,7 +13,7 @@ echo "refresh global config and build your env locally, I'll wait"
 read -n1 -r -p " Press a key to continue..." key
 echo
 # -- uncomment this if you want payments global config to be refreshed with every run of madness.sh
-# sudo sh /usr/local/sbin/oe-refresh-global-config.sh
+sudo sh /usr/local/sbin/oe-refresh-global-config.sh
 
 sudo dpkg -i "/home/vagrant/target/${SERVICE_WEBAPP_NAME}_0.0~SNAPSHOT_all.deb"
 

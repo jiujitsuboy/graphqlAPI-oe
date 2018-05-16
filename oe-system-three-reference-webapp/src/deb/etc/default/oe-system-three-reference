@@ -5,7 +5,7 @@
 #    %APP_PORT%         -- the port to start the app on
 #
 
-JAVA_HOME=/usr/jvm/jdk-9.0.4
+JAVA_HOME=%JDK9_HOME%
 PATH=$JAVA_HOME/bin:$PATH
 APP_NAME=%APP_NAME%
 APP_NAME_WEBAPP=${APP_NAME}-webapp
