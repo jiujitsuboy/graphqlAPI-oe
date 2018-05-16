@@ -1,7 +1,5 @@
 package com.openenglish.pp.controller;
 
-import com.openenglish.pp.common.api.model.UpsellInfo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

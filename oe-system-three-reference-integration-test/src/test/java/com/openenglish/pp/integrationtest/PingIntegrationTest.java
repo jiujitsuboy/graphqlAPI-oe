@@ -7,18 +7,16 @@ import com.openenglish.pp.client.configuration.ServiceClientConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertTrue;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {ServiceApplication.class, ServiceClientConfig.class})
-@WebIntegrationTest({"SERVICE_ACCEPT_ALL_SSL_CERTS=true","server.port=8888","SERVICE_HOST:http://localhost:8888"})
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {ServiceApplication.class, ServiceClientConfig.class},
+    properties ={"SERVICE_ACCEPT_ALL_SSL_CERTS=true","server.port=8888","SSO_SERVICE_HOST:http://localhost:8888"},
+    webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
+)
 public class PingIntegrationTest {
-  @Value("${local.server.port}")
+  @LocalServerPort
   private int port;
 
   @Autowired
@@ -26,6 +24,7 @@ public class PingIntegrationTest {
 
   @Test
   public void pingBinaryClient() {
+    System.out.println("++++++++++++++++++PORT:"+port);
     boolean success = serviceClient.ping();
     assertTrue(success);
   }

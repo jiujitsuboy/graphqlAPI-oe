@@ -18,14 +18,11 @@ case "$1" in
 esac
 
 CONTEXT=
-echo "==> running health check ping on http..."
-curl $CURL_ARGS http://$MACHINE/$CONTEXT/ping
-echo
 echo "==> running health check ping..."
 curl $CURL_ARGS https://$MACHINE/$CONTEXT/ping
 echo
 echo "==> running extended health check..."
-curl $CURL_ARGS https://$MACHINE/$CONTEXT/health
+curl $CURL_ARGS https://$MACHINE/actuator/health
 
 
 

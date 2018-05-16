@@ -14,8 +14,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.openenglish.pp</groupId>
+            <artifactId>oe-system-three-reference-common</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.openenglish</groupId>
-            <artifactId>oe-substrate-springboot-core</artifactId>
+            <artifactId>oe-substrate-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.openenglish</groupId>
+            <artifactId>oe-substrate-springboot2-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -38,36 +46,28 @@
             <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
         </dependency>
 
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.pojomatic</groupId>
-            <artifactId>pojomatic</artifactId>
-        </dependency>
 
         <!--Testing dependencies-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <groupId>org.jmockit</groupId>
+            <artifactId>jmockit</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jmockit</groupId>
-            <artifactId>jmockit</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

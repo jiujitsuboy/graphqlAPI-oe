@@ -70,13 +70,11 @@ fi
 sed -i  "s/%SUB_DOMAIN%/$FINAL_ENV/g" ${APP_DEFAULTS}
 
 # --- MEMORY ---
-JAVA_MAX_MEM="-Xmx3g"
-JAVA_MAX_PERM="-XX:MaxPermSize=512m"
+JAVA_MAX_MEM="-Xmx1500m"
 # stage and prod are considered the spring 'prod' profile
 SPRING_PROFILE="prod"
 if [ "$OE_ENV" = "dev" ]; then
     JAVA_MAX_MEM=
-    JAVA_MAX_PERM=
     SPRING_PROFILE="dev"
 fi
 
@@ -84,7 +82,6 @@ DNS_NAME=${APP_NAME}${FINAL_ENV}.openenglish.com
 
 # --- set env specific values ---
 sed -i  "s/%JAVA_MAX_MEM%/$JAVA_MAX_MEM/g" ${APP_DEFAULTS}
-sed -i  "s/%JAVA_MAX_PERM%/$JAVA_MAX_PERM/g" ${APP_DEFAULTS}
 sed -i  "s/%APP_NAME%/$APP_NAME/g" ${APP_DEFAULTS}
 sed -i  "s/%SPRING_PROFILE%/$SPRING_PROFILE/g" ${APP_DEFAULTS}
 
@@ -112,11 +109,11 @@ fi
 
 sed -i  "s/%SERVER_DNS%/$DNS_NAME/g" ${HTTP_SERVICE_CONFIG}
 sed -i  "s/%APP_NAME%/$APP_NAME/g" ${HTTP_SERVICE_CONFIG}
-
 sed -i  "s/%SERVER_DNS%/$DNS_NAME/g" ${HTTPS_SERVICE_CONFIG}
+sed -i  "s/%APP_NAME%/$APP_NAME/g" ${HTTPS_SERVICE_CONFIG}
+
 # we need to use $OE_ENV here because it does not have a dot in the name, $FINAL_ENV adds a dot to $OE_ENV
 sed -i  "s/%ENV%/$OE_ENV/g" ${HTTPS_SERVICE_CONFIG}
-sed -i  "s/%APP_NAME%/$APP_NAME/g" ${HTTPS_SERVICE_CONFIG}
 sed -i  "s/%COOKIE%/$FINAL_ENV/g" ${HTTPS_SERVICE_CONFIG}
 sed -i  "s/%SSL_CHAIN%/$SSL_CHAIN/g" ${HTTPS_SERVICE_CONFIG}
 sed -i  "s/%APP_PORT%/$APP_PORT/g" ${HTTPS_SERVICE_CONFIG}

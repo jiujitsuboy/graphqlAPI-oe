@@ -13,23 +13,15 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {propConfig.class, DatabaseConfig.class})
-//@WebIntegrationTest({"server.port=8888","SERVICE_HOST:http://localhost:8888"})
 public class TestDB {
-
-//  @Value("${local.server.port}")
-//  private int port;
-
-
-
 
   @Autowired
   DataSource dataSource;
