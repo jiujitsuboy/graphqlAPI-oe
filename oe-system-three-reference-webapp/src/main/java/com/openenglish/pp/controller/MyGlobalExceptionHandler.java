@@ -1,6 +1,7 @@
 package com.openenglish.pp.controller;
 
-import com.openenglish.sso.common.api.model.ErrorResponse;
+
+import com.openenglish.pp.common.api.model.ErrorResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -16,8 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 @ControllerAdvice
-public  class SSOGlobalExceptionHandler {
-  private static final Logger logger = LoggerFactory.getLogger(SSOGlobalExceptionHandler.class);
+public  class MyGlobalExceptionHandler {
+  private static final Logger logger = LoggerFactory.getLogger(MyGlobalExceptionHandler.class);
 
   @ExceptionHandler({BadRequestException.class, IllegalArgumentException.class,
                      MissingServletRequestParameterException.class})
