@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {MyApplication.class, ServiceClientConfig.class},
-    properties ={"SERVICE_ACCEPT_ALL_SSL_CERTS=true","server.port=8888","SSO_SERVICE_HOST:http://localhost:8888"},
+    properties ={"SERVICE_ACCEPT_ALL_SSL_CERTS=true","server.port=8888","SERVICE_HOST:http://localhost:8888"},
     webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
 )
 public class PingIntegrationTest {
