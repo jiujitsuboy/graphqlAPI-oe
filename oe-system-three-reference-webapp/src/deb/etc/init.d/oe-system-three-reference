@@ -28,27 +28,27 @@ APP_USER=oe
 case "$1" in
 start)
     su $APP_USER -c $APP_HOME/$APP_NAME-run.sh
-    echo "Starting #$APP_NAME Server."
+    echo "Starting $APP_NAME Server."
     ;;
 stop)
     su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-stop.sh"
-    echo "Stopping #$APP_NAME Server."
+    echo "Stopping $APP_NAME Server."
     ;;
 restart)
     su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-stop.sh"
-    echo "Stopping #$APP_NAME Server."
+    echo "Stopping $APP_NAME Server."
     su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-run.sh"
-    echo "Restarting #$APP_NAME Server."
+    echo "Restarting $APP_NAME Server."
     ;;
 force-reload)
     su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-stop.sh"
-    echo "Stopping #$APP_NAME Server."
+    echo "Stopping $APP_NAME Server."
     su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-run.sh"
-    echo "Restarting #$APP_NAME Server."
-    echo "Force reload of #$APP_NAME Server."
+    echo "Restarting $APP_NAME Server."
+    echo "Force reload of $APP_NAME Server."
     ;;
 status)
-    echo "Status of #$APP_NAME Server..."
+    echo "Status of $APP_NAME Server..."
     su $APP_USER -c "cd $APP_HOME;$APP_HOME/$APP_NAME-status.sh"
     ;;
 *)
