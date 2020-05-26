@@ -32,8 +32,9 @@
 
     <properties>
         <pp.global.config.version>2.1.20</pp.global.config.version>
-        <oe.substrate.spring-boot2.version>1.0.53</oe.substrate.spring-boot2.version>
+        <oe.substrate.spring-boot2.version>1.0.56</oe.substrate.spring-boot2.version>
         <build-properties.file>${user.home}/oe-system-three-reference.properties</build-properties.file>
+        <oe-substrate-core.version>3.0.56</oe-substrate-core.version>
     </properties>
 
     <dependencyManagement>
