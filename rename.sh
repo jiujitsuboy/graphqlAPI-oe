@@ -22,6 +22,18 @@ if [ "$#" -lt 3 ]; then
     echo "See the hackpad (Vagrant Ports): https://openenglish.hackpad.com/Vagrant-Ports-EYFdItONvzT"
     echo
     exit
+else
+    echo "Project name: $1"
+    echo "Project short name for logback: $2"
+    echo "Project port number prefix (e.g. 88): $3"
+    echo "Debug mode: $4"
+    echo
+    echo "Confirm if this is correct. Do you want to continue? [Y|n]"
+    read confirm
+
+    if [ "$confirm" = "n" -o "$confirm" = "N" ]; then
+        exit
+    fi
 fi
 
 #
