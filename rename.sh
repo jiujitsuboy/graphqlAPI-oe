@@ -168,6 +168,26 @@ function vagrantUpdates() {
 	    echo "updating other system specific files"
     fi
 }
+
+function readmeUpdates() {
+    origName=oe-system-three-reference
+    origDatabaseName=oe_system_three_reference
+    origPort=87
+
+    newDatabaseName=`echo $projectName | sed -e "s/-/_/g"`
+
+    for readmeFile in `find . -name README.md`
+    do
+        if [ "$debug" = "" ]; then
+            cp $readmeFile $readmeFile.BKP; cat $readmeFile.BKP | sed "s/${origName}/${projectName}/g" > $readmeFile
+            cp $readmeFile $readmeFile.BKP; cat $readmeFile.BKP | sed "s/${origPort}/${projectPortPrefix}/g" > $readmeFile
+            cp $readmeFile $readmeFile.BKP; cat $readmeFile.BKP | sed "s/${origDatabaseName}/${newDatabaseName}/g" > $readmeFile
+        else
+            echo "updating file: $readmeFile"
+        fi
+    done
+}
+
 function cleanup() {
     find . -name \*.BKP -exec rm {} +
 }
@@ -261,6 +281,9 @@ updateProjectSpecificFiles
 
 echo "**** updating Vagrant file"
 vagrantUpdates
+
+echo "**** updating README.md files"
+readmeUpdates
 
 echo "**** creating local properties"
 createLocalProperties
