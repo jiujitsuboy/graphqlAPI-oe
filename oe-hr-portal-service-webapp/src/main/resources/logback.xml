@@ -1,0 +1,29 @@
+<configuration scan="true">
+<appender name="STDOUT"
+          class="ch.qos.logback.core.ConsoleAppender">
+    <layout>
+        <pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} hr-portal-service [%thread] %-5level %X{callTraceId} %logger - %msg%n</pattern>
+    </layout>
+</appender>
+
+<!--Daily rolling file appender-->
+<appender name="DAILYFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- default location for output -->
+    <file>/opt/open-english/oe-hr-portal-service/logs/oe-hr-portal-service.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- when rollover happens, this is how the file is renamed -->
+        <FileNamePattern>/opt/open-english/oe-hr-portal-service/logs/oe-hr-portal-service.%d{yyyy-MM-dd}.log</FileNamePattern>
+    </rollingPolicy>
+
+    <layout>
+        <pattern>%d{yyyy-MM-dd_HH:mm:ss.SSS} hr-portal-service [%thread] %-5level %X{callTraceId} %logger - %msg%n</pattern>
+    </layout>
+</appender>
+
+<logger name="org.hibernate" level="WARN" />
+<logger name="org.springframework" level="WARN" />
+
+<root level="INFO">
+    <appender-ref ref="STDOUT"/>
+</root>
+</configuration>

@@ -9,23 +9,23 @@
     </parent>
 
     <groupId>com.openenglish.pp</groupId>
-    <artifactId>oe-system-three-reference</artifactId>
+    <artifactId>oe-hr-portal-service</artifactId>
     <version>FIXED-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>oe-system-three-reference-common</module>
-        <module>oe-system-three-reference-client</module>
-        <module>oe-system-three-reference-model</module>
-        <module>oe-system-three-reference-service</module>
-        <module>oe-system-three-reference-webapp</module>
+        <module>oe-hr-portal-service-common</module>
+        <module>oe-hr-portal-service-client</module>
+        <module>oe-hr-portal-service-model</module>
+        <module>oe-hr-portal-service-service</module>
+        <module>oe-hr-portal-service-webapp</module>
     </modules>
 
     <profiles>
         <profile>
             <id>integration</id>
             <modules>
-                <module>oe-system-three-reference-integration-test</module>
+                <module>oe-hr-portal-service-integration-test</module>
             </modules>
         </profile>
     </profiles>
@@ -33,7 +33,7 @@
     <properties>
         <pp.global.config.version>2.1.20</pp.global.config.version>
         <oe.substrate.spring-boot2.version>1.0.58</oe.substrate.spring-boot2.version>
-        <build-properties.file>${user.home}/oe-system-three-reference.properties</build-properties.file>
+        <build-properties.file>${user.home}/oe-hr-portal-service.properties</build-properties.file>
         <oe-substrate-core.version>3.0.56</oe-substrate-core.version>
         <log4j2.version>2.17.0</log4j2.version>  <!--security fix version of log4j2 if it's used -->
     </properties>
@@ -43,27 +43,27 @@
             <!-- project modules -->
             <dependency>
                 <groupId>com.openenglish.pp</groupId>
-                <artifactId>oe-system-three-reference-common</artifactId>
+                <artifactId>oe-hr-portal-service-common</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.openenglish.pp</groupId>
-                <artifactId>oe-system-three-reference-client</artifactId>
+                <artifactId>oe-hr-portal-service-client</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.openenglish.pp</groupId>
-                <artifactId>oe-system-three-reference-model</artifactId>
+                <artifactId>oe-hr-portal-service-model</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.openenglish.pp</groupId>
-                <artifactId>oe-system-three-reference-service</artifactId>
+                <artifactId>oe-hr-portal-service-service</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.openenglish.pp</groupId>
-                <artifactId>oe-system-three-reference-webapp</artifactId>
+                <artifactId>oe-hr-portal-service-webapp</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
 
