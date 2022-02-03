@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # oe-hr-portal-service 
 ## Quick start guide
 
@@ -77,3 +78,7 @@ to Vagrant and run the following command before running madness.sh:
     ```
     sudo cp user-home/oe-hr-portal-service.properties /opt/open-english/setup/dev/oe-hr-portal-service.properties
     ```
+=======
+# oe-hr-portal-service
+For holding all services related to hr portal.
+>>>>>>> 98f8ceac968418d15822e79c9ecfc48611f12774
