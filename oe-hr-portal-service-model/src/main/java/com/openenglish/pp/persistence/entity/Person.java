@@ -1,7 +1,10 @@
 package com.openenglish.pp.persistence.entity;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -11,7 +14,9 @@ import java.util.Set;
 @Entity
 @Table(name = "person")
 @Data
-@Immutable
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Person implements Serializable {
 
   @Id

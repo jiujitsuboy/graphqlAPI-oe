@@ -21,9 +21,9 @@ public class StudentResolver {
         this.personMapper = personMapper;
     }
 
-    @DgsData(parentType = "Query", field = "getStudentsByPurchaserId")
-    public Set<PersonDto> getStudentsByPurchaserId(Long purchaserId){
-        Set<Person> personSet =  personService.getStudentsByPurchaserId(purchaserId);
+    @DgsData(parentType = "Query", field = "getStudentsBySalesforcePurchaserId")
+    public Set<PersonDto> getStudentsBySalesforcePurchaserId(Long salesforcePurchaserId){
+        Set<Person> personSet =  personService.getStudentsBySalesforcePurchaserId(salesforcePurchaserId);
         return personSet.stream().map(person -> personMapper.toModel(person)).collect(Collectors.toSet());
     }
 }

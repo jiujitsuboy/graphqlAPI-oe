@@ -16,7 +16,7 @@ public class PersonMapper {
                .contactId(person.getContactId())
                .details(person.getDetails().stream().map(detail->PersonDetailDto.builder()
                        .detailsId(detail.getDetailsId())
-                       .purchaserId(detail.getPurchaserId())
+                       .purchaserId(detail.getSalesforcePurchaserId())
                        .build()).collect(Collectors.toSet()))
                .build();
     }

@@ -1,6 +1,9 @@
 package com.openenglish.pp.persistence.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -9,7 +12,9 @@ import java.io.Serializable;
 @Entity
 @Table(name = "person_detail")
 @Data
-@Immutable
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PersonDetail implements Serializable {
 
     @Id
@@ -17,6 +22,6 @@ public class PersonDetail implements Serializable {
     @Column(name = "person.detail_id")
     private Long detailsId;
 
-    @Column(name = "purchaser_id")
-    private Long purchaserId;
+    @Column(name = "salesforce_purchaser_id")
+    private Long salesforcePurchaserId;
 }

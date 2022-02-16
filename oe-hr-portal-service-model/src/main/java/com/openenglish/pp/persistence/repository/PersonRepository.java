@@ -8,5 +8,5 @@ import java.util.Set;
 public interface PersonRepository extends JpaRepository<Person, Long> {
   Person findByContactId(String contactId);
 
-  Set<Person> findPersonByDetailsPurchaserIdIn(Long purchaserId);
+  Set<Person> findPersonByDetailsSalesforcePurchaserIdIn(Long salesforcePurchaserId);
 }

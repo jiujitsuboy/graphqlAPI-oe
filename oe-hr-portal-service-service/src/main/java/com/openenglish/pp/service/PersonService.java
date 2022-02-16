@@ -16,8 +16,8 @@ public class PersonService {
         this.personRepository = personRepository;
     }
 
-    public Set<Person> getStudentsByPurchaserId(Long purchaserId){
-        Preconditions.checkArgument(purchaserId != null, "purchaserId should be non null");
-        return personRepository.findPersonByDetailsPurchaserIdIn(purchaserId);
+    public Set<Person> getStudentsBySalesforcePurchaserId(Long salesforcePurchaserId){
+        Preconditions.checkArgument(salesforcePurchaserId != null, "salesforcePurchaserId should be non null");
+        return personRepository.findPersonByDetailsSalesforcePurchaserIdIn(salesforcePurchaserId);
     }
 }

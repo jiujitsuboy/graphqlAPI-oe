@@ -6,5 +6,5 @@ type Student {
 
 type StudentDetail {
    detailsId: ID
-   purchaserId: Int
+   salesforcePurchaserId: Int
 }
