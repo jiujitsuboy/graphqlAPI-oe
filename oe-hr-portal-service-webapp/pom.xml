@@ -97,6 +97,13 @@
             <artifactId>javax.ws.rs-api</artifactId>
         </dependency>
 
+        <!-- DGS Netflix graphql library-->
+        <dependency>
+            <groupId>com.netflix.graphql.dgs</groupId>
+            <artifactId>graphql-dgs-spring-boot-starter</artifactId>
+            <version>3.8.0</version>
+        </dependency>
+
         <!-- JMX Monitoring -->
         <dependency>
             <groupId>net.bull.javamelody</groupId>
@@ -112,6 +119,18 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.3.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.3.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
