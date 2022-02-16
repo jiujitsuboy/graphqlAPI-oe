@@ -15,6 +15,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Immutable
 public class PersonDetail implements Serializable {
 
     @Id

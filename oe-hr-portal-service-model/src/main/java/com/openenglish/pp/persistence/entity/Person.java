@@ -17,6 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Immutable
 public class Person implements Serializable {
 
   @Id
