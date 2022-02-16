@@ -40,6 +40,14 @@
 
     <dependencyManagement>
         <dependencies>
+<!--            <dependency>-->
+<!--                <groupId>com.netflix.graphql.dgs</groupId>-->
+<!--                <artifactId>graphql-dgs-platform-dependencies</artifactId>-->
+<!--                &lt;!&ndash; The DGS BOM/platform dependency. This is the only place you set version of DGS &ndash;&gt;-->
+<!--                <version>3.0.11</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
             <!-- project modules -->
             <dependency>
                 <groupId>com.openenglish.pp</groupId>

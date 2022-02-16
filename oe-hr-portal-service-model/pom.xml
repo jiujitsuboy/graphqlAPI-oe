@@ -14,7 +14,7 @@
 
     <properties>
         <pp-liquidbase-changelog>src/main/liquibase/masterChangeLog.xml</pp-liquidbase-changelog>
-        <pp-sql-file></pp-sql-file>
+        <pp-sql-file>${project.basedir}/src/main/liquibase/changesets/baselines/sql/db.create.sql</pp-sql-file>
     </properties>
 
     <dependencies>

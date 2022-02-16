@@ -1,0 +1,19 @@
+type Query{
+  sayHello: String!
+  getStudentsByPurchaserId(purchaserId: Int): [Student]!
+}
+
+type Mutation{
+  reflectMyName(name: String!): String!
+}
+
+type Student {
+   id: ID
+   contactId: String
+   details: [StudentDetail]!
+}
+
+type StudentDetail {
+   detailsId: ID
+   purchaserId: Int
+}
