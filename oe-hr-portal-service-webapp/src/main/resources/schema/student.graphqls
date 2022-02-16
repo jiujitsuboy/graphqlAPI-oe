@@ -1,0 +1,24 @@
+ type Student {
+    id: ID
+    contactId: String
+    details: [StudentDetail]!
+    workingLevel: Level
+ }
+
+ type StudentDetail {
+    detailsId: ID
+    salesforcePurchaserId: Int
+ }
+
+ type Level {
+    id: ID
+    name: String
+    description: String
+    active: Boolean
+    numLiveRequired: Int
+    numImmersionRequired: Int
+    sequence: Int
+    lowScoreBoundary: Int
+    highScoreBoundary: Int
+    levelNum: String
+ }

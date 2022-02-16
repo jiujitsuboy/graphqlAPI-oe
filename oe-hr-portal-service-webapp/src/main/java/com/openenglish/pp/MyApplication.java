@@ -3,9 +3,8 @@ package com.openenglish.pp;
 import com.openenglish.substrate.SubstrateConfig;
 import com.openenglish.substrate.environment.EnvironmentPropertyConfigurer;
 import com.openenglish.substrate.logging.LogbackGraylogConfig;
-import com.openenglish.swagger.configuration.Swagger2Config;
-import com.openenglish.web.configuration.WebMvcConfig;
 import javax.servlet.Filter;
+
 import net.bull.javamelody.MonitoringFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +15,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
-@Import({ServiceConfig.class, SubstrateConfig.class, Swagger2Config.class,
-    LogbackGraylogConfig.class, WebMvcConfig.class})
+@Import({ServiceConfig.class, SubstrateConfig.class,
+        LogbackGraylogConfig.class})
 public class MyApplication {
 
   /**
