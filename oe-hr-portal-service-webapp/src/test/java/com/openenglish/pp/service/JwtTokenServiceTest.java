@@ -1,9 +1,11 @@
 package com.openenglish.pp.service;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,11 +28,11 @@ class JwtTokenServiceTest {
         final String TOKEN_USE = "access";
         final String SCOPE = "aws.cognito.signin.user.admin phone openid profile email";
 
-        DecodedJWT decodedJWT = jwtTokenService.decodeJWTToken(ACCESS_TOKEN);
-        assertNotNull(decodedJWT);
-        assertEquals(ISS,decodedJWT.getClaim("iss").asString());
-        assertEquals(TOKEN_USE,decodedJWT.getClaim("token_use").asString());
-        assertEquals(SCOPE,decodedJWT.getClaim("scope").asString());
+        Map<String, Claim> claims  = jwtTokenService.getJWTClaims(ACCESS_TOKEN);
+        assertNotNull(claims);
+        assertEquals(ISS,claims.get("iss").asString());
+        assertEquals(TOKEN_USE,claims.get("token_use").asString());
+        assertEquals(SCOPE,claims.get("scope").asString());
 
     }
 
