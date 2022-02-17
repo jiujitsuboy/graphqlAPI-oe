@@ -83,5 +83,4 @@ public class HrPortalServiceClient {
     return new HttpEntity<T>(body, httpHeaders);
   }
 
-
 }
