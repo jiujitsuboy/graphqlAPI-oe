@@ -8,7 +8,7 @@
         <version>1.0.58</version>
     </parent>
 
-    <groupId>com.openenglish.pp</groupId>
+    <groupId>com.openenglish.hr</groupId>
     <artifactId>oe-hr-portal-service</artifactId>
     <version>FIXED-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -42,27 +42,27 @@
         <dependencies>
             <!-- project modules -->
             <dependency>
-                <groupId>com.openenglish.pp</groupId>
+                <groupId>com.openenglish.hr</groupId>
                 <artifactId>oe-hr-portal-service-common</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.openenglish.pp</groupId>
+                <groupId>com.openenglish.hr</groupId>
                 <artifactId>oe-hr-portal-service-client</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.openenglish.pp</groupId>
+                <groupId>com.openenglish.hr</groupId>
                 <artifactId>oe-hr-portal-service-model</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.openenglish.pp</groupId>
+                <groupId>com.openenglish.hr</groupId>
                 <artifactId>oe-hr-portal-service-service</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.openenglish.pp</groupId>
+                <groupId>com.openenglish.hr</groupId>
                 <artifactId>oe-hr-portal-service-webapp</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
