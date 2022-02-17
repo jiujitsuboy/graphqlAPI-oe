@@ -1,8 +1,8 @@
 package com.openenglish.hr.integrationtest;
 
 import com.openenglish.hr.MyApplication;
-import com.openenglish.hr.client.ServiceClient;
-import com.openenglish.hr.client.configuration.ServiceClientConfig;
+import com.openenglish.hr.client.HrPortalServiceClient;
+import com.openenglish.hr.client.configuration.HrPortalServiceClientConfig;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {MyApplication.class, ServiceClientConfig.class},
+@SpringBootTest(classes = {MyApplication.class, HrPortalServiceClientConfig.class},
     properties ={"HR_PORTAL_SERVICE_ACCEPT_ALL_SSL_CERTS=true","server.port=8888","HR_PORTAL_SERVICE_HOST:http://localhost:8888"},
     webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT
 )
@@ -23,7 +23,7 @@ public class PingIntegrationTest {
   private int port;
 
   @Autowired
-  private ServiceClient serviceClient;
+  private HrPortalServiceClient serviceClient;
 
   @Test
   public void pingBinaryClient() {
