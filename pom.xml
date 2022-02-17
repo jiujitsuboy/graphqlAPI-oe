@@ -8,7 +8,7 @@
         <version>1.0.58</version>
     </parent>
 
-    <groupId>com.openenglish.pp</groupId>
+    <groupId>com.openenglish.hr</groupId>
     <artifactId>oe-hr-portal-service</artifactId>
     <version>FIXED-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -36,33 +36,35 @@
         <build-properties.file>${user.home}/oe-hr-portal-service.properties</build-properties.file>
         <oe-substrate-core.version>3.0.56</oe-substrate-core.version>
         <log4j2.version>2.17.0</log4j2.version>  <!--security fix version of log4j2 if it's used -->
+        <dozer.version>5.5.1</dozer.version>
+        <lombok.version>1.16.22</lombok.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <!-- project modules -->
             <dependency>
-                <groupId>com.openenglish.pp</groupId>
+                <groupId>com.openenglish.hr</groupId>
                 <artifactId>oe-hr-portal-service-common</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.openenglish.pp</groupId>
+                <groupId>com.openenglish.hr</groupId>
                 <artifactId>oe-hr-portal-service-client</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.openenglish.pp</groupId>
+                <groupId>com.openenglish.hr</groupId>
                 <artifactId>oe-hr-portal-service-model</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.openenglish.pp</groupId>
+                <groupId>com.openenglish.hr</groupId>
                 <artifactId>oe-hr-portal-service-service</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.openenglish.pp</groupId>
+                <groupId>com.openenglish.hr</groupId>
                 <artifactId>oe-hr-portal-service-webapp</artifactId>
                 <version>FIXED-SNAPSHOT</version>
             </dependency>
@@ -121,6 +123,17 @@
                     <exclusion>
                         <artifactId>junit</artifactId>
                         <groupId>junit</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.dozer</groupId>
+                <artifactId>dozer</artifactId>
+                <version>${dozer.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
