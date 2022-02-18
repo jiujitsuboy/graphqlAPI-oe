@@ -58,6 +58,11 @@
             <version>0.20.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>cognitoidentityprovider</artifactId>
+        </dependency>
+
         <!--Testing dependencies-->
         <dependency>
             <groupId>org.jmockit</groupId>

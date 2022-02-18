@@ -2,49 +2,57 @@ package com.openenglish.pp.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.Claim;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-
-import com.openenglish.pp.common.api.model.TokenDecodedInfo;
-
-import org.apache.commons.lang3.StringUtils;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserResponse;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class JwtTokenService {
-  private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final String EMAIL = "email";
 
-  private final String EMAIL = "email";
+    private final CognitoIdentityProviderClient cognitoIdentityProviderClient;
 
-  public Map<String, Claim> getJWTClaims(String token){
-    return JWT.decode(token).getClaims();
-  }
 
-  public Optional<String> getUserEmail(String token){
+    /**
+     * Return a map containing all the claims a JWT token has
+     *
+     * @param token JWT access token
+     * @return JWT claims
+     */
+    public Map<String, Claim> getJWTClaims(String token) {
+        return JWT.decode(token).getClaims();
+    }
 
-    Map<String, Claim> claims = getJWTClaims(token);
+    /**
+     * Retrieve the user's email using his JWT access token
+     *
+     * @param accessToken JWT access token
+     * @return User's Email
+     */
+    public Optional<String> getUserEmail(String accessToken) {
 
-    String userEmail = claims.containsKey(EMAIL) ? claims.get(EMAIL).asString() : "";
+        Optional<String> userEmail = Optional.empty();
 
-    return userEmail.isEmpty() ? Optional.empty() : Optional.of(userEmail);
-  }
+        GetUserRequest userRequest = GetUserRequest.builder().accessToken(accessToken).build();
+        GetUserResponse userResponse = cognitoIdentityProviderClient.getUser(userRequest);
 
-  public TokenDecodedInfo getTokenDecodedInfo(String token) {
-    Preconditions.checkArgument(StringUtils.isNotBlank(token), "token cannot be empty!");
-    TokenDecodedInfo tokenDecodedInfo = new TokenDecodedInfo();
-    tokenDecodedInfo.setExpiredDate(new Date());
-    tokenDecodedInfo.setIssuedDate(new Date());
-    tokenDecodedInfo.setPersonId(1L);
-    tokenDecodedInfo.setContactId("contactId");
-    tokenDecodedInfo.setRoleIds(Lists.newArrayList(1L));
-    tokenDecodedInfo.setScope(Lists.newArrayList("lp2-ui"));
-    return tokenDecodedInfo;
-  }
+        userEmail = userResponse.userAttributes().stream()
+                .filter(attribute -> attribute.name().equals(EMAIL))
+                .findFirst()
+                .map(attType -> Optional.of(attType.value()))
+                .orElse(Optional.empty());
 
+
+        return userEmail;
+    }
 }

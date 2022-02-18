@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.openenglish</groupId>
         <artifactId>oe-substrate-springboot2-parent</artifactId>
-        <version>1.0.58</version>
+        <version>FIXED-SNAPSHOT</version>
     </parent>
 
     <groupId>com.openenglish.pp</groupId>
@@ -123,6 +123,13 @@
                         <groupId>junit</groupId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>2.17.46</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
