@@ -1,6 +1,7 @@
 package com.openenglish.pp.service;
 
 import com.auth0.jwt.interfaces.Claim;
+import com.openenglish.hr.service.JwtTokenService;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;

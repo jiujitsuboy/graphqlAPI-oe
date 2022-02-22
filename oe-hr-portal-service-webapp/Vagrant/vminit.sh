@@ -7,7 +7,7 @@
 # add OE config info to system, the only part needed by the deb installer is 'env dev'
 mkdir -p /opt/open-english/setup
 cat <<EOF >/opt/open-english/setup/CONFIGDATA
-groupId com.openenglish.pp
+groupId com.openenglish.hr
 artifactId oe-hr-portal-service
 version FIXED-SNAPSHOT
 env dev
