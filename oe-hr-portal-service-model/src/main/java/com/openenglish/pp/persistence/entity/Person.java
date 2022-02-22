@@ -1,10 +1,7 @@
 package com.openenglish.pp.persistence.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -13,22 +10,28 @@ import java.util.Set;
 
 @Entity
 @Table(name = "person")
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Immutable
 public class Person implements Serializable {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id")
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-  @Column(name = "contactid")
-  private String contactId;
+    @Column(name = "firstname")
+    private String firstName;
+    @Column(name = "lastname")
+    private String lastName;
+    @Column(name = "email")
+    private String email;
 
-  @OneToMany(fetch = FetchType.EAGER)
-  @JoinColumn(name = "person_id", referencedColumnName = "id")
-  private Set<PersonDetail> details;
+    @Column(name = "contactid")
+    private String contactId;
+
+    @OneToOne(mappedBy = "person")
+    private PersonDetail details;
 }

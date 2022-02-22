@@ -1,17 +1,16 @@
 package com.openenglish.pp.graphql.query;
 
 import com.netflix.graphql.dgs.DgsQueryExecutor;
-import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.openenglish.pp.persistence.entity.Person;
 import com.openenglish.pp.persistence.entity.PersonDetail;
 import com.openenglish.pp.persistence.repository.PersonRepository;
 import com.openenglish.pp.service.PersonService;
-import com.openenglish.pp.service.mapper.PersonMapper;
+import com.openenglish.pp.service.mapper.Mapper;
 import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mocked;
-import mockit.Verifications;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +19,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
-import java.util.stream.StreamSupport;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {DgsAutoConfiguration.class, PersonMapper.class, PersonService.class,PersonRepository.class, StudentResolver.class})
+@SpringBootTest()
 public class StudentResolverTest {
 
     @Autowired
     private DgsQueryExecutor dgsQueryExecutor;
 
+    @Injectable
+    private Mapper mapper;
     @MockBean
     private PersonRepository personRepository;
     @Mocked
@@ -36,21 +36,21 @@ public class StudentResolverTest {
 
     @Test
     public void getStudentsByPurchaserId() {
-        Set<Person> persons = Set.of(Person.builder()
+        List<Person> persons = List.of(Person.builder()
                         .id(1L)
                         .contactId("2")
-                        .details(Set.of(PersonDetail.builder()
-                                .detailsId(12L)
+                        .details(PersonDetail.builder()
+                                .id(12L)
                                 .salesforcePurchaserId(12345L)
-                                .build()))
+                                .build())
                         .build(),
                 Person.builder()
                         .id(2L)
                         .contactId("3")
-                        .details(Set.of(PersonDetail.builder()
-                                .detailsId(22L)
+                        .details(PersonDetail.builder()
+                                .id(22L)
                                 .salesforcePurchaserId(12345L)
-                                .build()))
+                                .build())
                         .build());
 
         new Expectations(){{
@@ -63,7 +63,7 @@ public class StudentResolverTest {
                 "    id\n" +
                 "    contactId\n" +
                 "    details{\n" +
-                "      detailsId\n" +
+                "      id\n" +
                 "      salesforcePurchaserId\n" +
                 "    }\n" +
                 "    \n" +

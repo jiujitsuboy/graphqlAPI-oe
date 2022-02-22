@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class PersonDetailDto {
-    private Long detailsId;
-    private Long purchaserId;
+    private Long id;
+    private Long salesforcePurchaserId;
 }

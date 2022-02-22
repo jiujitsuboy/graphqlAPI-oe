@@ -5,25 +5,24 @@ import com.netflix.graphql.dgs.DgsData;
 import com.openenglish.pp.common.dto.PersonDto;
 import com.openenglish.pp.persistence.entity.Person;
 import com.openenglish.pp.service.PersonService;
-import com.openenglish.pp.service.mapper.PersonMapper;
+import com.openenglish.pp.service.mapper.Mapper;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @DgsComponent
+@RequiredArgsConstructor
 public class StudentResolver {
 
-    private PersonService personService;
-    private PersonMapper personMapper;
-
-    public StudentResolver(PersonService personService,PersonMapper personMapper) {
-        this.personService = personService;
-        this.personMapper = personMapper;
-    }
+    private final PersonService personService;
+    private final Mapper mapper;
 
     @DgsData(parentType = "Query", field = "getStudentsBySalesforcePurchaserId")
-    public Set<PersonDto> getStudentsBySalesforcePurchaserId(Long salesforcePurchaserId){
-        Set<Person> personSet =  personService.getStudentsBySalesforcePurchaserId(salesforcePurchaserId);
-        return personSet.stream().map(person -> personMapper.toModel(person)).collect(Collectors.toSet());
+    public List<PersonDto> getStudentsBySalesforcePurchaserId(Long salesforcePurchaserId){
+        List<Person> persons =  personService.getStudentsBySalesforcePurchaserId(salesforcePurchaserId);
+        return  persons.stream()
+                .map(person -> mapper.map(person, PersonDto.class))
+                .collect(Collectors.toList());
     }
 }

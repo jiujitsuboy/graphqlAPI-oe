@@ -1,10 +1,13 @@
 type Student {
    id: ID
+   firstName: String
+   lastName: String
+   email: String
    contactId: String
-   details: [StudentDetail]!
+   details: StudentDetail
 }
 
 type StudentDetail {
-   detailsId: ID
+   id: ID
    salesforcePurchaserId: Int
 }

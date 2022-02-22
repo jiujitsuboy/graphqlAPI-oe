@@ -10,6 +10,9 @@ import java.util.Set;
 public class PersonDto {
 
     private Long id;
+    private String firstName;
+    private String lastName;
+    private String email;
     private String contactId;
-    Set<PersonDetailDto> details;
+    PersonDetailDto details;
 }
