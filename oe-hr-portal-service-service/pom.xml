@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.openenglish.pp</groupId>
+        <groupId>com.openenglish.hr</groupId>
         <artifactId>oe-hr-portal-service</artifactId>
         <version>FIXED-SNAPSHOT</version>
     </parent>
@@ -21,7 +21,7 @@
             <artifactId>spring-boot-starter-logging</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.openenglish.pp</groupId>
+            <groupId>com.openenglish.hr</groupId>
             <artifactId>oe-hr-portal-service-model</artifactId>
         </dependency>
         <dependency>

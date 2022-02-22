@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.openenglish.pp</groupId>
+        <groupId>com.openenglish.hr</groupId>
         <artifactId>oe-hr-portal-service</artifactId>
         <version>FIXED-SNAPSHOT</version>
     </parent>
@@ -42,11 +42,11 @@
                 </dependency>
 
         <dependency>
-            <groupId>com.openenglish.pp</groupId>
+            <groupId>com.openenglish.hr</groupId>
             <artifactId>oe-hr-portal-service-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.openenglish.pp</groupId>
+            <groupId>com.openenglish.hr</groupId>
             <artifactId>oe-hr-portal-service-service</artifactId>
         </dependency>
         <dependency>
