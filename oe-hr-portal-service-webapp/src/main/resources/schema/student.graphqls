@@ -1,12 +1,12 @@
  type Student {
     id: ID
     contactId: String
-    details: [StudentDetail]!
+    details: StudentDetail
     workingLevel: Level
  }
 
  type StudentDetail {
-    detailsId: ID
+    id: ID
     salesforcePurchaserId: Int
  }
 
@@ -18,7 +18,7 @@
     numLiveRequired: Int
     numImmersionRequired: Int
     sequence: Int
-    lowScoreBoundary: Int
-    highScoreBoundary: Int
+    lowScoreBoundary: Float
+    highScoreBoundary: Float
     levelNum: String
  }

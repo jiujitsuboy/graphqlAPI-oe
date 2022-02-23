@@ -22,12 +22,18 @@ public class Person implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "firstname")
+    private String firstName;
+    @Column(name = "lastname")
+    private String lastName;
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "contactid")
     private String contactId;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "person_id", referencedColumnName = "id")
-    private Set<PersonDetail> details;
+    @OneToOne(mappedBy = "person")
+    private PersonDetail details;
 
     @ManyToOne
     @JoinColumn(name = "workinglevel_id", referencedColumnName = "id")
