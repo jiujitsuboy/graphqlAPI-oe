@@ -146,12 +146,6 @@
             <artifactId>pp-global-config</artifactId>
             <version>${pp.global.config.version}</version>
         </dependency>
-        <!-- DGS Netflix graphql library-->
-        <dependency>
-            <groupId>com.netflix.graphql.dgs</groupId>
-            <artifactId>graphql-dgs-spring-boot-starter</artifactId>
-            <version>${netflix.graphql.dgs.version}</version>
-        </dependency>
     </dependencies>
 
     <build>
