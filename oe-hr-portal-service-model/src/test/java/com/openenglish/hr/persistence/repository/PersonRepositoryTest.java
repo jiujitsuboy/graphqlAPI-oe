@@ -21,7 +21,7 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
 
     @Test
     public void findPersonByDetailsSalesforcePurchaserIdIn(){
-        Long salesforcePurchaserId = 12346L;
+        String salesforcePurchaserId = "12346";
         int expectedPersons = 3;
         List<Person> persons =  personRepository.findPersonByDetailsSalesforcePurchaserId(salesforcePurchaserId);
         assertNotNull(persons);

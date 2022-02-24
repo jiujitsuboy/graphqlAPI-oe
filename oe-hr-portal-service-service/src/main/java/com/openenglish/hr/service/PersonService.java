@@ -14,7 +14,7 @@ public class PersonService {
 
     private final PersonRepository personRepository;
 
-    public List<Person> getStudentsBySalesforcePurchaserId(Long salesforcePurchaserId) {
+    public List<Person> getStudentsBySalesforcePurchaserId(String salesforcePurchaserId) {
         Preconditions.checkArgument(salesforcePurchaserId != null, "salesforcePurchaserId should be non null");
         return personRepository.findPersonByDetailsSalesforcePurchaserId(salesforcePurchaserId);
     }

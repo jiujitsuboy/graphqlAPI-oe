@@ -38,6 +38,7 @@
         <log4j2.version>2.17.0</log4j2.version>  <!--security fix version of log4j2 if it's used -->
         <dozer.version>5.5.1</dozer.version>
         <lombok.version>1.16.22</lombok.version>
+        <netflix.graphql.dgs.version>3.8.0</netflix.graphql.dgs.version>
     </properties>
 
     <dependencyManagement>
@@ -144,6 +145,12 @@
             <groupId>com.openenglish.pp</groupId>
             <artifactId>pp-global-config</artifactId>
             <version>${pp.global.config.version}</version>
+        </dependency>
+        <!-- DGS Netflix graphql library-->
+        <dependency>
+            <groupId>com.netflix.graphql.dgs</groupId>
+            <artifactId>graphql-dgs-spring-boot-starter</artifactId>
+            <version>${netflix.graphql.dgs.version}</version>
         </dependency>
     </dependencies>
 

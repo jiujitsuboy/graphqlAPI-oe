@@ -1,13 +1,7 @@
 type Student {
-   id: ID
    firstName: String
    lastName: String
    email: String
    contactId: String
-   details: StudentDetail
-}
-
-type StudentDetail {
-   id: ID
-   salesforcePurchaserId: Int
+   salesforcePurchaserId: String
 }

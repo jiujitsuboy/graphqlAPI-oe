@@ -25,5 +25,5 @@ public class PersonDetail implements Serializable {
     private Person person;
 
     @Column(name = "salesforce_purchaser_id")
-    private Long salesforcePurchaserId;
+    private String salesforcePurchaserId;
 }

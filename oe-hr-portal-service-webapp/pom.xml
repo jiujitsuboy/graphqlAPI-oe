@@ -97,13 +97,6 @@
             <artifactId>javax.ws.rs-api</artifactId>
         </dependency>
 
-        <!-- DGS Netflix graphql library-->
-        <dependency>
-            <groupId>com.netflix.graphql.dgs</groupId>
-            <artifactId>graphql-dgs-spring-boot-starter</artifactId>
-            <version>3.8.0</version>
-        </dependency>
-
         <!-- JMX Monitoring -->
         <dependency>
             <groupId>net.bull.javamelody</groupId>

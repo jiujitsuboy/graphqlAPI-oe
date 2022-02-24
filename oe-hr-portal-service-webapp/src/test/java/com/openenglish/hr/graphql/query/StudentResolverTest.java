@@ -40,43 +40,41 @@ public class StudentResolverTest {
     public void getStudentsByPurchaserId() {
         List<Person> persons = List.of(Person.builder()
                         .id(1L)
+                        .email("fake1@openenglish.com")
                         .contactId("2")
                         .details(PersonDetail.builder()
                                 .id(12L)
-                                .salesforcePurchaserId(12345L)
+                                .salesforcePurchaserId("12345")
                                 .build())
                         .build(),
                 Person.builder()
                         .id(2L)
+                        .email("fake2@openenglish.com")
                         .contactId("3")
                         .details(PersonDetail.builder()
                                 .id(22L)
-                                .salesforcePurchaserId(12345L)
+                                .salesforcePurchaserId("12345")
                                 .build())
                         .build());
 
         new Expectations(){{
-            personService.getStudentsBySalesforcePurchaserId(anyLong);
+            personService.getStudentsBySalesforcePurchaserId(anyString);
             returns(persons);
         }};
 
         String query = "{\n" +
-                "  getStudentsBySalesforcePurchaserId(salesforcePurchaserId:12345){\n" +
-                "    id\n" +
+                "  getStudentsBySalesforcePurchaserId(salesforcePurchaserId:\"12345\"){\n" +
+                "    email\n" +
                 "    contactId\n" +
-                "    details{\n" +
-                "      id\n" +
-                "      salesforcePurchaserId\n" +
-                "    }\n" +
-                "    \n" +
+                "    salesforcePurchaserId\n" +
                 "  }\n" +
                 "}";
-        String proyection = "data.getStudentsBySalesforcePurchaserId[*].id";
+        String proyection = "data.getStudentsBySalesforcePurchaserId[*].email";
 
-        List<String> studentIds =  dgsQueryExecutor.executeAndExtractJsonPath(query, proyection);
+        List<String> studentsEmail =  dgsQueryExecutor.executeAndExtractJsonPath(query, proyection);
 
-        assertNotNull(studentIds);
-        persons.forEach(person -> assertTrue(studentIds.contains(person.getId().toString())));
+        assertNotNull(studentsEmail);
+        persons.forEach(person -> assertTrue(studentsEmail.contains(person.getEmail())));
 
     }
 }
