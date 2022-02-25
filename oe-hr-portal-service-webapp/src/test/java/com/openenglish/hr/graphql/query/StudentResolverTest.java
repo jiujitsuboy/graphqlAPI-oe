@@ -69,9 +69,9 @@ public class StudentResolverTest {
                 "    salesforcePurchaserId\n" +
                 "  }\n" +
                 "}";
-        String proyection = "data.getStudentsBySalesforcePurchaserId[*].email";
+        String projection = "data.getStudentsBySalesforcePurchaserId[*].email";
 
-        List<String> studentsEmail =  dgsQueryExecutor.executeAndExtractJsonPath(query, proyection);
+        List<String> studentsEmail =  dgsQueryExecutor.executeAndExtractJsonPath(query, projection);
 
         assertNotNull(studentsEmail);
         persons.forEach(person -> assertTrue(studentsEmail.contains(person.getEmail())));
