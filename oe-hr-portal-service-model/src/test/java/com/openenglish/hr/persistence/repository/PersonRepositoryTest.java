@@ -34,7 +34,7 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
         assertNotNull(persons);
         assertEquals(expectedPersons,persons.size());
 
-        persons.stream().filter(person -> person.getFirstName().equals(firstNameExpected)).findFirst().ifPresentOrElse(person -> {
+        persons.stream().filter(person -> person.getContactId().equals(contactIdExpected)).findFirst().ifPresentOrElse(person -> {
             assertThat(person.getFirstName(),is(firstNameExpected));
             assertThat(person.getLastName(),is(lastNameExpected));
             assertThat(person.getContactId(),is(contactIdExpected));
