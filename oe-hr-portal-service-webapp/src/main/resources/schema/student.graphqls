@@ -1,0 +1,7 @@
+type Student {
+   firstName: String
+   lastName: String
+   email: String
+   contactId: String
+   salesforcePurchaserId: String
+}
