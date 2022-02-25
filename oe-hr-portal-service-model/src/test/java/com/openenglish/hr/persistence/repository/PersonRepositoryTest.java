@@ -25,6 +25,7 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
         String salesforcePurchaserId = "12346";
         String firstNameExpected = "joseph";
         String lastNameExpected = "peterson";
+        String contactIdExpected = "sf_synegen5";
         String emailExpected = "josephp2@unknowdomain.com";
         int expectedPersons = 3;
 
@@ -36,6 +37,7 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
         persons.stream().filter(person -> person.getFirstName().equals(firstNameExpected)).findFirst().ifPresentOrElse(person -> {
             assertThat(person.getFirstName(),is(firstNameExpected));
             assertThat(person.getLastName(),is(lastNameExpected));
+            assertThat(person.getContactId(),is(contactIdExpected));
             assertThat(person.getEmail(),is(emailExpected));
         }, Assert::fail);
     }
