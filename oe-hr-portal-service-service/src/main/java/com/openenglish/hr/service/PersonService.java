@@ -16,7 +16,7 @@ public class PersonService {
     private final PersonRepository personRepository;
 
     public List<Person> getStudentsBySalesforcePurchaserId(String salesforcePurchaserId) {
-        Preconditions.checkArgument(StringUtils.isNoneBlank(salesforcePurchaserId) , "salesforcePurchaserId should be non null");
+        Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId) , "salesforcePurchaserId should be non null");
         return personRepository.findPersonByDetailsSalesforcePurchaserId(salesforcePurchaserId);
     }
 }
