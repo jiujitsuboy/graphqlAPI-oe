@@ -1,13 +1,10 @@
- type Student {
-    id: ID
+  type Student {
+    firstName: String
+    lastName: String
+    email: String
     contactId: String
-    details: StudentDetail
+    salesforcePurchaserId: String
     workingLevel: Level
- }
-
- type StudentDetail {
-    id: ID
-    salesforcePurchaserId: Int
  }
 
  type Level {
@@ -21,4 +18,9 @@
     lowScoreBoundary: Float
     highScoreBoundary: Float
     levelNum: String
+ }
+
+ type StudentPerLevel {
+    levelName: String
+    numberOfStudents: Int
  }

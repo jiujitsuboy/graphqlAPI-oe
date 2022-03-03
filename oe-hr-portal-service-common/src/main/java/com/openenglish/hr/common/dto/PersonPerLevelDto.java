@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PersonDetailDto {
-    private Long id;
-    private Long salesforcePurchaserId;
+public class PersonPerLevelDto {
+    private String levelName;
+    private long numberOfPersons;
 }
