@@ -19,6 +19,7 @@ import java.util.Optional;
 public class JwtTokenService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String EMAIL = "email";
+    private final String PURCHASER_ID = "custom:purchaserId";
 
     private final CognitoIdentityProviderClient cognitoIdentityProviderClient;
 
@@ -41,18 +42,32 @@ public class JwtTokenService {
      */
     public Optional<String> getUserEmail(String accessToken) {
 
-        Optional<String> userEmail = Optional.empty();
+        return getUserRequest(accessToken, EMAIL);
+    }
 
+    /**
+     * Retrieve the user's purchaser Id using his JWT access token
+     *
+     * @param accessToken JWT access token
+     * @return User's purchaser Id
+     */
+    public Optional<String> getUserPurchaserId(String accessToken) {
+
+        return getUserRequest(accessToken, PURCHASER_ID);
+    }
+
+    private Optional<String> getUserRequest(String accessToken, String userAttributeName) {
+        Optional<String> userAttribute;
         GetUserRequest userRequest = GetUserRequest.builder().accessToken(accessToken).build();
         GetUserResponse userResponse = cognitoIdentityProviderClient.getUser(userRequest);
 
-        userEmail = userResponse.userAttributes().stream()
-                .filter(attribute -> attribute.name().equals(EMAIL))
+        userAttribute = userResponse.userAttributes().stream()
+                .filter(attribute -> attribute.name().equals(userAttributeName))
                 .findFirst()
                 .map(attType -> Optional.of(attType.value()))
                 .orElse(Optional.empty());
 
 
-        return userEmail;
+        return userAttribute;
     }
 }

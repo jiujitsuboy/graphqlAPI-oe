@@ -95,6 +95,31 @@ public class JwtTokenServiceTest {
 
         jwtTokenService.getUserEmail(ACCESS_TOKEN);
     }
+
+    @Test
+    public void getUserPurchaserId() {
+
+        final String attributeTypeName = "custom:purchaserId";
+        final String attributeTypeValue = "12345";
+
+        AttributeType attributeType = AttributeType.builder()
+                .name(attributeTypeName)
+                .value(attributeTypeValue)
+                .build();
+
+        GetUserResponse userResponse = GetUserResponse.builder()
+                .userAttributes(attributeType)
+                .build();
+
+        new Expectations() {{
+            cognitoIdentityProviderClient.getUser((GetUserRequest) any);
+            returns(userResponse);
+        }};
+
+        Optional<String> userPurchaserId = jwtTokenService.getUserPurchaserId(ACCESS_TOKEN);
+        assertTrue(userPurchaserId.isPresent());
+        assertEquals(attributeTypeValue, userPurchaserId.get());
+    }
 }
 
 @Configuration
