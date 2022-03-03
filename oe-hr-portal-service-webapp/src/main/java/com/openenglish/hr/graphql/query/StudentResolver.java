@@ -19,7 +19,7 @@ public class StudentResolver {
     private final Mapper mapper;
 
     @DgsData(parentType = "Query", field = "getStudentsBySalesforcePurchaserId")
-    public List<PersonDto> getStudentsBySalesforcePurchaserId(Long salesforcePurchaserId){
+    public List<PersonDto> getStudentsBySalesforcePurchaserId(String salesforcePurchaserId){
         List<Person> persons =  personService.getStudentsBySalesforcePurchaserId(salesforcePurchaserId);
         return  persons.stream()
                 .map(person -> mapper.map(person, PersonDto.class))

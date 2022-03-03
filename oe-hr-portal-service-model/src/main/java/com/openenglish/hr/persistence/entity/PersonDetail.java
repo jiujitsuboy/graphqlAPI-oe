@@ -24,6 +24,6 @@ public class PersonDetail implements Serializable {
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     private Person person;
 
-    @Column(name = "salesforce_purchaser_id")
-    private Long salesforcePurchaserId;
+    @Column(name = "SALESFORCE_PURCHASER_ID")
+    private String salesforcePurchaserId;
 }
