@@ -26,11 +26,11 @@ public class Level implements Serializable {
     @Column(name = "active")
     private boolean active;
     @Column(name = "numliverequired")
-    private int numLiveRequired;
+    private Integer numLiveRequired;
     @Column(name = "numimmersionrequired")
-    private int numImmersionRequired;
+    private Integer numImmersionRequired;
     @Column(name = "sequence")
-    private int sequence;
+    private Integer sequence;
     @Column(name = "lowscoreboundary")
     private BigDecimal lowScoreBoundary;
     @Column(name = "highscoreboundary")
