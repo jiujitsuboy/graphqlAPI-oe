@@ -35,7 +35,7 @@ public class StudentResolver {
 
         return studentsByLevel.stream().map(students -> PersonPerLevelDto.builder()
                 .levelName(students.getLevelName())
-                .numberOfPersons(students.getNumberOfPersons())
+                .totalNumber(students.getNumberOfPersons())
                 .build()).collect(Collectors.toList());
 
 //        List<PersonPerLevelDto> l = studentsByLevel.stream()

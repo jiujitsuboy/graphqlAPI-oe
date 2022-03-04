@@ -7,5 +7,5 @@ import lombok.Data;
 @Builder
 public class PersonPerLevelDto {
     private String levelName;
-    private long numberOfPersons;
+    private long totalNumber;
 }

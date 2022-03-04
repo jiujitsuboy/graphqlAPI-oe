@@ -22,5 +22,5 @@
 
  type StudentPerLevel {
     levelName: String
-    numberOfStudents: Int
+    totalNumber: Int
  }
