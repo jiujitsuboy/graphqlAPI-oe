@@ -6,13 +6,9 @@ import mockit.Injectable;
 import mockit.Tested;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
@@ -26,10 +22,6 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-
-@RunWith(SpringRunner.class)
-@ContextConfiguration(classes = propConfig.class)
-@SpringBootTest(classes = JwtTokenService.class)
 public class JwtTokenServiceTest {
 
     @Rule

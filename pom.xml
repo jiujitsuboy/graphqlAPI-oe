@@ -39,6 +39,11 @@
         <dozer.version>5.5.1</dozer.version>
         <lombok.version>1.16.22</lombok.version>
         <netflix.graphql.dgs.version>3.8.0</netflix.graphql.dgs.version>
+        <auth0.java-jwt.version>3.18.3</auth0.java-jwt.version>
+        <auth0.jwks-rsa.version>0.20.2</auth0.jwks-rsa.version>
+        <software.amazon.awssdk.version>2.17.46</software.amazon.awssdk.version>
+
+
     </properties>
 
     <dependencyManagement>
@@ -139,9 +144,20 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>com.auth0</groupId>
+                <artifactId>java-jwt</artifactId>
+                <version>${auth0.java-jwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.auth0</groupId>
+                <artifactId>jwks-rsa</artifactId>
+                <version>${auth0.jwks-rsa.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>bom</artifactId>
-                <version>2.17.46</version>
+                <version>${software.amazon.awssdk.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

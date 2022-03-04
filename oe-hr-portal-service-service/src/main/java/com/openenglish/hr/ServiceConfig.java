@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 
 @Configuration
@@ -21,9 +22,11 @@ public class ServiceConfig {
 
     @Bean
     public CognitoIdentityProviderClient cognitoIdentityProviderClient(@Value("${aws.credentials.access.token.id}") String awsAccessID,
-                                                                       @Value("${aws.credentials.secret.token.key}") String awsSecretAccessKey){
+                                                                       @Value("${aws.credentials.secret.token.key}") String awsSecretAccessKey,
+                                                                       @Value("${aws.credentials.region}") String awsRegion ){
         AwsBasicCredentials awsBasicCredentials = AwsBasicCredentials.create(awsAccessID, awsSecretAccessKey);
         return CognitoIdentityProviderClient.builder()
+                .region(Region.of(awsRegion))
                 .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
                 .build();
     }
