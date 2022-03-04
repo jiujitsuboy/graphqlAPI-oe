@@ -1,10 +1,13 @@
 package com.openenglish.hr.graphql.query;
 
+import com.jayway.jsonpath.TypeRef;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 
+import com.openenglish.hr.common.dto.PersonPerLevelDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.PersonDetail;
+import com.openenglish.hr.persistence.entity.aggregation.IPersonsPerLevel;
 import com.openenglish.hr.persistence.repository.PersonRepository;
 import com.openenglish.hr.service.PersonService;
 import com.openenglish.hr.service.mapper.Mapper;
@@ -21,8 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest()
@@ -95,13 +97,7 @@ public class StudentResolverTest {
         String query = "{\n" +
                 "  getStudentsBySalesforcePurchaserId(salesforcePurchaserId:\"12345\"){\n" +
                 "    email\n" +
-                "    contactId\n" +
-                "    salesforcePurchaserId\n" +
-                "    workingLevel{\n" +
-                "     name\n" +
-                "     levelNum\n" +
                 "    }\n" +
-                "  }\n" +
                 "}";
         String projection = "data.getStudentsBySalesforcePurchaserId[*].email";
 
@@ -109,6 +105,61 @@ public class StudentResolverTest {
 
         assertNotNull(studentsEmail);
         persons.forEach(person -> assertTrue(studentsEmail.contains(person.getEmail())));
+
+    }
+
+    @Test
+    public void getAllStudentsByLevel() {
+
+        List<IPersonsPerLevel> personsPerLevelExpected = List.of(new IPersonsPerLevel() {
+            @Override
+            public String getLevelName() {
+                return "Level 1";
+            }
+
+            @Override
+            public long getTotalNumber() {
+                return 42;
+            }
+        }, new IPersonsPerLevel() {
+            @Override
+            public String getLevelName() {
+                return "Level 2";
+            }
+
+            @Override
+            public long getTotalNumber() {
+                return 56;
+            }
+        });
+
+        new Expectations() {{
+            personService.getAllPersonsByLevel();
+            returns(personsPerLevelExpected);
+        }};
+
+        String query = "{\n" +
+                "  getAllStudentsByLevel{\n" +
+                "    levelName\n" +
+                "    totalNumber\n" +
+                "  }\n" +
+                "}";
+        String projection = "data.getAllStudentsByLevel[*]";
+
+
+        List<PersonPerLevelDto> studentsPerLevel = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
+        });
+
+        assertNotNull(studentsPerLevel);
+
+        for (int index = 0; index < studentsPerLevel.size(); index++) {
+
+            IPersonsPerLevel expected = personsPerLevelExpected.get(index);
+            PersonPerLevelDto received = studentsPerLevel.get(index);
+
+            assertEquals(expected.getLevelName(), received.getLevelName());
+            assertEquals(expected.getTotalNumber(), received.getTotalNumber());
+        }
 
     }
 }
