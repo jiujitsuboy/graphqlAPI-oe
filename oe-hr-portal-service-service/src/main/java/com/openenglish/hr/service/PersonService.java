@@ -22,7 +22,6 @@ public class PersonService {
     }
 
         public List<IPersonsPerLevel> getAllPersonsByLevel() {
-//    public List<Object[]> getAllPersonsByLevel() {
         return personRepository.getAllPersonsPerLevel();
     }
 }

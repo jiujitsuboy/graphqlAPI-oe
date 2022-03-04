@@ -31,16 +31,9 @@ public class StudentResolver {
     @DgsData(parentType = "Query", field = "getAllStudentsByLevel")
     public List<PersonPerLevelDto> getAllStudentsByLevel(){
         List<IPersonsPerLevel> studentsByLevel =  personService.getAllPersonsByLevel();
-//        List<Object[]> studentsByLevel =  personService.getAllPersonsByLevel();
 
-        return studentsByLevel.stream().map(students -> PersonPerLevelDto.builder()
-                .levelName(students.getLevelName())
-                .totalNumber(students.getNumberOfPersons())
-                .build()).collect(Collectors.toList());
-
-//        List<PersonPerLevelDto> l = studentsByLevel.stream()
-//                .map(personByLevel -> mapper.map(personByLevel, PersonPerLevelDto.class))
-//                .collect(Collectors.toList());
-//        return null;
+        return studentsByLevel.stream()
+                .map(personByLevel -> mapper.map(personByLevel, PersonPerLevelDto.class))
+                .collect(Collectors.toList());
     }
 }
