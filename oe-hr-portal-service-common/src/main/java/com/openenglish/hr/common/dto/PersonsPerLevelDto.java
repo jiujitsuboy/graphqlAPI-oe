@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PersonPerLevelDto {
+public class PersonsPerLevelDto {
     private String levelName;
     private long totalNumber;
 }

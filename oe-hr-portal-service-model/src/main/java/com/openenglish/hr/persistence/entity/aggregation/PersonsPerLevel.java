@@ -1,6 +1,6 @@
 package com.openenglish.hr.persistence.entity.aggregation;
 
-public interface IPersonsPerLevel {
+public interface PersonsPerLevel {
     String getLevelName();
     long getTotalNumber();
 }

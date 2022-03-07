@@ -1,4 +1,4 @@
-  type Student {
+  type Person {
     firstName: String
     lastName: String
     email: String
@@ -20,7 +20,7 @@
     levelNum: String
  }
 
- type StudentPerLevel {
+ type PersonsPerLevel {
     levelName: String
     totalNumber: Int
  }

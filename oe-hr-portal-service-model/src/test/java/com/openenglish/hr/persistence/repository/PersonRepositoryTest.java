@@ -4,7 +4,7 @@ import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import com.openenglish.hr.persistence.entity.Person;
-import com.openenglish.hr.persistence.entity.aggregation.IPersonsPerLevel;
+import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,17 +47,18 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
     public void getAllPersonsPerLevel(){
 
         String levelName = "Level 100";
+        String salesforcePurchaserId = "12346";
         long totalNumber = 3;
 
-        List<IPersonsPerLevel> personsPerLevel =  personRepository.getAllPersonsPerLevel();
+        List<PersonsPerLevel> personsPerLevel =  personRepository.getAllPersonsPerLevel(salesforcePurchaserId);
 
         assertNotNull(personsPerLevel);
 
         personsPerLevel.stream()
-                .filter(temp -> ((IPersonsPerLevel)temp).getLevelName().equals(levelName))
+                .filter(temp -> ((PersonsPerLevel)temp).getLevelName().equals(levelName))
                 .findFirst()
                 .ifPresentOrElse(level->{
-                    IPersonsPerLevel personLevel =  (IPersonsPerLevel)level;
+                    PersonsPerLevel personLevel =  (PersonsPerLevel)level;
                     assertThat(personLevel.getLevelName(),is(levelName));
                     assertThat(personLevel.getTotalNumber(),is(totalNumber));
                 },Assert::fail);

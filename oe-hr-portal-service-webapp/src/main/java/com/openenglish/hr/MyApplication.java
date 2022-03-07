@@ -3,8 +3,6 @@ package com.openenglish.hr;
 import com.openenglish.substrate.SubstrateConfig;
 import com.openenglish.substrate.environment.EnvironmentPropertyConfigurer;
 import com.openenglish.substrate.logging.LogbackGraylogConfig;
-import com.openenglish.swagger.configuration.Swagger2Config;
-import com.openenglish.web.configuration.WebMvcConfig;
 
 import javax.servlet.Filter;
 
