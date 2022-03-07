@@ -61,16 +61,19 @@ public class JwtTokenService {
   }
 
   private Optional<String> getUserRequest(String accessToken, String userAttributeName) {
-    Optional<String> userAttribute;
+    Optional<String> userAttribute = Optional.empty();
     GetUserRequest userRequest = GetUserRequest.builder().accessToken(accessToken).build();
-    GetUserResponse userResponse = cognitoIdentityProviderClient.getUser(userRequest);
-
-    userAttribute = userResponse.userAttributes().stream()
-            .filter(attribute -> attribute.name().equals(userAttributeName))
-            .findFirst()
-            .map(attType -> Optional.of(attType.value()))
-            .orElse(Optional.empty());
-
+    try {
+      GetUserResponse userResponse = cognitoIdentityProviderClient.getUser(userRequest);
+      userAttribute = userResponse.userAttributes().stream()
+              .filter(attribute -> attribute.name().equals(userAttributeName))
+              .findFirst()
+              .map(attType -> Optional.of(attType.value()))
+              .orElse(Optional.empty());
+    }
+    catch (Exception e){
+      logger.error(e.getMessage());
+    }
 
     return userAttribute;
   }

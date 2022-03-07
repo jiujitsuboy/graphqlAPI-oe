@@ -74,13 +74,11 @@ public class JwtTokenServiceTest {
 
         new Expectations() {{
             cognitoIdentityProviderClient.getUser((GetUserRequest) any);
-            result = NotAuthorizedException.builder().message("Invalid Access Token...").build();
+            returns(Optional.empty());
         }};
 
-        expectedException.expect(NotAuthorizedException.class);
-        expectedException.expectMessage("Invalid Access Token...");
-
-        jwtTokenService.getUserEmail(ACCESS_TOKEN);
+        Optional<String> userEmail = jwtTokenService.getUserEmail(ACCESS_TOKEN);
+        assertFalse(userEmail.isPresent());
     }
 
     @Test
