@@ -41,7 +41,7 @@
         <netflix.graphql.dgs.version>3.8.0</netflix.graphql.dgs.version>
         <auth0.java-jwt.version>3.18.3</auth0.java-jwt.version>
         <auth0.jwks-rsa.version>0.20.2</auth0.jwks-rsa.version>
-        <software.amazon.awssdk.version>2.17.46</software.amazon.awssdk.version>
+        <awssdk.version>2.17.46</awssdk.version>
 
 
     </properties>
@@ -157,7 +157,7 @@
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
                 <artifactId>bom</artifactId>
-                <version>${software.amazon.awssdk.version}</version>
+                <version>${awssdk.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

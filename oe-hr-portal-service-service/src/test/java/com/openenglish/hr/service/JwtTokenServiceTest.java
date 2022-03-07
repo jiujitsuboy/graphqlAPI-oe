@@ -7,10 +7,6 @@ import mockit.Tested;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserRequest;
@@ -111,18 +107,4 @@ public class JwtTokenServiceTest {
         assertTrue(userPurchaserId.isPresent());
         assertEquals(attributeTypeValue, userPurchaserId.get());
     }
-}
-
-@Configuration
-class propConfig {
-
-    @Bean
-    public CognitoIdentityProviderClient cognitoIdentityProviderClient() {
-        AwsBasicCredentials awsBasicCredentials = AwsBasicCredentials.create("fakeAccessKeyId",
-                "fakeSecretAccessKeyId");
-        return CognitoIdentityProviderClient.builder()
-                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
-                .build();
-    }
-
 }

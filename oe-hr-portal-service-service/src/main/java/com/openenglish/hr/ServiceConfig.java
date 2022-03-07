@@ -21,12 +21,11 @@ import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityPr
 public class ServiceConfig {
 
     @Bean
-    public CognitoIdentityProviderClient cognitoIdentityProviderClient(@Value("${aws.credentials.access.token.id}") String awsAccessID,
-                                                                       @Value("${aws.credentials.secret.token.key}") String awsSecretAccessKey,
-                                                                       @Value("${aws.credentials.region}") String awsRegion ){
+    public CognitoIdentityProviderClient cognitoIdentityProviderClient(@Value("${COGNITO_AWS_HR_PORTAL_ACCESS_KEY_ID}") String awsAccessID,
+                                                                       @Value("${COGNITO_AWS_HR_PORTAL_ACCESS_SECRET_KEY}") String awsSecretAccessKey){
         AwsBasicCredentials awsBasicCredentials = AwsBasicCredentials.create(awsAccessID, awsSecretAccessKey);
         return CognitoIdentityProviderClient.builder()
-                .region(Region.of(awsRegion))
+                //Region not specified explicity, it is grab of the default region configured in the credentials file of the user profile
                 .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
                 .build();
     }
