@@ -15,38 +15,38 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
-@Import({ServiceConfig.class, SubstrateConfig.class,
-        LogbackGraylogConfig.class})
+@Import({ServiceConfig.class, SubstrateConfig.class, Swagger2Config.class,
+    LogbackGraylogConfig.class, WebMvcConfig.class})
 public class MyApplication {
 
-    /**
-     * https://groups.google.com/forum/#!topic/javamelody/65xJeM-ozms
-     *
-     * @return FilterRegistrationBean
-     */
-    @Bean
-    public static FilterRegistrationBean javaMelodyFilterRegistration() {
-        Filter javaMelodyFilter = new MonitoringFilter();
-        FilterRegistrationBean javaMelodyFilterBean = new FilterRegistrationBean(javaMelodyFilter);
-        javaMelodyFilterBean.addServletNames("monitoring");
-        javaMelodyFilterBean.addUrlPatterns("/*");
+  /**
+   * https://groups.google.com/forum/#!topic/javamelody/65xJeM-ozms
+   *
+   * @return FilterRegistrationBean
+   */
+  @Bean
+  public static FilterRegistrationBean javaMelodyFilterRegistration() {
+    Filter javaMelodyFilter = new MonitoringFilter();
+    FilterRegistrationBean javaMelodyFilterBean = new FilterRegistrationBean(javaMelodyFilter);
+    javaMelodyFilterBean.addServletNames("monitoring");
+    javaMelodyFilterBean.addUrlPatterns("/*");
 
-        return javaMelodyFilterBean;
-    }
+    return javaMelodyFilterBean;
+  }
 
-    @Bean
-    public static EnvironmentPropertyConfigurer envPropertyPlaceholderConfigurer() {
-        EnvironmentPropertyConfigurer environmentPropertyConfigurer = new EnvironmentPropertyConfigurer();
-        environmentPropertyConfigurer.setGlobalFileName("pp-global-config.properties");
-        environmentPropertyConfigurer.setPropFileName("oe-hr-portal-service.properties");
-        environmentPropertyConfigurer.setOrder(1);
-        return environmentPropertyConfigurer;
-    }
+  @Bean
+  public static EnvironmentPropertyConfigurer envPropertyPlaceholderConfigurer() {
+    EnvironmentPropertyConfigurer environmentPropertyConfigurer = new EnvironmentPropertyConfigurer();
+    environmentPropertyConfigurer.setGlobalFileName("pp-global-config.properties");
+    environmentPropertyConfigurer.setPropFileName("oe-hr-portal-service.properties");
+    environmentPropertyConfigurer.setOrder(1);
+    return environmentPropertyConfigurer;
+  }
 
 
-    final static Logger logger = LoggerFactory.getLogger(MyApplication.class);
+  final static Logger logger = LoggerFactory.getLogger(MyApplication.class);
 
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(MyApplication.class, args);
-    }
+  public static void main(String[] args) throws Exception {
+    SpringApplication.run(MyApplication.class, args);
+  }
 }
