@@ -11,10 +11,12 @@ import java.util.List;
 public interface PersonRepository extends JpaRepository<Person, Long> {
     List<Person> findPersonByDetailsSalesforcePurchaserId(String salesforcePurchaserId);
 
-    @Query("SELECT  l.name AS levelName, count(p.id) AS totalNumber " +
-            "FROM Person p JOIN p.details d JOIN p.workingLevel l " +
-            "WHERE d.salesforcePurchaserId=:salesforcePurchaserId " +
-            "GROUP BY l.name " +
-            "ORDER BY l.name ASC")
+    @Query(value = "select l.name AS levelName, count(*) AS totalNumber " +
+            "from person p " +
+            "left join person_detail pd on p.id = pd.person_id " +
+            "left join level l on p.workinglevel_id  = l.id " +
+            "where pd.salesforce_purchaser_id = :salesforcePurchaserId " +
+            "group by l.id " +
+            "order by l.id asc", nativeQuery = true)
     List<PersonsPerLevel> getAllPersonsPerLevel(@Param("salesforcePurchaserId")String salesforcePurchaserId);
 }

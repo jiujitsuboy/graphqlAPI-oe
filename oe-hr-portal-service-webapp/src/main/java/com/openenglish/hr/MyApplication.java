@@ -43,7 +43,6 @@ public class MyApplication {
         return environmentPropertyConfigurer;
     }
 
-
     final static Logger logger = LoggerFactory.getLogger(MyApplication.class);
 
     public static void main(String[] args) throws Exception {
