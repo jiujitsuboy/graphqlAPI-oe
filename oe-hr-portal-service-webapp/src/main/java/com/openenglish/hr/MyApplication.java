@@ -5,7 +5,6 @@ import com.openenglish.substrate.environment.EnvironmentPropertyConfigurer;
 import com.openenglish.substrate.logging.LogbackGraylogConfig;
 
 import javax.servlet.Filter;
-
 import net.bull.javamelody.MonitoringFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
