@@ -3,45 +3,50 @@ package com.openenglish.hr.graphql.query;
 import com.jayway.jsonpath.TypeRef;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 
+import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.PersonDetail;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
-import com.openenglish.hr.persistence.repository.PersonRepository;
 import com.openenglish.hr.service.PersonService;
 import com.openenglish.hr.service.mapper.Mapper;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
+import com.openenglish.hr.service.mapper.MappingConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest()
+@Import(MappingConfig.class)
+@SpringBootTest(classes = {DgsAutoConfiguration.class, PersonResolver.class})
 public class PersonResolverTest {
 
     @Autowired
     private DgsQueryExecutor dgsQueryExecutor;
+    @Autowired
+    private ApplicationContext applicationContext;
 
-    @Injectable
+    @Autowired
     private Mapper mapper;
+
     @MockBean
-    private PersonRepository personRepository;
-    @Mocked
     private PersonService personService;
 
     @Test
     public void getPersonsByPurchaserId() {
+        Arrays.stream(applicationContext.getBeanDefinitionNames()).forEach(System.out::println);
         List<Person> persons = List.of(Person.builder()
                         .id(1L)
                         .firstName("joseph")
@@ -89,15 +94,12 @@ public class PersonResolverTest {
                                 .build())
                         .build());
 
-        new Expectations() {{
-            personService.getPersonsBySalesforcePurchaserId(anyString);
-            returns(persons);
-        }};
+        Mockito.when(personService.getPersonsBySalesforcePurchaserId(anyString())).thenReturn(persons);
 
-        String query = "{\n" +
-                "  getPersonsBySalesforcePurchaserId(salesforcePurchaserId:\"12345\"){\n" +
-                "    email\n" +
-                "    }\n" +
+        String query = "{ " +
+                "  getPersonsBySalesforcePurchaserId(salesforcePurchaserId:\"12345\"){ " +
+                "    email" +
+                "    }" +
                 "}";
         String projection = "data.getPersonsBySalesforcePurchaserId[*].email";
 
@@ -133,16 +135,13 @@ public class PersonResolverTest {
             }
         });
 
-        new Expectations() {{
-            personService.getAllPersonsByLevel(anyString);
-            returns(personsPerLevelExpected);
-        }};
+        Mockito.when(personService.getAllPersonsByLevel(anyString())).thenReturn(personsPerLevelExpected);
 
-        String query = "{\n" +
-                "  getAllPersonsByLevel{\n" +
-                "    levelName\n" +
-                "    totalNumber\n" +
-                "  }\n" +
+        String query = "{ " +
+                "  getAllPersonsByLevel{ " +
+                "    levelName " +
+                "    totalNumber " +
+                "  }" +
                 "}";
         String projection = "data.getAllPersonsByLevel[*]";
 
@@ -160,6 +159,5 @@ public class PersonResolverTest {
             assertEquals(expected.getLevelName(), received.getLevelName());
             assertEquals(expected.getTotalNumber(), received.getTotalNumber());
         }
-
     }
 }
