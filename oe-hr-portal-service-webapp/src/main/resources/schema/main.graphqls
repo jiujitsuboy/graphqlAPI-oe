@@ -1,3 +1,4 @@
 type Query{
-  getStudentsBySalesforcePurchaserId(salesforcePurchaserId: String): [Student]!
+  getPersonsBySalesforcePurchaserId(salesforcePurchaserId: String): [Person]!
+  getAllPersonsByLevel(salesforcePurchaserId: String): [PersonsPerLevel]!
 }

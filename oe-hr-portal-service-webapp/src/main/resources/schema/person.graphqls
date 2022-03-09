@@ -1,0 +1,26 @@
+  type Person {
+    firstName: String
+    lastName: String
+    email: String
+    contactId: String
+    salesforcePurchaserId: String
+    workingLevel: Level
+ }
+
+ type Level {
+    id: ID
+    name: String
+    description: String
+    active: Boolean
+    numLiveRequired: Int
+    numImmersionRequired: Int
+    sequence: Int
+    lowScoreBoundary: Float
+    highScoreBoundary: Float
+    levelNum: String
+ }
+
+ type PersonsPerLevel {
+    levelName: String
+    totalNumber: Int
+ }

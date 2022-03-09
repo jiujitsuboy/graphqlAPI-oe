@@ -12,4 +12,5 @@ public class PersonDto {
     private String email;
     private String contactId;
     private String salesforcePurchaserId;
+    private LevelDto workingLevel;
 }

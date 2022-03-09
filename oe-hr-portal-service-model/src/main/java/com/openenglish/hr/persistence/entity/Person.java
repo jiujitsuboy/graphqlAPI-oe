@@ -1,10 +1,12 @@
 package com.openenglish.hr.persistence.entity;
 
+
 import lombok.*;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 @Entity
 @Table(name = "person")
@@ -32,4 +34,8 @@ public class Person implements Serializable {
 
     @OneToOne(mappedBy = "person")
     private PersonDetail details;
+
+    @ManyToOne
+    @JoinColumn(name = "workinglevel_id", referencedColumnName = "id")
+    private Level workingLevel;
 }
