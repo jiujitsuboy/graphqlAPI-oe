@@ -24,3 +24,14 @@
     levelName: String
     totalNumber: Int
  }
+
+ type ActivitiesOverview {
+     privateClasses: Int
+     groupClasses: Int
+     levelPassed: Int
+     learnedLessons: Int
+     completedUnits:Int
+     practiceHours: Int
+     totalHoursUsage: Int
+     period: String
+ }

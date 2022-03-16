@@ -4,10 +4,12 @@ import com.jayway.jsonpath.TypeRef;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
+import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.PersonDetail;
+import com.openenglish.hr.persistence.entity.aggregation.ActivitiesOverview;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.service.PersonService;
 import com.openenglish.hr.service.mapper.Mapper;
@@ -45,7 +47,7 @@ public class PersonResolverTest {
     private PersonService personService;
 
     @Test
-    public void getPersonsByPurchaserId() {
+    public void getPersons() {
         Arrays.stream(applicationContext.getBeanDefinitionNames()).forEach(System.out::println);
         List<Person> persons = List.of(Person.builder()
                         .id(1L)
@@ -94,14 +96,14 @@ public class PersonResolverTest {
                                 .build())
                         .build());
 
-        Mockito.when(personService.getPersonsBySalesforcePurchaserId(anyString())).thenReturn(persons);
+        Mockito.when(personService.getPersons(anyString())).thenReturn(persons);
 
         String query = "{ " +
-                "  getPersonsBySalesforcePurchaserId(salesforcePurchaserId:\"12345\"){ " +
+                "  getPersons(salesforcePurchaserId:\"12345\"){ " +
                 "    email" +
                 "    }" +
                 "}";
-        String projection = "data.getPersonsBySalesforcePurchaserId[*].email";
+        String projection = "data.getPersons[*].email";
 
         List<String> personsEmail = dgsQueryExecutor.executeAndExtractJsonPath(query, projection);
 
@@ -158,6 +160,132 @@ public class PersonResolverTest {
 
             assertEquals(expected.getLevelName(), received.getLevelName());
             assertEquals(expected.getTotalNumber(), received.getTotalNumber());
+        }
+    }
+
+    @Test
+    public void getAllActivitiesOverview() {
+
+        List<ActivitiesOverview> activitiesOverviewExpected =
+                List.of(new ActivitiesOverview() {
+
+                            @Override
+                            public long getGroupClasses() {
+                                return 10;
+                            }
+
+                            @Override
+                            public long getPrivateClasses() {
+                                return 5;
+                            }
+
+                            @Override
+                            public long getLearnedLessons() {
+                                return 3;
+                            }
+
+                            @Override
+                            public long getCompletedUnits() {
+                                return 1;
+                            }
+
+                            @Override
+                            public long getPracticeHours() {
+                                return 20;
+                            }
+
+                            @Override
+                            public long getLevelPassed() {
+                                return 1;
+                            }
+
+                            @Override
+                            public long getTotalHoursUsage() {
+                                return 40;
+                            }
+
+                            @Override
+                            public String getPeriod() {
+                                return "2022-03";
+                            }
+                        },
+                        new ActivitiesOverview() {
+
+                            @Override
+                            public long getGroupClasses() {
+                                return 20;
+                            }
+
+                            @Override
+                            public long getPrivateClasses() {
+                                return 15;
+                            }
+
+                            @Override
+                            public long getLearnedLessons() {
+                                return 2;
+                            }
+
+                            @Override
+                            public long getCompletedUnits() {
+                                return 1;
+                            }
+
+                            @Override
+                            public long getPracticeHours() {
+                                return 40;
+                            }
+
+                            @Override
+                            public long getLevelPassed() {
+                                return 6;
+                            }
+
+                            @Override
+                            public long getTotalHoursUsage() {
+                                return 80;
+                            }
+
+                            @Override
+                            public String getPeriod() {
+                                return "2022-02";
+                            }
+                        });
+
+        Mockito.when(personService.getAllActivitiesOverview(anyString())).thenReturn(activitiesOverviewExpected);
+
+        String query = "{ " +
+                "  getAllActivitiesOverview(salesforcePurchaserId:\"12345\"){ " +
+                "    groupClasses " +
+                "    privateClasses " +
+                "    levelPassed " +
+                "    learnedLessons " +
+                "    completedUnits " +
+                "    practiceHours " +
+                "    totalHoursUsage " +
+                "    period" +
+                "    }" +
+                "}";
+        String projection = "data.getAllActivitiesOverview[*]";
+
+        List<ActivitiesOverviewDto> activitiesOverviewDtos = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
+        });
+
+        assertNotNull(activitiesOverviewDtos);
+
+        for (int index = 0; index < activitiesOverviewDtos.size(); index++) {
+
+            ActivitiesOverview expected = activitiesOverviewExpected.get(index);
+            ActivitiesOverviewDto received = activitiesOverviewDtos.get(index);
+
+            assertEquals(expected.getGroupClasses(), received.getGroupClasses());
+            assertEquals(expected.getPrivateClasses(), received.getPrivateClasses());
+            assertEquals(expected.getLearnedLessons(), received.getLearnedLessons());
+            assertEquals(expected.getCompletedUnits(), received.getCompletedUnits());
+            assertEquals(expected.getPracticeHours(), received.getPracticeHours());
+            assertEquals(expected.getLevelPassed(), received.getLevelPassed());
+            assertEquals(expected.getTotalHoursUsage(), received.getTotalHoursUsage());
+            assertEquals(expected.getPeriod(), received.getPeriod());
         }
     }
 }
