@@ -4,7 +4,7 @@ import com.jayway.jsonpath.TypeRef;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
-import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
+import com.openenglish.hr.common.dto.ActivitiesOverviewWithIncrementsDto;
 import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
@@ -176,27 +176,27 @@ public class PersonResolverTest {
 
                             @Override
                             public long getPrivateClasses() {
-                                return 5;
+                                return -50;
                             }
 
                             @Override
-                            public long getLearnedLessons() {
-                                return 3;
+                            public long getCompletedLessons() {
+                                return 30;
                             }
 
                             @Override
                             public long getCompletedUnits() {
-                                return 1;
+                                return -25;
                             }
 
                             @Override
                             public long getPracticeHours() {
-                                return 20;
+                                return -20;
                             }
 
                             @Override
                             public long getLevelPassed() {
-                                return 1;
+                                return 40;
                             }
 
                             @Override
@@ -206,7 +206,7 @@ public class PersonResolverTest {
 
                             @Override
                             public String getPeriod() {
-                                return "2022-03";
+                                return "2022-02";
                             }
                         },
                         new ActivitiesOverview() {
@@ -222,7 +222,7 @@ public class PersonResolverTest {
                             }
 
                             @Override
-                            public long getLearnedLessons() {
+                            public long getCompletedLessons() {
                                 return 2;
                             }
 
@@ -248,44 +248,53 @@ public class PersonResolverTest {
 
                             @Override
                             public String getPeriod() {
-                                return "2022-02";
+                                return "2022-03";
                             }
                         });
 
-        Mockito.when(personService.getAllActivitiesOverview(anyString())).thenReturn(activitiesOverviewExpected);
+        Mockito.when(personService.getCurrentMonthActivitiesOverview(anyString())).thenReturn(activitiesOverviewExpected);
 
         String query = "{ " +
                 "  getAllActivitiesOverview(salesforcePurchaserId:\"12345\"){ " +
-                "    groupClasses " +
-                "    privateClasses " +
-                "    levelPassed " +
-                "    learnedLessons " +
-                "    completedUnits " +
-                "    practiceHours " +
-                "    totalHoursUsage " +
+                "     groupClasses" +
+                "    groupClassesIncrement" +
+                "    privateClasses" +
+                "    privateClassesIncrement" +
+                "    levelPassed" +
+                "    levelPassedIncrement" +
+                "    completedLessons" +
+                "    completedLessonsIncrement" +
+                "    completedUnits" +
+                "    completedUnitsIncrement" +
+                "    practiceHours" +
+                "    practiceHoursIncrement" +
+                "    totalHoursUsage" +
+                "    totalHoursUsageIncrement" +
                 "    period" +
                 "    }" +
                 "}";
-        String projection = "data.getAllActivitiesOverview[*]";
+        String projection = "data.getAllActivitiesOverview";
 
-        List<ActivitiesOverviewDto> activitiesOverviewDtos = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
-        });
+        ActivitiesOverviewWithIncrementsDto activitiesOverviewDtos = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, ActivitiesOverviewWithIncrementsDto.class);
 
         assertNotNull(activitiesOverviewDtos);
 
-        for (int index = 0; index < activitiesOverviewDtos.size(); index++) {
 
-            ActivitiesOverview expected = activitiesOverviewExpected.get(index);
-            ActivitiesOverviewDto received = activitiesOverviewDtos.get(index);
+        assertEquals(activitiesOverviewExpected.get(1).getGroupClasses(), activitiesOverviewDtos.getGroupClasses());
+        assertEquals(activitiesOverviewExpected.get(0).getGroupClasses(), activitiesOverviewDtos.getGroupClassesIncrement(),0);
+        assertEquals(activitiesOverviewExpected.get(1).getPrivateClasses(), activitiesOverviewDtos.getPrivateClasses());
+        assertEquals(activitiesOverviewExpected.get(0).getPrivateClasses(), activitiesOverviewDtos.getPrivateClassesIncrement(),0);
+        assertEquals(activitiesOverviewExpected.get(1).getCompletedLessons(), activitiesOverviewDtos.getCompletedLessons());
+        assertEquals(activitiesOverviewExpected.get(0).getCompletedLessons(), activitiesOverviewDtos.getCompletedLessonsIncrement(),0);
+        assertEquals(activitiesOverviewExpected.get(1).getCompletedUnits(), activitiesOverviewDtos.getCompletedUnits());
+        assertEquals(activitiesOverviewExpected.get(0).getCompletedUnits(), activitiesOverviewDtos.getCompletedUnitsIncrement(),0);
+        assertEquals(activitiesOverviewExpected.get(1).getPracticeHours(), activitiesOverviewDtos.getPracticeHours());
+        assertEquals(activitiesOverviewExpected.get(0).getPracticeHours(), activitiesOverviewDtos.getPracticeHoursIncrement(),0);
+        assertEquals(activitiesOverviewExpected.get(1).getLevelPassed(), activitiesOverviewDtos.getLevelPassed());
+        assertEquals(activitiesOverviewExpected.get(0).getLevelPassed(), activitiesOverviewDtos.getLevelPassedIncrement(),0);
+        assertEquals(activitiesOverviewExpected.get(1).getTotalHoursUsage(), activitiesOverviewDtos.getTotalHoursUsage());
+        assertEquals(activitiesOverviewExpected.get(0).getTotalHoursUsage(), activitiesOverviewDtos.getTotalHoursUsageIncrement(),0);
+        assertEquals(activitiesOverviewExpected.get(1).getPeriod(), activitiesOverviewDtos.getPeriod());
 
-            assertEquals(expected.getGroupClasses(), received.getGroupClasses());
-            assertEquals(expected.getPrivateClasses(), received.getPrivateClasses());
-            assertEquals(expected.getLearnedLessons(), received.getLearnedLessons());
-            assertEquals(expected.getCompletedUnits(), received.getCompletedUnits());
-            assertEquals(expected.getPracticeHours(), received.getPracticeHours());
-            assertEquals(expected.getLevelPassed(), received.getLevelPassed());
-            assertEquals(expected.getTotalHoursUsage(), received.getTotalHoursUsage());
-            assertEquals(expected.getPeriod(), received.getPeriod());
-        }
     }
 }

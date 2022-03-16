@@ -9,6 +9,8 @@ import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -55,12 +57,11 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
         assertNotNull(personsPerLevel);
 
         personsPerLevel.stream()
-                .filter(temp -> ((PersonsPerLevel)temp).getLevelName().equals(levelName))
+                .filter(temp -> temp.getLevelName().equals(levelName))
                 .findFirst()
                 .ifPresentOrElse(level->{
-                    PersonsPerLevel personLevel =  (PersonsPerLevel)level;
-                    assertThat(personLevel.getLevelName(),is(levelName));
-                    assertThat(personLevel.getTotalNumber(),is(totalNumber));
+                    assertThat(level.getLevelName(),is(levelName));
+                    assertThat(level.getTotalNumber(),is(totalNumber));
                 },Assert::fail);
     }
 
@@ -71,25 +72,25 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
         long groupClassesNum = 1;
         long privateClassesNum = 0;
         long levelPassedNum = 0;
-        long learnedLessonsNum = 1;
+        long completedLessonsNum = 1;
         long completedUnitsNum = 0;
-        long practiceHoursNum = 20;
-        long totalHoursUsageNum = 0;
+        long practiceHoursNum = 0;
+        long totalHoursUsageNum = 50;
 
 
-        String previousMonthDate = "2022-02";
-        String currentMonthDate = "2022-03";
+        LocalDate previousMonthDate = LocalDate.parse("2022-02-01");
+        LocalDate currentMonthDate = LocalDate.parse("2022-03-31");
 
         List<ActivitiesOverview> activitiesOverviews = personRepository.getActivitiesOverview(salesforcePurchaserId, previousMonthDate, currentMonthDate);
 
         activitiesOverviews.stream()
-                .filter(activitiesOverview -> activitiesOverview.getPeriod().equals(currentMonthDate))
+                .filter(activitiesOverview -> activitiesOverview.getPeriod().equals(String.format("%d-%02d",currentMonthDate.getYear(),currentMonthDate.getMonthValue())))
                 .findFirst()
                 .ifPresentOrElse(activity -> {
                     assertThat(activity.getGroupClasses(), is(groupClassesNum));
                     assertThat(activity.getPrivateClasses(), is(privateClassesNum));
                     assertThat(activity.getLevelPassed(), is(levelPassedNum));
-                    assertThat(activity.getLearnedLessons(), is(learnedLessonsNum));
+                    assertThat(activity.getCompletedLessons(), is(completedLessonsNum));
                     assertThat(activity.getCompletedUnits(), is(completedUnitsNum));
                     assertThat(activity.getPracticeHours(), is(practiceHoursNum));
                     assertThat(activity.getTotalHoursUsage(), is(totalHoursUsageNum));

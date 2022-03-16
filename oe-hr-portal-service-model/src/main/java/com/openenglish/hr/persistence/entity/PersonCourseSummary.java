@@ -2,11 +2,10 @@ package com.openenglish.hr.persistence.entity;
 
 import lombok.Data;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Type;
-import org.joda.time.LocalDateTime;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Immutable
@@ -28,6 +27,5 @@ public class PersonCourseSummary implements Serializable {
   private Person person;
 
   @Column(name = "lastdatecompleted", insertable = false, updatable = false)
-  @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentLocalDateTime")
   private LocalDateTime lastDateCompleted;
 }

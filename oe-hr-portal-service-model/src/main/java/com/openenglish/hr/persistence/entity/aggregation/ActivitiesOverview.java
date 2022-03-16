@@ -4,7 +4,7 @@ public interface ActivitiesOverview {
 
     long getGroupClasses();
     long getPrivateClasses();
-    long getLearnedLessons();
+    long getCompletedLessons();
     long getCompletedUnits();
     long getPracticeHours();
     long getLevelPassed();
