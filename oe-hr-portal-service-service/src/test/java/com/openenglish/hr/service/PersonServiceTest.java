@@ -1,45 +1,36 @@
-package com.openenglish.hr.graphql.query;
+package com.openenglish.hr.service;
 
-import com.jayway.jsonpath.TypeRef;
-import com.netflix.graphql.dgs.DgsQueryExecutor;
-
-import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
-import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.PersonDetail;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
-import com.openenglish.hr.service.PersonService;
-import com.openenglish.hr.service.mapper.MappingConfig;
+import com.openenglish.hr.persistence.repository.PersonRepository;
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Tested;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.rules.ExpectedException;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyString;
 
-@RunWith(SpringRunner.class)
-@Import(MappingConfig.class)
-@SpringBootTest(classes = {DgsAutoConfiguration.class, PersonResolver.class})
-public class PersonResolverTest {
+public class PersonServiceTest {
 
-    @Autowired
-    private DgsQueryExecutor dgsQueryExecutor;
-
-    @MockBean
+    @Injectable
+    private PersonRepository personRepository;
+    @Tested
     private PersonService personService;
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void getPersons() {
-        List<Person> persons = List.of(Person.builder()
+    public void getPersons(){
+        String salesforcePurchaserId = "12345";
+
+        List<Person> personsExpected = List.of(Person.builder()
                         .id(1L)
                         .firstName("joseph")
                         .lastName("murray")
@@ -86,24 +77,28 @@ public class PersonResolverTest {
                                 .build())
                         .build());
 
-        Mockito.when(personService.getPersons(anyString())).thenReturn(persons);
+        new Expectations() {{
+            personRepository.findPersonByDetailsSalesforcePurchaserId(anyString);
+            returns(personsExpected);
+        }};
 
-        String query = "{ " +
-                "  getPersons(salesforcePurchaserId:\"12345\"){ " +
-                "    email" +
-                "    }" +
-                "}";
-        String projection = "data.getPersons[*].email";
+        List<Person> persons =  personService.getPersons(salesforcePurchaserId);
 
-        List<String> personsEmail = dgsQueryExecutor.executeAndExtractJsonPath(query, projection);
-
-        assertNotNull(personsEmail);
-        persons.forEach(person -> assertTrue(personsEmail.contains(person.getEmail())));
-
+        assertNotNull(persons);
     }
 
     @Test
-    public void getAllPersonsByLevel() {
+    public void getPersonsEmptyPurchaserId(){
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
+        String salesforcePurchaserId = "";
+        List<Person> persons =  personService.getPersons(salesforcePurchaserId);
+    }
+
+    @Test
+    public void getAllPersonsByLevel(){
+
+        String salesforcePurchaserId = "12345";
 
         List<PersonsPerLevel> personsPerLevelExpected = List.of(new PersonsPerLevel() {
             @Override
@@ -127,29 +122,22 @@ public class PersonResolverTest {
             }
         });
 
-        Mockito.when(personService.getAllPersonsByLevel(anyString())).thenReturn(personsPerLevelExpected);
+        new Expectations() {{
+            personRepository.getAllPersonsPerLevel(anyString);
+            returns(personsPerLevelExpected);
+        }};
 
-        String query = "{ " +
-                "  getAllPersonsByLevel{ " +
-                "    levelName " +
-                "    totalNumber " +
-                "  }" +
-                "}";
-        String projection = "data.getAllPersonsByLevel[*]";
+        List<PersonsPerLevel> personsPerLevels =  personService.getAllPersonsByLevel(salesforcePurchaserId);
 
+        assertNotNull(personsPerLevels);
 
-        List<PersonsPerLevelDto> personsPerLevel = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
-        });
+    }
 
-        assertNotNull(personsPerLevel);
-
-        for (int index = 0; index < personsPerLevel.size(); index++) {
-
-            PersonsPerLevel expected = personsPerLevelExpected.get(index);
-            PersonsPerLevelDto received = personsPerLevel.get(index);
-
-            assertEquals(expected.getLevelName(), received.getLevelName());
-            assertEquals(expected.getTotalNumber(), received.getTotalNumber());
-        }
+    @Test
+    public void getAllPersonsByLevelEmptyPurchaserId(){
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
+        String salesforcePurchaserId = "";
+        List<PersonsPerLevel> personsPerLevels =  personService.getAllPersonsByLevel(salesforcePurchaserId);
     }
 }

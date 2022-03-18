@@ -1,0 +1,17 @@
+  type ActivitiesOverviewWithIncrements {
+     privateClasses: Int
+     groupClasses: Int
+     levelPassed: Int
+     completedLessons: Int
+     completedUnits:Int
+     practiceHours: Int
+     totalHoursUsage: Int
+     period: String
+     groupClassesIncrement: Float
+     privateClassesIncrement: Float
+     completedLessonsIncrement: Float
+     completedUnitsIncrement: Float
+     practiceHoursIncrement: Float
+     levelPassedIncrement: Float
+     totalHoursUsageIncrement: Float
+ }
