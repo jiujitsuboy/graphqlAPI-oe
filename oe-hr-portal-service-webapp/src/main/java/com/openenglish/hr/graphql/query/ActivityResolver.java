@@ -3,9 +3,14 @@ package com.openenglish.hr.graphql.query;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsData;
 import com.openenglish.hr.common.dto.ActivitiesOverviewWithIncrementsDto;
+import com.openenglish.hr.common.dto.ActivityStatisticsDto;
+import com.openenglish.hr.persistence.entity.aggregation.ActivityStatistics;
 import com.openenglish.hr.service.ActivityService;
 import com.openenglish.hr.service.mapper.Mapper;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @DgsComponent
 @RequiredArgsConstructor
@@ -17,5 +22,14 @@ public class ActivityResolver {
     @DgsData(parentType = "Query", field = "getAllActivitiesOverview")
     public ActivitiesOverviewWithIncrementsDto getAllActivitiesOverview(String salesforcePurchaserId) {
         return activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId).orElse(null);
+    }
+
+    @DgsData(parentType = "Query", field = "getActivitiesStatistics")
+    public List<ActivityStatisticsDto> getActivitiesStatistics(String salesforcePurchaserId, int year, List<Long> activities) {
+        List<ActivityStatistics> activityStatistics = activityService.getActivitiesStatistics(salesforcePurchaserId, year, activities);
+
+        return activityStatistics.stream()
+                .map(activityStatistic -> mapper.map(activityStatistic, ActivityStatisticsDto.class))
+                .collect(Collectors.toList());
     }
 }

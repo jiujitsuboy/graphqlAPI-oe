@@ -2,6 +2,7 @@ package com.openenglish.hr.service;
 
 import com.openenglish.hr.common.dto.ActivitiesOverviewWithIncrementsDto;
 import com.openenglish.hr.persistence.entity.aggregation.ActivitiesOverview;
+import com.openenglish.hr.persistence.entity.aggregation.ActivityStatistics;
 import com.openenglish.hr.persistence.repository.ActivityRepository;
 import mockit.Expectations;
 import mockit.Injectable;
@@ -11,6 +12,8 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
@@ -135,5 +138,41 @@ public class ActivityServiceTest {
 
         assertFalse(activitiesOverviewWithIncrementsDto.isPresent());
 
+    }
+
+    @Test
+    public void getActivitiesStatistics(){
+        String salesforcePurchaserId = "12345";
+        int year = 2022;
+        List<Long> activities = List.of(1l);
+
+        List<ActivityStatistics> activityStatistics = null;
+
+        List<ActivityStatistics> activitiesOverviewsExpected = IntStream.rangeClosed(1,12).boxed().map(number->new ActivityStatistics(){
+            @Override
+            public String getMonth() {
+                return String.format("2022-%02d",number);
+            }
+
+            @Override
+            public double getHours() {
+                return 0;
+            }
+        }).collect(Collectors.toList());
+
+        new Expectations() {{
+            activityRepository.getStaticsPerMonth(anyString, anyInt, (List<Long>) any);
+            returns(activitiesOverviewsExpected);
+        }};
+
+       List<ActivityStatistics> activityStatisticsResult = activityService.getActivitiesStatistics(salesforcePurchaserId,year,activities);
+
+       assertEquals(activitiesOverviewsExpected.size(),activityStatisticsResult.size());
+
+       for(int index = 1; index< activityStatisticsResult.size(); index++){
+           ActivityStatistics currentActivityStatics =  activityStatisticsResult.get(index-1);
+           assertEquals(String.format("2022-%02d",index),currentActivityStatics.getMonth());
+           assertEquals(activitiesOverviewsExpected.get(index-1).getHours(),currentActivityStatics.getHours(),0);
+       }
     }
 }

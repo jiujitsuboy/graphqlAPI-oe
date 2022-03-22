@@ -15,3 +15,8 @@
      levelPassedIncrement: Float
      totalHoursUsageIncrement: Float
  }
+
+ type ActivitiesStatistics{
+    month: String
+    hours: Float
+ }

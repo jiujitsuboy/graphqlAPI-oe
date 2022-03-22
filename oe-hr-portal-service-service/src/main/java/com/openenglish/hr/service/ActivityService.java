@@ -3,6 +3,8 @@ package com.openenglish.hr.service;
 import com.google.common.base.Preconditions;
 import com.openenglish.hr.common.dto.ActivitiesOverviewWithIncrementsDto;
 import com.openenglish.hr.persistence.entity.aggregation.ActivitiesOverview;
+import com.openenglish.hr.persistence.entity.aggregation.ActivityStatistics;
+import com.openenglish.hr.persistence.entity.enums.CourseTypeEnum;
 import com.openenglish.hr.persistence.repository.ActivityRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +53,10 @@ public class ActivityService {
         }
 
         return activitiesOverviewWithIncrementsDto;
+    }
+
+    public List<ActivityStatistics> getActivitiesStatistics(String salesforcePurchaserId, int year, List<Long> courseTypesNames) {
+        return activityRepository.getStaticsPerMonth(salesforcePurchaserId, year, courseTypesNames);
     }
 
     private double calculatePercentagesIncrement(long currentValue, long previousValue) {
