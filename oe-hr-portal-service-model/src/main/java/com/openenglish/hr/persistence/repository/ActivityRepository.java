@@ -20,9 +20,9 @@ public interface ActivityRepository extends JpaRepository<Person, Long> {
             "       sum(case when c.coursetype_id = 6 then 1 else 0 end) as levelPassed, " +
             "       sum(case when (c.coursetype_id = 1 and c.coursesubtype_id in (1,2)) or c.coursetype_id in (4,5) then 25 " +
             "                when c.coursetype_id = 2 and c.coursesubtype_id = 4 then 30 " +
-            "                when c.coursetype_id in (3,8,10) then pcs.timeontask/3600" +
+            "                when c.coursetype_id in (3,8,10) then pcs.timeontask" +
             "                else 0" +
-            "           end) as totalHoursUsage," +
+            "           end)/3600 as totalHoursUsage," +
             "       to_char(pcs.createddate, 'YYYY-MM') as period " +
             "from person p " +
             "inner join person_detail pd on p.id = pd.person_id " +

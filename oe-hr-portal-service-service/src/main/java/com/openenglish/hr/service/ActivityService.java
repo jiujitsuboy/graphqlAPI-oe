@@ -24,7 +24,7 @@ public class ActivityService {
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
         LocalDate currentMonthDate = LocalDate.now();
-        LocalDate previousMonthDate = LocalDate.of(currentMonthDate.getYear(), currentMonthDate.getMonthValue(), 1).minusMonths(12);
+        LocalDate previousMonthDate = LocalDate.of(currentMonthDate.getYear(), currentMonthDate.getMonthValue(), 1).minusMonths(1);
 
         List<ActivitiesOverview> activitiesOverviews = activityRepository.getActivitiesOverview(salesforcePurchaserId, previousMonthDate, currentMonthDate);
 
@@ -53,6 +53,19 @@ public class ActivityService {
     }
 
     private double calculatePercentagesIncrement(long currentValue, long previousValue) {
-        return currentValue > 0 ? Math.round((((((double) currentValue) / previousValue) - 1) * 100) * 100.0) / 100.0 : 0;
+
+        double porcentageWithTwoDecimalPositions = 0.0;
+
+        if(previousValue > 0){
+            // rule of 3
+            double porcentageRatio = ((double) currentValue) / previousValue;
+            //Indicates if the difference is negative or positive against the last month
+            double porcentageDifference = (porcentageRatio - 1 ) * 100;
+            // Round the result value to two decimal positions.
+            porcentageWithTwoDecimalPositions = Math.round(porcentageDifference  * 100.0) /100.0;
+        }
+
+        return porcentageWithTwoDecimalPositions;
+//        return previousValue > 0 ? Math.round((((((double) currentValue) / previousValue) - 1) * 100) * 100.0) / 100.0 : 0;
     }
 }
