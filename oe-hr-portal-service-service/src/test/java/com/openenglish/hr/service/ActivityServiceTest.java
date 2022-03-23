@@ -1,17 +1,14 @@
 package com.openenglish.hr.service;
 
-import com.openenglish.hr.common.dto.ActivitiesOverviewWithIncrementsDto;
+import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.persistence.entity.aggregation.ActivitiesOverview;
 import com.openenglish.hr.persistence.repository.ActivityRepository;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
 import org.junit.Test;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 public class ActivityServiceTest {
@@ -26,47 +23,7 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "12345";
 
-        List<ActivitiesOverview> activitiesOverviews = List.of(new ActivitiesOverview(){
-            @Override
-            public long getGroupClasses() {
-                return 10;
-            }
-
-            @Override
-            public long getPrivateClasses() {
-                return 20;
-            }
-
-            @Override
-            public long getCompletedLessons() {
-                return 30;
-            }
-
-            @Override
-            public long getCompletedUnits() {
-                return 40;
-            }
-
-            @Override
-            public long getPracticeHours() {
-                return 50;
-            }
-
-            @Override
-            public long getLevelPassed() {
-                return 60;
-            }
-
-            @Override
-            public long getTotalHoursUsage() {
-                return 70;
-            }
-
-            @Override
-            public String getPeriod() {
-                return "2022-02";
-            }
-        }, new ActivitiesOverview(){
+        ActivitiesOverview activitiesOverviews = new ActivitiesOverview(){
             @Override
             public long getGroupClasses() {
                 return 20;
@@ -98,42 +55,84 @@ public class ActivityServiceTest {
             }
 
             @Override
-            public long getTotalHoursUsage() {
-                return 80;
+            public double getTotalHoursUsage() {
+                return 80.0333333;
             }
-
-            @Override
-            public String getPeriod() {
-                return "2022-03";
-            }
-        });
+        };
 
         new Expectations() {{
-            activityRepository.getActivitiesOverview(anyString, (LocalDate) any, (LocalDate) any);
+            activityRepository.getActivitiesOverview(anyString);
             returns(activitiesOverviews);
         }};
 
-        Optional<ActivitiesOverviewWithIncrementsDto> activitiesOverviewWithIncrementsDto = activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId);
+        ActivitiesOverviewDto activitiesOverviewDto = activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId);
 
-        assertTrue(activitiesOverviewWithIncrementsDto.isPresent());
-
+        assertThat(activitiesOverviews.getGroupClasses(), is(activitiesOverviewDto.getGroupClasses()));
+        assertThat(activitiesOverviews.getPrivateClasses(), is(activitiesOverviewDto.getPrivateClasses()));
+        assertThat(activitiesOverviews.getLevelPassed(), is(activitiesOverviewDto.getLevelPassed()));
+        assertThat(activitiesOverviews.getCompletedUnits(), is(activitiesOverviewDto.getCompletedUnits()));
+        assertThat(activitiesOverviews.getCompletedLessons(), is(activitiesOverviewDto.getCompletedLessons()));
+        assertThat(activitiesOverviews.getPracticeHours(), is(activitiesOverviewDto.getPracticeHours()));
+        assertThat(Math.round(activitiesOverviews.getTotalHoursUsage()* 100.0)/100.0, is(activitiesOverviewDto.getTotalHoursUsage()));
     }
 
     @Test
     public void getCurrentMonthActivitiesOverviewEmpty(){
 
         String salesforcePurchaserId = "12345";
+        final long ZERO = 0l;
 
-        List<ActivitiesOverview> activitiesOverviews = Collections.emptyList();
+        ActivitiesOverview activitiesOverviews = new ActivitiesOverview() {
+            @Override
+            public long getGroupClasses() {
+                return 0;
+            }
+
+            @Override
+            public long getPrivateClasses() {
+                return 0;
+            }
+
+            @Override
+            public long getCompletedLessons() {
+                return 0;
+            }
+
+            @Override
+            public long getCompletedUnits() {
+                return 0;
+            }
+
+            @Override
+            public long getPracticeHours() {
+                return 0;
+            }
+
+            @Override
+            public long getLevelPassed() {
+                return 0;
+            }
+
+            @Override
+            public double getTotalHoursUsage() {
+                return 0;
+            }
+        };
 
         new Expectations() {{
-            activityRepository.getActivitiesOverview(anyString, (LocalDate) any, (LocalDate) any);
+            activityRepository.getActivitiesOverview(anyString);
             returns(activitiesOverviews);
         }};
 
-        Optional<ActivitiesOverviewWithIncrementsDto> activitiesOverviewWithIncrementsDto = activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId);
+        ActivitiesOverviewDto activitiesOverviewDto = activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId);
 
-        assertFalse(activitiesOverviewWithIncrementsDto.isPresent());
+        assertEquals(activitiesOverviewDto.getGroupClasses(),ZERO);
+        assertEquals(activitiesOverviewDto.getPrivateClasses(),ZERO);
+        assertEquals(activitiesOverviewDto.getLevelPassed(),ZERO);
+        assertEquals(activitiesOverviewDto.getCompletedUnits(),ZERO);
+        assertEquals(activitiesOverviewDto.getCompletedLessons(),ZERO);
+        assertEquals(activitiesOverviewDto.getPracticeHours(),ZERO);
+        assertEquals(activitiesOverviewDto.getTotalHoursUsage(),(double)ZERO,0);
 
     }
 }

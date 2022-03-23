@@ -2,7 +2,7 @@ package com.openenglish.hr.graphql.query;
 
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsData;
-import com.openenglish.hr.common.dto.ActivitiesOverviewWithIncrementsDto;
+import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.service.ActivityService;
 import com.openenglish.hr.service.mapper.Mapper;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ public class ActivityResolver {
     private final Mapper mapper;
 
     @DgsData(parentType = "Query", field = "getAllActivitiesOverview")
-    public ActivitiesOverviewWithIncrementsDto getAllActivitiesOverview(String salesforcePurchaserId) {
-        return activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId).orElse(null);
+    public ActivitiesOverviewDto getAllActivitiesOverview(String salesforcePurchaserId) {
+        return activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId);
     }
 }

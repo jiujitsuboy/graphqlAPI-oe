@@ -1,16 +1,12 @@
 package com.openenglish.hr.service;
 
 import com.google.common.base.Preconditions;
-import com.openenglish.hr.common.dto.ActivitiesOverviewWithIncrementsDto;
+import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.persistence.entity.aggregation.ActivitiesOverview;
 import com.openenglish.hr.persistence.repository.ActivityRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,51 +14,34 @@ public class ActivityService {
 
     private final ActivityRepository activityRepository;
 
-    public Optional<ActivitiesOverviewWithIncrementsDto> getCurrentMonthActivitiesOverview(String salesforcePurchaserId) {
-
-        Optional<ActivitiesOverviewWithIncrementsDto> activitiesOverviewWithIncrementsDto = Optional.empty();
+    public ActivitiesOverviewDto getCurrentMonthActivitiesOverview(String salesforcePurchaserId) {
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        LocalDate currentMonthDate = LocalDate.now();
-        LocalDate previousMonthDate = LocalDate.of(currentMonthDate.getYear(), currentMonthDate.getMonthValue(), 1).minusMonths(1);
 
-        List<ActivitiesOverview> activitiesOverviews = activityRepository.getActivitiesOverview(salesforcePurchaserId, previousMonthDate, currentMonthDate);
+        ActivitiesOverview activitiesOverview = activityRepository.getActivitiesOverview(salesforcePurchaserId);
 
-        if (activitiesOverviews.size() == 2) {
-
-            activitiesOverviewWithIncrementsDto = Optional.of(ActivitiesOverviewWithIncrementsDto.builder()
-                    .groupClasses(activitiesOverviews.get(1).getGroupClasses())
-                    .privateClasses(activitiesOverviews.get(1).getPrivateClasses())
-                    .completedLessons(activitiesOverviews.get(1).getCompletedLessons())
-                    .completedUnits(activitiesOverviews.get(1).getCompletedUnits())
-                    .practiceHours(activitiesOverviews.get(1).getPracticeHours())
-                    .levelPassed(activitiesOverviews.get(1).getLevelPassed())
-                    .totalHoursUsage(activitiesOverviews.get(1).getTotalHoursUsage())
-                    .groupClassesIncrement(calculatePercentagesIncrement(activitiesOverviews.get(1).getGroupClasses(), activitiesOverviews.get(0).getGroupClasses()))
-                    .privateClassesIncrement(calculatePercentagesIncrement(activitiesOverviews.get(1).getPrivateClasses(), activitiesOverviews.get(0).getPrivateClasses()))
-                    .completedLessonsIncrement(calculatePercentagesIncrement(activitiesOverviews.get(1).getCompletedLessons(), activitiesOverviews.get(0).getCompletedLessons()))
-                    .completedUnitsIncrement(calculatePercentagesIncrement(activitiesOverviews.get(1).getCompletedUnits(), activitiesOverviews.get(0).getCompletedUnits()))
-                    .practiceHoursIncrement(calculatePercentagesIncrement(activitiesOverviews.get(1).getPracticeHours(), activitiesOverviews.get(0).getPracticeHours()))
-                    .levelPassedIncrement(calculatePercentagesIncrement(activitiesOverviews.get(1).getLevelPassed(), activitiesOverviews.get(0).getLevelPassed()))
-                    .totalHoursUsageIncrement(calculatePercentagesIncrement(activitiesOverviews.get(1).getTotalHoursUsage(), activitiesOverviews.get(0).getTotalHoursUsage()))
-                    .period(activitiesOverviews.get(1).getPeriod())
-                    .build());
-        }
-
-        return activitiesOverviewWithIncrementsDto;
+        return ActivitiesOverviewDto.builder()
+                .groupClasses(activitiesOverview.getGroupClasses())
+                .privateClasses(activitiesOverview.getPrivateClasses())
+                .completedLessons(activitiesOverview.getCompletedLessons())
+                .completedUnits(activitiesOverview.getCompletedUnits())
+                .practiceHours(activitiesOverview.getPracticeHours())
+                .levelPassed(activitiesOverview.getLevelPassed())
+                .totalHoursUsage(Math.round(activitiesOverview.getTotalHoursUsage() * 100.0) / 100.0)
+                .build();
     }
 
-    private double calculatePercentagesIncrement(long currentValue, long previousValue) {
+    private double calculatePercentagesIncrement(double currentValue, double previousValue) {
 
         double porcentageWithTwoDecimalPositions = 0.0;
 
-        if(previousValue > 0){
+        if (previousValue > 0) {
             // rule of 3
             double porcentageRatio = ((double) currentValue) / previousValue;
             //Indicates if the difference is negative or positive against the last month
-            double porcentageDifference = (porcentageRatio - 1 ) * 100;
+            double porcentageDifference = (porcentageRatio - 1) * 100;
             // Round the result value to two decimal positions.
-            porcentageWithTwoDecimalPositions = Math.round(porcentageDifference  * 100.0) /100.0;
+            porcentageWithTwoDecimalPositions = Math.round(porcentageDifference * 100.0) / 100.0;
         }
 
         return porcentageWithTwoDecimalPositions;
