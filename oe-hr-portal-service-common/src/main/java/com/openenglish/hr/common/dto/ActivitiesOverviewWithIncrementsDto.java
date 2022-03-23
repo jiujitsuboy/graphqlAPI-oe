@@ -16,7 +16,7 @@ public class ActivitiesOverviewWithIncrementsDto {
     private long completedUnits;
     private long practiceHours;
     private long levelPassed;
-    private long totalHoursUsage;
+    private double totalHoursUsage;
     private double groupClassesIncrement;
     private double privateClassesIncrement;
     private double completedLessonsIncrement;

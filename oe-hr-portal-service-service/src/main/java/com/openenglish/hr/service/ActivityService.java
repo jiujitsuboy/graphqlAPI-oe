@@ -52,13 +52,13 @@ public class ActivityService {
         return activitiesOverviewWithIncrementsDto;
     }
 
-    private double calculatePercentagesIncrement(long currentValue, long previousValue) {
+    private double calculatePercentagesIncrement(double currentValue, double previousValue) {
 
         double porcentageWithTwoDecimalPositions = 0.0;
 
         if(previousValue > 0){
             // rule of 3
-            double porcentageRatio = ((double) currentValue) / previousValue;
+            double porcentageRatio = currentValue / previousValue;
             //Indicates if the difference is negative or positive against the last month
             double porcentageDifference = (porcentageRatio - 1 ) * 100;
             // Round the result value to two decimal positions.
@@ -66,6 +66,5 @@ public class ActivityService {
         }
 
         return porcentageWithTwoDecimalPositions;
-//        return previousValue > 0 ? Math.round((((((double) currentValue) / previousValue) - 1) * 100) * 100.0) / 100.0 : 0;
     }
 }

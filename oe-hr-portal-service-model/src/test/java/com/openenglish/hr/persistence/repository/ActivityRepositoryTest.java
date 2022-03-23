@@ -31,7 +31,7 @@ public class ActivityRepositoryTest extends AbstractPersistenceTest {
         long completedLessonsNum = 1;
         long completedUnitsNum = 0;
         long practiceHoursNum = 0;
-        long totalHoursUsageNum = 50;
+        double totalHoursUsageNum = 0.019444444444444445;
 
 
         LocalDate previousMonthDate = LocalDate.parse("2022-02-01");

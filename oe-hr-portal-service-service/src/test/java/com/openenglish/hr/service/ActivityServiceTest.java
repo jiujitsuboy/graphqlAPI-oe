@@ -58,7 +58,7 @@ public class ActivityServiceTest {
             }
 
             @Override
-            public long getTotalHoursUsage() {
+            public double getTotalHoursUsage() {
                 return 70;
             }
 
@@ -98,7 +98,7 @@ public class ActivityServiceTest {
             }
 
             @Override
-            public long getTotalHoursUsage() {
+            public double getTotalHoursUsage() {
                 return 80;
             }
 
