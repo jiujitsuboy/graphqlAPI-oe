@@ -92,7 +92,7 @@ public class ActivityResolverTest {
         assertEquals(activitiesOverviewWithIncrementsExpected.get().getPracticeHoursIncrement(), activitiesOverviewDtos.getPracticeHoursIncrement(),0);
         assertEquals(activitiesOverviewWithIncrementsExpected.get().getLevelPassed(), activitiesOverviewDtos.getLevelPassed());
         assertEquals(activitiesOverviewWithIncrementsExpected.get().getLevelPassedIncrement(), activitiesOverviewDtos.getLevelPassedIncrement(),0);
-        assertEquals(activitiesOverviewWithIncrementsExpected.get().getTotalHoursUsage(), activitiesOverviewDtos.getTotalHoursUsage());
+        assertEquals(activitiesOverviewWithIncrementsExpected.get().getTotalHoursUsage(), activitiesOverviewDtos.getTotalHoursUsage(),0);
         assertEquals(activitiesOverviewWithIncrementsExpected.get().getTotalHoursUsageIncrement(), activitiesOverviewDtos.getTotalHoursUsageIncrement(),0);
         assertEquals(activitiesOverviewWithIncrementsExpected.get().getPeriod(), activitiesOverviewDtos.getPeriod());
 
