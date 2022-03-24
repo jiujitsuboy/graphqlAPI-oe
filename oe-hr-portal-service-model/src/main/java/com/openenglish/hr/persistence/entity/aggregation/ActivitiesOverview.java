@@ -8,5 +8,5 @@ public interface ActivitiesOverview {
     long getCompletedUnits();
     long getPracticeHours();
     long getLevelPassed();
-    double getTotalHoursUsage();
+    double getTotalMinutesUsage();
 }

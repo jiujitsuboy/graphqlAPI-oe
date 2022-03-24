@@ -4,9 +4,14 @@ import com.google.common.base.Preconditions;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.persistence.entity.aggregation.ActivitiesOverview;
 import com.openenglish.hr.persistence.repository.ActivityRepository;
+import com.openenglish.hr.service.util.NumberUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,33 +23,34 @@ public class ActivityService {
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
 
-        ActivitiesOverview activitiesOverview = activityRepository.getActivitiesOverview(salesforcePurchaserId);
+        long groupClassesNumObtained = 0;
+        long privateClassesNumObtained = 0;
+        long levelPassedNumObtained = 0;
+        long completedLessonsNumObtained = 0;
+        long completedUnitsNumObtained = 0;
+        long practiceHoursNumObtained = 0;
+        double totalMinutesUsageNumObtained = 0.0;
+
+        List<ActivitiesOverview> activitiesOverviews = activityRepository.getActivitiesOverview(salesforcePurchaserId);
+
+        for (ActivitiesOverview activitiesOverview : activitiesOverviews) {
+            groupClassesNumObtained += activitiesOverview.getGroupClasses();
+            privateClassesNumObtained += activitiesOverview.getPrivateClasses();
+            levelPassedNumObtained += activitiesOverview.getLevelPassed();
+            completedLessonsNumObtained += activitiesOverview.getCompletedLessons();
+            completedUnitsNumObtained += activitiesOverview.getCompletedUnits();
+            practiceHoursNumObtained += activitiesOverview.getPracticeHours();
+            totalMinutesUsageNumObtained += activitiesOverview.getTotalMinutesUsage();
+        };
 
         return ActivitiesOverviewDto.builder()
-                .groupClasses(activitiesOverview.getGroupClasses())
-                .privateClasses(activitiesOverview.getPrivateClasses())
-                .completedLessons(activitiesOverview.getCompletedLessons())
-                .completedUnits(activitiesOverview.getCompletedUnits())
-                .practiceHours(activitiesOverview.getPracticeHours())
-                .levelPassed(activitiesOverview.getLevelPassed())
-                .totalHoursUsage(Math.round(activitiesOverview.getTotalHoursUsage() * 100.0) / 100.0)
+                .groupClasses(groupClassesNumObtained)
+                .privateClasses(privateClassesNumObtained)
+                .completedLessons(completedLessonsNumObtained)
+                .completedUnits(completedUnitsNumObtained)
+                .practiceHours(practiceHoursNumObtained)
+                .levelPassed(levelPassedNumObtained)
+                .totalHoursUsage(NumberUtils.round(totalMinutesUsageNumObtained/60,2))
                 .build();
-    }
-
-    private double calculatePercentagesIncrement(double currentValue, double previousValue) {
-
-        double porcentageWithTwoDecimalPositions = 0.0;
-
-        if (previousValue > 0) {
-            // rule of 3
-            double porcentageRatio = ((double) currentValue) / previousValue;
-            //Indicates if the difference is negative or positive against the last month
-            double porcentageDifference = (porcentageRatio - 1) * 100;
-            // Round the result value to two decimal positions.
-            porcentageWithTwoDecimalPositions = Math.round(porcentageDifference * 100.0) / 100.0;
-        }
-
-        return porcentageWithTwoDecimalPositions;
-//        return previousValue > 0 ? Math.round((((((double) currentValue) / previousValue) - 1) * 100) * 100.0) / 100.0 : 0;
     }
 }
