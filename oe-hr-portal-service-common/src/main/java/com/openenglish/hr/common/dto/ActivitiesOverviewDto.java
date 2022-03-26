@@ -14,7 +14,7 @@ public class ActivitiesOverviewDto {
     private long privateClasses;
     private long completedLessons;
     private long completedUnits;
-    private long practiceHours;
+    private double practiceHours;
     private long levelPassed;
     private double totalHoursUsage;
 }

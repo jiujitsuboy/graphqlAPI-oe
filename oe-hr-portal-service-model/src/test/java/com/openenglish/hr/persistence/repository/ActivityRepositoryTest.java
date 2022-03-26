@@ -24,24 +24,16 @@ public class ActivityRepositoryTest extends AbstractPersistenceTest {
 
         String salesforcePurchaserId = "12347";
         final int NUMBER_RECORDS_EXPECTED = 18;
-        final long GROUP_CLASSES_NUM_EXPECTED = 0;
-        final long PRIVATE_CLASSES_NUM_EXPECTED = 0;
-        final long LEVEL_PASSED_NUM_EXPECTED = 0;
-        final long COMPLETED_LESSONS_NUM_EXPECTED = 1;
-        final long COMPLETED_UNITS_NUM_EXPECTED = 0;
-        final long PRACTICE_HOURS_NUM_EXPECTED = 0;
-        final double TOTAL_MINUTES_USAGE_NUM_EXPECTED = 25.0;
+        final long COURSE_TYPE_EXPECTED = 4;
+        final long COURSE_SUBTYPE_EXPECTED = 1;
+        final double TOTAL_MINUTES_USAGE_NUM_EXPECTED = 5.666666666666667;
 
         List<ActivitiesOverview> activitiesOverviews = activityRepository.getActivitiesOverview(salesforcePurchaserId);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, activitiesOverviews.size());
-        assertThat(activitiesOverviews.get(0).getGroupClasses(), is(GROUP_CLASSES_NUM_EXPECTED));
-        assertThat(activitiesOverviews.get(0).getPrivateClasses(), is(PRIVATE_CLASSES_NUM_EXPECTED));
-        assertThat(activitiesOverviews.get(0).getLevelPassed(), is(LEVEL_PASSED_NUM_EXPECTED));
-        assertThat(activitiesOverviews.get(0).getCompletedLessons(), is(COMPLETED_LESSONS_NUM_EXPECTED));
-        assertThat(activitiesOverviews.get(0).getCompletedUnits(), is(COMPLETED_UNITS_NUM_EXPECTED));
-        assertThat(activitiesOverviews.get(0).getPracticeHours(), is(PRACTICE_HOURS_NUM_EXPECTED));
-        assertEquals(TOTAL_MINUTES_USAGE_NUM_EXPECTED, activitiesOverviews.get(0).getTotalMinutesUsage() ,0);
+        assertThat(activitiesOverviews.get(0).getCourseType(), is(COURSE_TYPE_EXPECTED));
+        assertThat(activitiesOverviews.get(0).getCourseSubType(), is(COURSE_SUBTYPE_EXPECTED));
+        assertEquals(TOTAL_MINUTES_USAGE_NUM_EXPECTED, activitiesOverviews.get(0).getTimeInMinutes() ,0);
     }
 
     @Test

@@ -28,17 +28,17 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "12345";
 
-        ActivitiesOverview activitiesOverview1 = ActitiviesOverviewImpl.builder()
-                .groupClasses(20).privateClasses(30).completedLessons(40).completedUnits(50).practiceHours(60).levelPassed(70).totalMinutesUsage(80.0333333)
-                .build();
-        ActivitiesOverview activitiesOverview2 = ActitiviesOverviewImpl.builder()
-                .groupClasses(20).privateClasses(30).completedLessons(40).completedUnits(50).practiceHours(60).levelPassed(70).totalMinutesUsage(80.0333333)
-                .build();
-        ActivitiesOverview activitiesOverview3 = ActitiviesOverviewImpl.builder()
-                .groupClasses(20).privateClasses(30).completedLessons(40).completedUnits(50).practiceHours(60).levelPassed(70).totalMinutesUsage(80.0333333)
-                .build();
+        ActivitiesOverview activitiesOverview11 = ActitiviesOverviewImpl.builder().courseType(1l).courseSubType(2l).timeInMinutes(50.0).build();
+        ActivitiesOverview activitiesOverview12 = ActitiviesOverviewImpl.builder().courseType(1l).courseSubType(2l).timeInMinutes(70.0).build();
+        ActivitiesOverview activitiesOverview13 = ActitiviesOverviewImpl.builder().courseType(1l).courseSubType(2l).timeInMinutes(90.0).build();
+        ActivitiesOverview activitiesOverview21 = ActitiviesOverviewImpl.builder().courseType(3l).courseSubType(0l).timeInMinutes(10.5).build();
+        ActivitiesOverview activitiesOverview22 = ActitiviesOverviewImpl.builder().courseType(3l).courseSubType(0l).timeInMinutes(10.5).build();
+        ActivitiesOverview activitiesOverview31 = ActitiviesOverviewImpl.builder().courseType(4l).courseSubType(0l).timeInMinutes(30.2).build();
+        ActivitiesOverview activitiesOverview32 = ActitiviesOverviewImpl.builder().courseType(4l).courseSubType(0l).timeInMinutes(30.2).build();
+        ActivitiesOverview activitiesOverview33 = ActitiviesOverviewImpl.builder().courseType(4l).courseSubType(0l).timeInMinutes(30.2).build();
 
-        List<ActivitiesOverview> activitiesOverviews = List.of(activitiesOverview1, activitiesOverview2, activitiesOverview3);
+        List<ActivitiesOverview> activitiesOverviews = List.of(activitiesOverview11, activitiesOverview12, activitiesOverview13,
+                activitiesOverview21, activitiesOverview22, activitiesOverview31, activitiesOverview32, activitiesOverview33);
 
         new Expectations() {{
             activityRepository.getActivitiesOverview(anyString);
@@ -47,13 +47,16 @@ public class ActivityServiceTest {
 
         ActivitiesOverviewDto activitiesOverviewDto = activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId);
 
-        long groupClassesNumObtained = activitiesOverview1.getGroupClasses() + activitiesOverview2.getGroupClasses() + activitiesOverview3.getGroupClasses();
-        long privateClassesNumObtained = activitiesOverview1.getPrivateClasses() + activitiesOverview2.getPrivateClasses() + activitiesOverview3.getPrivateClasses();
-        long levelPassedNumObtained = activitiesOverview1.getLevelPassed() + activitiesOverview2.getLevelPassed() + activitiesOverview3.getLevelPassed();
-        long completedLessonsNumObtained = activitiesOverview1.getCompletedLessons() + activitiesOverview2.getCompletedLessons() + activitiesOverview3.getCompletedLessons();
-        long completedUnitsNumObtained = activitiesOverview1.getCompletedUnits() + activitiesOverview2.getCompletedUnits() + activitiesOverview3.getCompletedUnits();
-        long practiceHoursNumObtained = activitiesOverview1.getPracticeHours() + activitiesOverview2.getPracticeHours() + activitiesOverview3.getPracticeHours();
-        double totalMinutesUsageNumObtained = NumberUtils.round((activitiesOverview1.getTotalMinutesUsage() + activitiesOverview2.getTotalMinutesUsage() + activitiesOverview3.getTotalMinutesUsage())/60,2);
+        long groupClassesNumObtained = List.of(activitiesOverview11, activitiesOverview12, activitiesOverview13).size();
+        long privateClassesNumObtained = 0;
+        long levelPassedNumObtained = 0;
+        long completedLessonsNumObtained = List.of(activitiesOverview31, activitiesOverview32, activitiesOverview33).size();
+        long completedUnitsNumObtained = 0;
+        double practiceHoursNumObtained = activitiesOverview21.getTimeInMinutes() + activitiesOverview22.getTimeInMinutes();
+        double totalMinutesUsageNumObtained = (groupClassesNumObtained * 60) + (privateClassesNumObtained * 30) +
+                ((completedLessonsNumObtained + completedUnitsNumObtained) * 25) + (practiceHoursNumObtained);
+
+        totalMinutesUsageNumObtained = NumberUtils.round(totalMinutesUsageNumObtained / 60, 2);
 
         assertThat(groupClassesNumObtained, is(activitiesOverviewDto.getGroupClasses()));
         assertThat(privateClassesNumObtained, is(activitiesOverviewDto.getPrivateClasses()));
@@ -84,7 +87,7 @@ public class ActivityServiceTest {
         assertEquals(activitiesOverviewDto.getLevelPassed(), ZERO);
         assertEquals(activitiesOverviewDto.getCompletedUnits(), ZERO);
         assertEquals(activitiesOverviewDto.getCompletedLessons(), ZERO);
-        assertEquals(activitiesOverviewDto.getPracticeHours(), ZERO);
+        assertEquals(activitiesOverviewDto.getPracticeHours(), (double)ZERO, 0);
         assertEquals(activitiesOverviewDto.getTotalHoursUsage(), (double) ZERO, 0);
 
     }

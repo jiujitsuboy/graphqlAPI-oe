@@ -11,11 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ActitiviesOverviewImpl implements ActivitiesOverview {
-    private long groupClasses;
-    private long privateClasses;
-    private long completedLessons;
-    private long completedUnits;
-    private long practiceHours;
-    private long levelPassed;
-    private double totalMinutesUsage;
+    private Long courseType;
+    private Long courseSubType;
+    private Double timeInMinutes;
 }
