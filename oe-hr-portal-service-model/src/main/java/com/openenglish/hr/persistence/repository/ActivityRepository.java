@@ -12,7 +12,7 @@ public interface ActivityRepository extends JpaRepository<Person, Long> {
 
     @Query(value ="select c.coursetype_id as courseType, " +
                 "         c.coursesubtype_id as courseSubType, " +
-                "         cast(pcs.timeontask as float)/60 as timeInMinutes " +
+                "         pcs.timeontask as timeInMinutes " +
                 "from person p " +
                 "inner join person_detail pd on p.id = pd.person_id " +
                 "left join personcoursesummary pcs on p.id = pcs.person_id " +

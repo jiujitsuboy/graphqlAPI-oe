@@ -33,7 +33,7 @@ public enum CourseTypeEnum {
         return this.groupType;
     }
 
-    public static CourseTypeEnum getStatusByValue(Long value) {
+    public static CourseTypeEnum getCourseTypeByValue(Long value) {
         CourseTypeEnum[] arr$ = values();
         int len$ = arr$.length;
 

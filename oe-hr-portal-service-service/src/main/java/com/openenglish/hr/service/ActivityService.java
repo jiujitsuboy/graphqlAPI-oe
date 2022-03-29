@@ -18,6 +18,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ActivityService {
 
+    public final int ONE_MINUTE = 1;
+    public static final int HOURS_MINUTES = 60;
+    public static final int MINUTES_SECONDS = 60;
+    public static final int MINUTES_FACTOR_25 = 25;
+    public static final int MINUTES_FACTOR_30 = 30;
+    public static final int MINUTES_FACTOR_60 = 60;
     private final ActivityRepository activityRepository;
 
     public ActivitiesOverviewDto getCurrentMonthActivitiesOverview(String salesforcePurchaserId) {
@@ -27,58 +33,52 @@ public class ActivityService {
         List<ActivitiesOverview> activitiesOverviews = activityRepository.getActivitiesOverview(salesforcePurchaserId);
 
         Map<CourseTypeEnum, Double> courseTypeCounting = activitiesOverviews.stream()
-                .collect(Collectors.groupingBy(activitiesOverview -> {
-                    //default value, which is not used to calculate anything
-                    CourseTypeEnum courseTypeEnum = CourseTypeEnum.LEVEL_ZERO;
-                    if (activitiesOverview.getCourseType() != null) {
-                        if (activitiesOverview.getCourseType() != null && activitiesOverview.getCourseType() == 1
-                                && activitiesOverview.getCourseSubType() != null && List.of(1l, 2l).contains(activitiesOverview.getCourseSubType())) {
-                            courseTypeEnum = CourseTypeEnum.LIVE_CLASS;
-                        } else if (activitiesOverview.getCourseType() == 2 && activitiesOverview.getCourseSubType() == 4) {
-                            courseTypeEnum = CourseTypeEnum.PRIVATE_CLASS;
-                        } else if (activitiesOverview.getCourseType() == 4) {
-                            courseTypeEnum = CourseTypeEnum.LESSON;
-                        } else if (activitiesOverview.getCourseType() == 5) {
-                            courseTypeEnum = CourseTypeEnum.UNIT_ASSESSMENT;
-                        } else if (activitiesOverview.getCourseType() == 6) {
-                            courseTypeEnum = CourseTypeEnum.LEVEL_ASSESSMENT;
-                        } else if (List.of(3l, 8l, 10l).contains(activitiesOverview.getCourseType())) {
-                            courseTypeEnum = CourseTypeEnum.PRACTICE;
-                        }
-                    }
-                    return courseTypeEnum;
-                }, Collectors.summingDouble(activitiesOverview ->
-                        activitiesOverview.getCourseType() != null && List.of(3l, 8l, 10l).contains(activitiesOverview.getCourseType()) ? activitiesOverview.getTimeInMinutes() : 1
+                .collect(Collectors.groupingBy(ActivityService::classifyByCourseType, Collectors.summingDouble(activitiesOverview ->
+                        activitiesOverview.getCourseType() != null &&
+                                List.of(CourseTypeEnum.PRACTICE.getValue(), CourseTypeEnum.NEWS.getValue(), CourseTypeEnum.IDIOMS.getValue()).contains(activitiesOverview.getCourseType()) ? activitiesOverview.getTimeInSeconds()/MINUTES_SECONDS : ONE_MINUTE
                 )));
 
-        double totalTimeInHours = courseTypeCounting.entrySet().stream().mapToDouble(entry -> {
-            double timeHours = 0;
-            switch (entry.getKey()) {
-                case LIVE_CLASS:
-                    timeHours = entry.getValue() * 60;
-                    break;
-                case PRIVATE_CLASS:
-                    timeHours = entry.getValue() * 30;
-                    break;
-                case LESSON:
-                case UNIT_ASSESSMENT:
-                    timeHours = entry.getValue() * 25;
-                    break;
-                case PRACTICE:
-                    timeHours = entry.getValue();
-                    break;
-            }
-            return timeHours;
-        }).sum() / 60;
+        double totalTimeInHours = courseTypeCounting.entrySet().stream()
+                .mapToDouble(ActivityService::convertActivitiesOccurrenceToMinutes)
+                .sum() / HOURS_MINUTES;
 
         return ActivitiesOverviewDto.builder()
                 .groupClasses(courseTypeCounting.getOrDefault(CourseTypeEnum.LIVE_CLASS, 0.0).longValue())
                 .privateClasses(courseTypeCounting.getOrDefault(CourseTypeEnum.PRIVATE_CLASS, 0.0).longValue())
                 .completedLessons(courseTypeCounting.getOrDefault(CourseTypeEnum.LESSON, 0.0).longValue())
                 .completedUnits(courseTypeCounting.getOrDefault(CourseTypeEnum.UNIT_ASSESSMENT, 0.0).longValue())
-                .practiceHours(courseTypeCounting.getOrDefault(CourseTypeEnum.PRACTICE, 0.0).longValue())
+                .practiceHours(courseTypeCounting.getOrDefault(CourseTypeEnum.PRACTICE, 0.0).doubleValue())
                 .levelPassed(courseTypeCounting.getOrDefault(CourseTypeEnum.LEVEL_ASSESSMENT, 0.0).longValue())
                 .totalHoursUsage(NumberUtils.round(totalTimeInHours, 2))
                 .build();
+    }
+
+    private static CourseTypeEnum classifyByCourseType(ActivitiesOverview activitiesOverview){
+        //default value, which is not used to calculate anything
+        CourseTypeEnum courseTypeEnum = CourseTypeEnum.LEVEL_ZERO;
+        if(activitiesOverview.getCourseType()!=null) {
+            courseTypeEnum = CourseTypeEnum.getCourseTypeByValue(activitiesOverview.getCourseType());
+        }
+        return courseTypeEnum != null ? courseTypeEnum : CourseTypeEnum.PRACTICE;
+    }
+
+    private static Double convertActivitiesOccurrenceToMinutes(Map.Entry<CourseTypeEnum, Double> entry){
+        double timeHours = 0;
+        switch (entry.getKey()) {
+            case LIVE_CLASS:
+                timeHours = entry.getValue() * MINUTES_FACTOR_60;
+                break;
+            case PRIVATE_CLASS:
+                timeHours = entry.getValue() * MINUTES_FACTOR_30;
+                break;
+            case LESSON:
+            case UNIT_ASSESSMENT:
+                timeHours = entry.getValue() * MINUTES_FACTOR_25;
+                break;
+            case PRACTICE:
+                timeHours = entry.getValue();
+                break;
+        }
+        return timeHours;
     }
 }

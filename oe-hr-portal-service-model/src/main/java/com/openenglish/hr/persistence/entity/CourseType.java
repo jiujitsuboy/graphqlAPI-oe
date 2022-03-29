@@ -13,6 +13,8 @@ import java.io.Serializable;
 @Immutable
 public class CourseType implements Serializable {
 
+  private static long serialVersionUID = -14345342887212L;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")

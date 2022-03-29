@@ -11,6 +11,8 @@ import java.io.Serializable;
 @Data
 public class Course implements Serializable {
 
+  private static long serialVersionUID = -143453426565462L;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")

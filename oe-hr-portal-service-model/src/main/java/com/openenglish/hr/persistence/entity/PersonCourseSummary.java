@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @Table(name = "personcoursesummary")
 public class PersonCourseSummary implements Serializable {
 
+  private static long serialVersionUID = -23454265465462L;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")

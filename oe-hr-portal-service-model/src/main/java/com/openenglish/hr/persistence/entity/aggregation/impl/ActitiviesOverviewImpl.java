@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class ActitiviesOverviewImpl implements ActivitiesOverview {
     private Long courseType;
     private Long courseSubType;
-    private Double timeInMinutes;
+    private Double timeInSeconds;
 }

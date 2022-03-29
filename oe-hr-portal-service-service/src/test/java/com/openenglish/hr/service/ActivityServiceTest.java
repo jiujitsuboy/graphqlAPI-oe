@@ -28,14 +28,14 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "12345";
 
-        ActivitiesOverview activitiesOverview11 = ActitiviesOverviewImpl.builder().courseType(1l).courseSubType(2l).timeInMinutes(50.0).build();
-        ActivitiesOverview activitiesOverview12 = ActitiviesOverviewImpl.builder().courseType(1l).courseSubType(2l).timeInMinutes(70.0).build();
-        ActivitiesOverview activitiesOverview13 = ActitiviesOverviewImpl.builder().courseType(1l).courseSubType(2l).timeInMinutes(90.0).build();
-        ActivitiesOverview activitiesOverview21 = ActitiviesOverviewImpl.builder().courseType(3l).courseSubType(0l).timeInMinutes(10.5).build();
-        ActivitiesOverview activitiesOverview22 = ActitiviesOverviewImpl.builder().courseType(3l).courseSubType(0l).timeInMinutes(10.5).build();
-        ActivitiesOverview activitiesOverview31 = ActitiviesOverviewImpl.builder().courseType(4l).courseSubType(0l).timeInMinutes(30.2).build();
-        ActivitiesOverview activitiesOverview32 = ActitiviesOverviewImpl.builder().courseType(4l).courseSubType(0l).timeInMinutes(30.2).build();
-        ActivitiesOverview activitiesOverview33 = ActitiviesOverviewImpl.builder().courseType(4l).courseSubType(0l).timeInMinutes(30.2).build();
+        ActivitiesOverview activitiesOverview11 = ActitiviesOverviewImpl.builder().courseType(1l).courseSubType(2l).timeInSeconds(50.0).build();
+        ActivitiesOverview activitiesOverview12 = ActitiviesOverviewImpl.builder().courseType(1l).courseSubType(2l).timeInSeconds(70.0).build();
+        ActivitiesOverview activitiesOverview13 = ActitiviesOverviewImpl.builder().courseType(1l).courseSubType(2l).timeInSeconds(90.0).build();
+        ActivitiesOverview activitiesOverview21 = ActitiviesOverviewImpl.builder().courseType(3l).courseSubType(0l).timeInSeconds(10.5).build();
+        ActivitiesOverview activitiesOverview22 = ActitiviesOverviewImpl.builder().courseType(3l).courseSubType(0l).timeInSeconds(10.5).build();
+        ActivitiesOverview activitiesOverview31 = ActitiviesOverviewImpl.builder().courseType(4l).courseSubType(0l).timeInSeconds(30.2).build();
+        ActivitiesOverview activitiesOverview32 = ActitiviesOverviewImpl.builder().courseType(4l).courseSubType(0l).timeInSeconds(30.2).build();
+        ActivitiesOverview activitiesOverview33 = ActitiviesOverviewImpl.builder().courseType(4l).courseSubType(0l).timeInSeconds(30.2).build();
 
         List<ActivitiesOverview> activitiesOverviews = List.of(activitiesOverview11, activitiesOverview12, activitiesOverview13,
                 activitiesOverview21, activitiesOverview22, activitiesOverview31, activitiesOverview32, activitiesOverview33);
@@ -52,11 +52,11 @@ public class ActivityServiceTest {
         long levelPassedNumObtained = 0;
         long completedLessonsNumObtained = List.of(activitiesOverview31, activitiesOverview32, activitiesOverview33).size();
         long completedUnitsNumObtained = 0;
-        double practiceHoursNumObtained = activitiesOverview21.getTimeInMinutes() + activitiesOverview22.getTimeInMinutes();
-        double totalMinutesUsageNumObtained = (groupClassesNumObtained * 60) + (privateClassesNumObtained * 30) +
-                ((completedLessonsNumObtained + completedUnitsNumObtained) * 25) + (practiceHoursNumObtained);
+        double practiceHoursNumObtained = (activitiesOverview21.getTimeInSeconds() + activitiesOverview22.getTimeInSeconds())/ActivityService.MINUTES_SECONDS;
+        double totalMinutesUsageNumObtained = (groupClassesNumObtained * ActivityService.MINUTES_FACTOR_60) + (privateClassesNumObtained * ActivityService.MINUTES_FACTOR_30) +
+                ((completedLessonsNumObtained + completedUnitsNumObtained) * ActivityService.MINUTES_FACTOR_25) + (practiceHoursNumObtained);
 
-        totalMinutesUsageNumObtained = NumberUtils.round(totalMinutesUsageNumObtained / 60, 2);
+        totalMinutesUsageNumObtained = NumberUtils.round(totalMinutesUsageNumObtained / ActivityService.HOURS_MINUTES, 2);
 
         assertThat(groupClassesNumObtained, is(activitiesOverviewDto.getGroupClasses()));
         assertThat(privateClassesNumObtained, is(activitiesOverviewDto.getPrivateClasses()));
