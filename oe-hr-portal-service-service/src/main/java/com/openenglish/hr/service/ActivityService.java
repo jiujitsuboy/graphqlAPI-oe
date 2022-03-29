@@ -9,6 +9,7 @@ import com.openenglish.hr.service.util.NumberUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -37,8 +38,7 @@ public class ActivityService {
 
         Map<CourseTypeEnum, Double> courseTypeCounting = activitiesOverviews.stream()
                 .collect(Collectors.groupingBy(ActivityService::classifyByCourseType, Collectors.summingDouble(activitiesOverview ->
-                        activitiesOverview.getCourseType() != null &&
-                                PRACTICE_COURSE_TYPES.contains(activitiesOverview.getCourseType()) ? activitiesOverview.getTimeInSeconds() / MINUTES_SECONDS : ONE_MINUTE
+                        CollectionUtils.contains(PRACTICE_COURSE_TYPES.iterator(), activitiesOverview.getCourseType()) ? activitiesOverview.getTimeInSeconds() / MINUTES_SECONDS : ONE_MINUTE
                 )));
 
         double totalTimeInHours = courseTypeCounting.entrySet().stream()
