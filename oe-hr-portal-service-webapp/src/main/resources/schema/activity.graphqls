@@ -4,6 +4,6 @@
      levelPassed: Int
      completedLessons: Int
      completedUnits:Int
-     practiceHours: Int
+     practiceHours: Float
      totalHoursUsage: Float
  }

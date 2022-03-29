@@ -26,7 +26,7 @@ public class ActivityRepositoryTest extends AbstractPersistenceTest {
         final int NUMBER_RECORDS_EXPECTED = 18;
         final long COURSE_TYPE_EXPECTED = 4;
         final long COURSE_SUBTYPE_EXPECTED = 1;
-        final double TOTAL_MINUTES_USAGE_NUM_EXPECTED = 340;
+        final double TOTAL_SECONDS_USAGE_NUM_EXPECTED = 340;
 
         List<ActivitiesOverview> activitiesOverviews = activityRepository.getActivitiesOverview(salesforcePurchaserId);
 
@@ -37,7 +37,7 @@ public class ActivityRepositoryTest extends AbstractPersistenceTest {
                 .forEach(activitiesOverview -> {
                     assertThat(activitiesOverview.getCourseType(), is(COURSE_TYPE_EXPECTED));
                     assertThat(activitiesOverview.getCourseSubType(), is(COURSE_SUBTYPE_EXPECTED));
-                    assertEquals(TOTAL_MINUTES_USAGE_NUM_EXPECTED, activitiesOverview.getTimeInSeconds(), 0);
+                    assertEquals(TOTAL_SECONDS_USAGE_NUM_EXPECTED, activitiesOverview.getTimeInSeconds(), 0);
                 });
     }
 
