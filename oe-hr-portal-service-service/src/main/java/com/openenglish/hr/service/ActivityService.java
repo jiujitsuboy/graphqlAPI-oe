@@ -24,6 +24,9 @@ public class ActivityService {
     public static final int MINUTES_FACTOR_25 = 25;
     public static final int MINUTES_FACTOR_30 = 30;
     public static final int MINUTES_FACTOR_60 = 60;
+    private static final List PRACTICE_COURSE_TYPES = List.of(CourseTypeEnum.PRACTICE.getValue(),
+            CourseTypeEnum.NEWS.getValue(),
+            CourseTypeEnum.IDIOMS.getValue());
     private final ActivityRepository activityRepository;
 
     public ActivitiesOverviewDto getCurrentMonthActivitiesOverview(String salesforcePurchaserId) {
@@ -35,7 +38,7 @@ public class ActivityService {
         Map<CourseTypeEnum, Double> courseTypeCounting = activitiesOverviews.stream()
                 .collect(Collectors.groupingBy(ActivityService::classifyByCourseType, Collectors.summingDouble(activitiesOverview ->
                         activitiesOverview.getCourseType() != null &&
-                                List.of(CourseTypeEnum.PRACTICE.getValue(), CourseTypeEnum.NEWS.getValue(), CourseTypeEnum.IDIOMS.getValue()).contains(activitiesOverview.getCourseType()) ? activitiesOverview.getTimeInSeconds()/MINUTES_SECONDS : ONE_MINUTE
+                                PRACTICE_COURSE_TYPES.contains(activitiesOverview.getCourseType()) ? activitiesOverview.getTimeInSeconds() / MINUTES_SECONDS : ONE_MINUTE
                 )));
 
         double totalTimeInHours = courseTypeCounting.entrySet().stream()
@@ -53,16 +56,16 @@ public class ActivityService {
                 .build();
     }
 
-    private static CourseTypeEnum classifyByCourseType(ActivitiesOverview activitiesOverview){
+    private static CourseTypeEnum classifyByCourseType(ActivitiesOverview activitiesOverview) {
         //default value, which is not used to calculate anything
         CourseTypeEnum courseTypeEnum = CourseTypeEnum.LEVEL_ZERO;
-        if(activitiesOverview.getCourseType()!=null) {
+        if (activitiesOverview.getCourseType() != null) {
             courseTypeEnum = CourseTypeEnum.getCourseTypeByValue(activitiesOverview.getCourseType());
         }
         return courseTypeEnum != null ? courseTypeEnum : CourseTypeEnum.PRACTICE;
     }
 
-    private static Double convertActivitiesOccurrenceToMinutes(Map.Entry<CourseTypeEnum, Double> entry){
+    private static Double convertActivitiesOccurrenceToMinutes(Map.Entry<CourseTypeEnum, Double> entry) {
         double timeHours = 0;
         switch (entry.getKey()) {
             case LIVE_CLASS:
