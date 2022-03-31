@@ -1,7 +1,7 @@
 package com.openenglish.hr.persistence.entity;
 
 
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -9,7 +9,10 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "coursetype")
-@Data
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Immutable
 public class CourseType implements Serializable {
 

@@ -1,8 +1,10 @@
 package com.openenglish.hr.service;
 
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
-import com.openenglish.hr.persistence.entity.aggregation.ActivitiesOverview;
-import com.openenglish.hr.persistence.repository.CustomActivityRepository;
+import com.openenglish.hr.persistence.entity.Course;
+import com.openenglish.hr.persistence.entity.CourseType;
+import com.openenglish.hr.persistence.entity.PersonCourseSummary;
+import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
 import com.openenglish.hr.service.util.NumberUtils;
 import mockit.Expectations;
 import mockit.Injectable;
@@ -18,7 +20,7 @@ import static org.junit.Assert.*;
 public class ActivityServiceTest {
 
     @Injectable
-    private CustomActivityRepository customActivityRepository;
+    private PersonCourseSummaryRepository personCourseSummaryRepository;
     @Tested
     private ActivityService activityService;
 
@@ -27,31 +29,57 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "12345";
 
-        ActivitiesOverview activitiesOverview11 = ActivitiesOverview.builder().courseType(1l).timeInSeconds(50.0).build();
-        ActivitiesOverview activitiesOverview12 = ActivitiesOverview.builder().courseType(1l).timeInSeconds(70.0).build();
-        ActivitiesOverview activitiesOverview13 = ActivitiesOverview.builder().courseType(1l).timeInSeconds(90.0).build();
-        ActivitiesOverview activitiesOverview21 = ActivitiesOverview.builder().courseType(3l).timeInSeconds(10.5).build();
-        ActivitiesOverview activitiesOverview22 = ActivitiesOverview.builder().courseType(3l).timeInSeconds(10.5).build();
-        ActivitiesOverview activitiesOverview31 = ActivitiesOverview.builder().courseType(4l).timeInSeconds(30.2).build();
-        ActivitiesOverview activitiesOverview32 = ActivitiesOverview.builder().courseType(4l).timeInSeconds(30.2).build();
-        ActivitiesOverview activitiesOverview33 = ActivitiesOverview.builder().courseType(4l).timeInSeconds(30.2).build();
+        PersonCourseSummary personCourseSummary11 = PersonCourseSummary.builder()
+                .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
+                .timeontask(50)
+                .build();
+        PersonCourseSummary personCourseSummary12 = PersonCourseSummary.builder()
+                .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
+                .timeontask(70)
+                .build();
+        PersonCourseSummary personCourseSummary13 = PersonCourseSummary.builder()
+                .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
+                .timeontask(90)
+                .build();
 
-        List<ActivitiesOverview> activitiesOverviews = List.of(activitiesOverview11, activitiesOverview12, activitiesOverview13,
-                activitiesOverview21, activitiesOverview22, activitiesOverview31, activitiesOverview32, activitiesOverview33);
+        PersonCourseSummary personCourseSummary21 = PersonCourseSummary.builder()
+                .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
+                .timeontask(10)
+                .build();
+        PersonCourseSummary personCourseSummary22 = PersonCourseSummary.builder()
+                .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
+                .timeontask(10)
+                .build();
+
+        PersonCourseSummary personCourseSummary31 = PersonCourseSummary.builder()
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .timeontask(30)
+                .build();
+        PersonCourseSummary personCourseSummary32 = PersonCourseSummary.builder()
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .timeontask(30)
+                .build();
+        PersonCourseSummary personCourseSummary33 = PersonCourseSummary.builder()
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .timeontask(30)
+                .build();
+
+        List<PersonCourseSummary> personCourseSummaries = List.of(personCourseSummary11, personCourseSummary12, personCourseSummary13,
+                personCourseSummary21, personCourseSummary22, personCourseSummary31, personCourseSummary32, personCourseSummary33);
 
         new Expectations() {{
-            customActivityRepository.getActivitiesOverview(anyString);
-            returns(activitiesOverviews);
+            personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserId(anyString);
+            returns(personCourseSummaries);
         }};
 
         ActivitiesOverviewDto activitiesOverviewDto = activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId);
 
-        long groupClassesNumObtained = List.of(activitiesOverview11, activitiesOverview12, activitiesOverview13).size();
+        long groupClassesNumObtained = List.of(personCourseSummary11, personCourseSummary12, personCourseSummary13).size();
         long privateClassesNumObtained = 0;
         long levelPassedNumObtained = 0;
-        long completedLessonsNumObtained = List.of(activitiesOverview31, activitiesOverview32, activitiesOverview33).size();
+        long completedLessonsNumObtained = List.of(personCourseSummary31, personCourseSummary32, personCourseSummary33).size();
         long completedUnitsNumObtained = 0;
-        double practiceHoursNumObtained = activitiesOverview21.getTimeInSeconds() + activitiesOverview22.getTimeInSeconds();
+        double practiceHoursNumObtained = personCourseSummary21.getTimeontask() + personCourseSummary22.getTimeontask();
         double totalMinutesUsageNumObtained = (groupClassesNumObtained * ActivityService.LIVE_CLASS_CONVERSION_FACTOR) + (privateClassesNumObtained * ActivityService.PRIVATE_CLASS_CONVERSION_FACTOR) +
                 ((completedLessonsNumObtained + completedUnitsNumObtained) * ActivityService.LESSON_UNIT_ASSESSMENT_CONVERSION_FACTOR) + (practiceHoursNumObtained);
 
@@ -72,11 +100,11 @@ public class ActivityServiceTest {
         String salesforcePurchaserId = "12347";
         final long ZERO = 0l;
 
-        List<ActivitiesOverview> activitiesOverviews = new ArrayList<>();
+        List<PersonCourseSummary> personCourseSummaries = new ArrayList<>();
 
         new Expectations() {{
-            customActivityRepository.getActivitiesOverview(anyString);
-            returns(activitiesOverviews);
+            personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserId(anyString);
+            returns(personCourseSummaries);
         }};
 
         ActivitiesOverviewDto activitiesOverviewDto = activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId);

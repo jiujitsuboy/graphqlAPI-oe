@@ -1,6 +1,7 @@
 package com.openenglish.hr.persistence.entity;
 
 import lombok.Data;
+import lombok.Getter;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -9,7 +10,7 @@ import java.io.Serializable;
 @Entity
 @Immutable
 @Table(name = "unit")
-@Data
+@Getter
 public class Unit implements Serializable {
 
   private static final long serialVersionUID = -3551443645957159733L;

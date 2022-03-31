@@ -1,6 +1,6 @@
 package com.openenglish.hr.persistence.entity;
 
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -9,7 +9,10 @@ import java.time.LocalDateTime;
 
 @Entity
 @Immutable
-@Data
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "personcoursesummary")
 public class PersonCourseSummary implements Serializable {
 
