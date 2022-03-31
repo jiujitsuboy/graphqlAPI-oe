@@ -1,9 +1,9 @@
 package com.openenglish.hr.persistence.repository;
 
-import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import com.openenglish.hr.persistence.entity.aggregation.ActivitiesOverview;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,26 +17,24 @@ import static org.junit.Assert.*;
 public class ActivityRepositoryTest extends AbstractPersistenceTest {
 
     @Autowired
-    private ActivityRepository activityRepository;
+    private CustomActivityRepository customActivityRepository;
 
     @Test
     public void getActivitiesOverview() {
 
         String salesforcePurchaserId = "12347";
-        final int NUMBER_RECORDS_EXPECTED = 18;
+        final int NUMBER_RECORDS_EXPECTED = 16;
         final long COURSE_TYPE_EXPECTED = 4;
-        final long COURSE_SUBTYPE_EXPECTED = 1;
         final double TOTAL_SECONDS_USAGE_NUM_EXPECTED = 340;
 
-        List<ActivitiesOverview> activitiesOverviews = activityRepository.getActivitiesOverview(salesforcePurchaserId);
+        List<ActivitiesOverview> activitiesOverviews = customActivityRepository.getActivitiesOverview(salesforcePurchaserId);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, activitiesOverviews.size());
 
         activitiesOverviews.stream()
-                .filter(activitiesOverview -> activitiesOverview.getCourseType() != null && activitiesOverview.getCourseType() == COURSE_TYPE_EXPECTED)
+                .filter(activitiesOverview -> activitiesOverview.getCourseType() == COURSE_TYPE_EXPECTED)
                 .forEach(activitiesOverview -> {
                     assertThat(activitiesOverview.getCourseType(), is(COURSE_TYPE_EXPECTED));
-                    assertThat(activitiesOverview.getCourseSubType(), is(COURSE_SUBTYPE_EXPECTED));
                     assertEquals(TOTAL_SECONDS_USAGE_NUM_EXPECTED, activitiesOverview.getTimeInSeconds(), 0);
                 });
     }
@@ -47,7 +45,7 @@ public class ActivityRepositoryTest extends AbstractPersistenceTest {
         String salesforcePurchaserId = "12348";
         final int NUMBER_RECORDS_EXPECTED = 0;
 
-        List<ActivitiesOverview> activitiesOverviews = activityRepository.getActivitiesOverview(salesforcePurchaserId);
+        List<ActivitiesOverview> activitiesOverviews = customActivityRepository.getActivitiesOverview(salesforcePurchaserId);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, activitiesOverviews.size());
     }

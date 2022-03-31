@@ -30,4 +30,7 @@ public class PersonCourseSummary implements Serializable {
 
   @Column(name = "lastdatecompleted", insertable = false, updatable = false)
   private LocalDateTime lastDateCompleted;
+
+  @Column(name = "timeontask")
+  private int timeontask;
 }

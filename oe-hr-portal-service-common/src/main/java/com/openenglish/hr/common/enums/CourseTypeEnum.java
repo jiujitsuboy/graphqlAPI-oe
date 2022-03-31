@@ -34,11 +34,11 @@ public enum CourseTypeEnum {
     }
 
     public static CourseTypeEnum getCourseTypeByValue(Long value) {
-        CourseTypeEnum[] arr$ = values();
-        int len$ = arr$.length;
+        CourseTypeEnum[] arr = values();
+        int len = arr.length;
 
-        for(int i$ = 0; i$ < len$; ++i$) {
-            CourseTypeEnum s = arr$[i$];
+        for(int i = 0; i < len; ++i) {
+            CourseTypeEnum s = arr[i];
             if (s.getValue().equals(value)) {
                 return s;
             }
