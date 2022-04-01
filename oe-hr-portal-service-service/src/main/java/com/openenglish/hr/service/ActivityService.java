@@ -23,10 +23,10 @@ public class ActivityService {
     public static final int MINUTES_PER_LESSON_UNIT_ASSESSMENT = 25;
     public static final int MINUTES_PER_PRIVATE_CLASS = 30;
     public static final int MINUTES_PER_LIVE_CLASS = 60;
-    private static final Set PRACTICE_COURSE_TYPES = Set.of(CourseTypeEnum.PRACTICE.getValue(),
+    private static final Set<Long> PRACTICE_COURSE_TYPES = Set.of(CourseTypeEnum.PRACTICE.getValue(),
             CourseTypeEnum.NEWS.getValue(),
             CourseTypeEnum.IDIOMS.getValue());
-    private static final Set COURSE_TYPES_OF_INTEREST = Set.of(
+    private static final Set<Long> COURSE_TYPES_OF_INTEREST = Set.of(
             CourseTypeEnum.LIVE_CLASS.getValue(),
             CourseTypeEnum.PRIVATE_CLASS.getValue(),
             CourseTypeEnum.LESSON.getValue(),
