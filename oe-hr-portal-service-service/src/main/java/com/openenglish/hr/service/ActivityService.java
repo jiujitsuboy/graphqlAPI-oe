@@ -18,10 +18,11 @@ import java.util.stream.Collectors;
 public class ActivityService {
 
     public static final int ONE_ACTIVITY = 1;
-    public static final int SECONDS_IN_HOUR = 60;
-    public static final int LESSON_UNIT_ASSESSMENT_CONVERSION_FACTOR = 1500;
-    public static final int PRIVATE_CLASS_CONVERSION_FACTOR = 1800;
-    public static final int LIVE_CLASS_CONVERSION_FACTOR = 3600;
+    public static final int SECONDS_IN_HOUR = 3600;
+    public static final int SECONDS_IN_MINUTE = 60;
+    public static final int MINUTES_PER_LESSON_UNIT_ASSESSMENT = 25;
+    public static final int MINUTES_PER_PRIVATE_CLASS = 30;
+    public static final int MINUTES_PER_LIVE_CLASS = 60;
     private static final Set PRACTICE_COURSE_TYPES = Set.of(CourseTypeEnum.PRACTICE.getValue(),
             CourseTypeEnum.NEWS.getValue(),
             CourseTypeEnum.IDIOMS.getValue());
@@ -34,14 +35,19 @@ public class ActivityService {
             CourseTypeEnum.PRACTICE.getValue(),
             CourseTypeEnum.NEWS.getValue(),
             CourseTypeEnum.IDIOMS.getValue()
-            );
+    );
 
     private final PersonCourseSummaryRepository personCourseSummaryRepository;
 
+    /**
+     * Group and sum the time of each CourseType activity
+     * @param salesforcePurchaserId id of the owner of the licencse
+     * @return total time in hours of usage for every CourseType activity
+     */
     public ActivitiesOverviewDto getCurrentMonthActivitiesOverview(String salesforcePurchaserId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
 
-        List<PersonCourseSummary> personCourseSummaries =  personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserId(salesforcePurchaserId);
+        List<PersonCourseSummary> personCourseSummaries = personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserId(salesforcePurchaserId);
 
         Map<CourseTypeEnum, Integer> courseTypeCounting = getSummingTimeByGroupingCourseTypes(personCourseSummaries);
 
@@ -52,50 +58,54 @@ public class ActivityService {
                 .privateClasses(courseTypeCounting.getOrDefault(CourseTypeEnum.PRIVATE_CLASS, 0).longValue())
                 .completedLessons(courseTypeCounting.getOrDefault(CourseTypeEnum.LESSON, 0).longValue())
                 .completedUnits(courseTypeCounting.getOrDefault(CourseTypeEnum.UNIT_ASSESSMENT, 0).longValue())
-                .practiceHours(courseTypeCounting.getOrDefault(CourseTypeEnum.PRACTICE, 0).doubleValue())
+                .practiceHours(NumberUtils.round(courseTypeCounting.getOrDefault(CourseTypeEnum.PRACTICE, 0).doubleValue()/SECONDS_IN_HOUR,2))
                 .levelPassed(courseTypeCounting.getOrDefault(CourseTypeEnum.LEVEL_ASSESSMENT, 0).longValue())
                 .totalHoursUsage(NumberUtils.round(totalTimeInHours, 2))
                 .build();
     }
 
-    private double getTotalTimeInHours(Map<CourseTypeEnum, Integer> courseTypeCounting){
+    private double getTotalTimeInHours(Map<CourseTypeEnum, Integer> courseTypeCounting) {
 
         return (double) courseTypeCounting
                 .entrySet()
                 .stream()
-                .mapToInt(this::convertActivitiesOccurrenceToMinutes)
+                .mapToInt(this::convertActivitiesOccurrenceToSeconds)
                 .sum() / SECONDS_IN_HOUR;
     }
 
-    private Map<CourseTypeEnum, Integer> getSummingTimeByGroupingCourseTypes(List<PersonCourseSummary> personCourseSummaries){
+    private Map<CourseTypeEnum, Integer> getSummingTimeByGroupingCourseTypes(List<PersonCourseSummary> personCourseSummaries) {
         return personCourseSummaries
                 .stream()
                 .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(personCourseSummary.getCourse().getCourseType().getId()))
-                .collect(Collectors.groupingBy(personCourseSummary ->  CourseTypeEnum.getStatusByValue(personCourseSummary.getCourse().getCourseType().getId()),
+                .collect(Collectors.groupingBy(personCourseSummary -> CourseTypeEnum.getStatusByValue(personCourseSummary.getCourse().getCourseType().getId()),
                         Collectors.summingInt(this::summingTimeForActivities)));
     }
 
-    private int summingTimeForActivities(PersonCourseSummary personCourseSummary){
+    private int summingTimeForActivities(PersonCourseSummary personCourseSummary) {
         return PRACTICE_COURSE_TYPES.contains(personCourseSummary.getCourse().getCourseType().getId()) ? personCourseSummary.getTimeontask() : ONE_ACTIVITY;
     }
 
-    private Integer convertActivitiesOccurrenceToMinutes(Map.Entry<CourseTypeEnum, Integer> entry) {
+    private Integer convertActivitiesOccurrenceToSeconds(Map.Entry<CourseTypeEnum, Integer> entry) {
         int timeInSeconds = 0;
         switch (entry.getKey()) {
             case LIVE_CLASS:
-                timeInSeconds = entry.getValue() * LIVE_CLASS_CONVERSION_FACTOR;
+                timeInSeconds = entry.getValue() * toSeconds(MINUTES_PER_LIVE_CLASS);
                 break;
             case PRIVATE_CLASS:
-                timeInSeconds = entry.getValue() * PRIVATE_CLASS_CONVERSION_FACTOR;
+                timeInSeconds = entry.getValue() * toSeconds(MINUTES_PER_PRIVATE_CLASS);
                 break;
             case LESSON:
             case UNIT_ASSESSMENT:
-                timeInSeconds = entry.getValue() * LESSON_UNIT_ASSESSMENT_CONVERSION_FACTOR;
+                timeInSeconds = entry.getValue() * toSeconds(MINUTES_PER_LESSON_UNIT_ASSESSMENT);
                 break;
             case PRACTICE:
                 timeInSeconds = entry.getValue();
                 break;
         }
         return timeInSeconds;
+    }
+
+    public int toSeconds(int minutes) {
+        return minutes * SECONDS_IN_MINUTE;
     }
 }

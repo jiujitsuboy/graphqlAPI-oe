@@ -80,9 +80,10 @@ public class ActivityServiceTest {
         long completedLessonsNumObtained = List.of(personCourseSummary31, personCourseSummary32, personCourseSummary33).size();
         long completedUnitsNumObtained = 0;
         double practiceHoursNumObtained = personCourseSummary21.getTimeontask() + personCourseSummary22.getTimeontask();
-        double totalMinutesUsageNumObtained = (groupClassesNumObtained * ActivityService.LIVE_CLASS_CONVERSION_FACTOR) + (privateClassesNumObtained * ActivityService.PRIVATE_CLASS_CONVERSION_FACTOR) +
-                ((completedLessonsNumObtained + completedUnitsNumObtained) * ActivityService.LESSON_UNIT_ASSESSMENT_CONVERSION_FACTOR) + (practiceHoursNumObtained);
+        double totalMinutesUsageNumObtained = (groupClassesNumObtained * activityService.toSeconds(ActivityService.MINUTES_PER_LIVE_CLASS)) + (privateClassesNumObtained * activityService.toSeconds(ActivityService.MINUTES_PER_PRIVATE_CLASS)) +
+                ((completedLessonsNumObtained + completedUnitsNumObtained) * activityService.toSeconds(ActivityService.MINUTES_PER_LESSON_UNIT_ASSESSMENT)) + (practiceHoursNumObtained);
 
+        practiceHoursNumObtained = NumberUtils.round(practiceHoursNumObtained / ActivityService.SECONDS_IN_HOUR, 2);
         totalMinutesUsageNumObtained = NumberUtils.round(totalMinutesUsageNumObtained / ActivityService.SECONDS_IN_HOUR, 2);
 
         assertThat(groupClassesNumObtained, is(activitiesOverviewDto.getGroupClasses()));
@@ -114,7 +115,7 @@ public class ActivityServiceTest {
         assertEquals(activitiesOverviewDto.getLevelPassed(), ZERO);
         assertEquals(activitiesOverviewDto.getCompletedUnits(), ZERO);
         assertEquals(activitiesOverviewDto.getCompletedLessons(), ZERO);
-        assertEquals(activitiesOverviewDto.getPracticeHours(), (double)ZERO, 0);
+        assertEquals(activitiesOverviewDto.getPracticeHours(), (double) ZERO, 0);
         assertEquals(activitiesOverviewDto.getTotalHoursUsage(), (double) ZERO, 0);
 
     }

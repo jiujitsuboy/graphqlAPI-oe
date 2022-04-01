@@ -12,8 +12,8 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
-@DatabaseSetup(value = "classpath:activityData.xml", type = DatabaseOperation.INSERT)
-@DatabaseTearDown(value = "classpath:activityData.xml", type = DatabaseOperation.DELETE)
+@DatabaseSetup(value = "classpath:personCourseSummaryData.xml", type = DatabaseOperation.INSERT)
+@DatabaseTearDown(value = "classpath:personCourseSummaryData.xml", type = DatabaseOperation.DELETE)
 public class PersonCourseSummaryRepositoryTest extends AbstractPersistenceTest {
 
     @Autowired
