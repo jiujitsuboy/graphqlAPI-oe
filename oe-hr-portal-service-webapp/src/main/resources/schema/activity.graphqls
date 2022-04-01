@@ -1,0 +1,9 @@
+  type ActivitiesOverview {
+     privateClasses: Int
+     groupClasses: Int
+     levelPassed: Int
+     completedLessons: Int
+     completedUnits:Int
+     practiceHours: Float
+     totalHoursUsage: Float
+ }

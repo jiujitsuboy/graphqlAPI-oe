@@ -1,4 +1,5 @@
 type Query{
-  getPersonsBySalesforcePurchaserId(salesforcePurchaserId: String): [Person]!
+  getPersons(salesforcePurchaserId: String): [Person]!
   getAllPersonsByLevel(salesforcePurchaserId: String): [PersonsPerLevel]!
+  getAllActivitiesOverview(salesforcePurchaserId: String): ActivitiesOverview
 }

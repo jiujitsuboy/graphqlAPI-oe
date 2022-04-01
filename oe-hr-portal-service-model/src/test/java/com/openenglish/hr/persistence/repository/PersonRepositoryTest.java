@@ -23,11 +23,11 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
 
     @Test
     public void findPersonByDetailsSalesforcePurchaserIdIn(){
-        String salesforcePurchaserId = "12346";
+        String salesforcePurchaserId = "12347";
         String firstNameExpected = "joseph";
         String lastNameExpected = "peterson";
-        String contactIdExpected = "sf_synegen5";
-        String emailExpected = "josephp2@unknowdomain.com";
+        String contactIdExpected = "sf_synegen801";
+        String emailExpected = "josephp430@unknowdomain.com";
         int expectedPersons = 3;
 
         List<Person> persons =  personRepository.findPersonByDetailsSalesforcePurchaserId(salesforcePurchaserId);
@@ -47,7 +47,7 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
     public void getAllPersonsPerLevel(){
 
         String levelName = "Level 100";
-        String salesforcePurchaserId = "12346";
+        String salesforcePurchaserId = "12347";
         long totalNumber = 3;
 
         List<PersonsPerLevel> personsPerLevel =  personRepository.getAllPersonsPerLevel(salesforcePurchaserId);
@@ -55,12 +55,22 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
         assertNotNull(personsPerLevel);
 
         personsPerLevel.stream()
-                .filter(temp -> ((PersonsPerLevel)temp).getLevelName().equals(levelName))
+                .filter(temp -> temp.getLevelName().equals(levelName))
                 .findFirst()
                 .ifPresentOrElse(level->{
-                    PersonsPerLevel personLevel =  (PersonsPerLevel)level;
-                    assertThat(personLevel.getLevelName(),is(levelName));
-                    assertThat(personLevel.getTotalNumber(),is(totalNumber));
+                    assertThat(level.getLevelName(),is(levelName));
+                    assertThat(level.getTotalNumber(),is(totalNumber));
                 },Assert::fail);
+    }
+
+    @Test
+    public void getAllPersonsPerLevelEmpty(){
+        String salesforcePurchaserId = "12348";
+        final long ZERO_RECORDS = 0;
+
+        List<PersonsPerLevel> personsPerLevel =  personRepository.getAllPersonsPerLevel(salesforcePurchaserId);
+
+        assertNotNull(personsPerLevel);
+        assertEquals(ZERO_RECORDS,personsPerLevel.size());
     }
 }

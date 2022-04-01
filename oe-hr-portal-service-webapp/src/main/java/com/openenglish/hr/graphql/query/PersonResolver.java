@@ -20,17 +20,17 @@ public class PersonResolver {
     private final PersonService personService;
     private final Mapper mapper;
 
-    @DgsData(parentType = "Query", field = "getPersonsBySalesforcePurchaserId")
-    public List<PersonDto> getPersonsBySalesforcePurchaserId(String salesforcePurchaserId){
-        List<Person> persons =  personService.getPersonsBySalesforcePurchaserId(salesforcePurchaserId);
-        return   persons.stream()
+    @DgsData(parentType = "Query", field = "getPersons")
+    public List<PersonDto> getPersons(String salesforcePurchaserId) {
+        List<Person> persons = personService.getPersons(salesforcePurchaserId);
+        return persons.stream()
                 .map(person -> mapper.map(person, PersonDto.class))
                 .collect(Collectors.toList());
     }
 
     @DgsData(parentType = "Query", field = "getAllPersonsByLevel")
-    public List<PersonsPerLevelDto> getAllPersonsByLevel(String salesforcePurchaserId){
-        List<PersonsPerLevel> personsByLevel =  personService.getAllPersonsByLevel(salesforcePurchaserId);
+    public List<PersonsPerLevelDto> getAllPersonsByLevel(String salesforcePurchaserId) {
+        List<PersonsPerLevel> personsByLevel = personService.getAllPersonsByLevel(salesforcePurchaserId);
 
         return personsByLevel.stream()
                 .map(personByLevel -> mapper.map(personByLevel, PersonsPerLevelDto.class))

@@ -66,6 +66,11 @@
             <artifactId>dozer</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.openenglish.lp2</groupId>
+            <artifactId>lp2-commons-datatype</artifactId>
+        </dependency>
+
         <!--Testing dependencies-->
         <dependency>
             <groupId>org.jmockit</groupId>

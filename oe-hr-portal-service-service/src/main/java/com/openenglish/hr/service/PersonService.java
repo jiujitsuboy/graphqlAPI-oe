@@ -16,12 +16,12 @@ public class PersonService {
 
     private final PersonRepository personRepository;
 
-    public List<Person> getPersonsBySalesforcePurchaserId(String salesforcePurchaserId) {
+    public List<Person> getPersons(String salesforcePurchaserId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
         return personRepository.findPersonByDetailsSalesforcePurchaserId(salesforcePurchaserId);
     }
 
-        public List<PersonsPerLevel> getAllPersonsByLevel(String salesforcePurchaserId) {
+    public List<PersonsPerLevel> getAllPersonsByLevel(String salesforcePurchaserId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
         return personRepository.getAllPersonsPerLevel(salesforcePurchaserId);
     }
