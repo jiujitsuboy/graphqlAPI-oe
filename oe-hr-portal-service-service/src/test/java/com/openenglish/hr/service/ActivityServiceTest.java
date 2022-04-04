@@ -16,8 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 public class ActivityServiceTest {
@@ -192,7 +191,8 @@ public class ActivityServiceTest {
     @Test
     public void getActivitiesStatisticsEmpty() {
         String salesforcePurchaserId = "12345";
-        final long ZERO = 0L;
+        final double ZERO = 0.0;
+        final int MONTHS_OF_YEAR = 12;
 
         List<PersonCourseSummary> personCourseSummaries = new ArrayList<>();
 
@@ -202,6 +202,9 @@ public class ActivityServiceTest {
         }};
 
         List<ActivityStatistics> activityStatistics = activityService.getActivitiesStatistics(salesforcePurchaserId, 0, List.of(1, 2));
-        assertEquals(ZERO, activityStatistics.size());
+        assertEquals(MONTHS_OF_YEAR, activityStatistics.size());
+        activityStatistics
+                .stream()
+                .forEach(activityStatistic -> assertThat(activityStatistic.getHours(), equalTo(ZERO)));
     }
 }
