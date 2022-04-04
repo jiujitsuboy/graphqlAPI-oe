@@ -1,6 +1,6 @@
 package com.openenglish.hr.persistence.entity;
 
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -8,8 +8,13 @@ import java.io.Serializable;
 
 @Entity
 @Immutable
-@Data
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Course implements Serializable {
+
+  private static long serialVersionUID = -143453426565462L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

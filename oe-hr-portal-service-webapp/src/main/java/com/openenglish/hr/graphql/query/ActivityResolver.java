@@ -2,7 +2,7 @@ package com.openenglish.hr.graphql.query;
 
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsData;
-import com.openenglish.hr.common.dto.ActivitiesOverviewWithIncrementsDto;
+import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.common.dto.ActivityStatisticsDto;
 import com.openenglish.hr.persistence.entity.aggregation.ActivityStatistics;
 import com.openenglish.hr.service.ActivityService;
@@ -20,12 +20,13 @@ public class ActivityResolver {
     private final Mapper mapper;
 
     @DgsData(parentType = "Query", field = "getAllActivitiesOverview")
-    public ActivitiesOverviewWithIncrementsDto getAllActivitiesOverview(String salesforcePurchaserId) {
-        return activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId).orElse(null);
+    public ActivitiesOverviewDto getAllActivitiesOverview(String salesforcePurchaserId) {
+        return activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId);
     }
 
     @DgsData(parentType = "Query", field = "getActivitiesStatistics")
-    public List<ActivityStatisticsDto> getActivitiesStatistics(String salesforcePurchaserId, int year, List<Long> activities) {
+    public List<ActivityStatisticsDto> getActivitiesStatistics(String salesforcePurchaserId, int year, List<Integer> activities) {
+
         List<ActivityStatistics> activityStatistics = activityService.getActivitiesStatistics(salesforcePurchaserId, year, activities);
 
         return activityStatistics.stream()

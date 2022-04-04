@@ -1,6 +1,13 @@
 package com.openenglish.hr.persistence.entity.aggregation;
 
-public interface ActivityStatistics {
-    String getMonth();
-    double getHours();
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+@AllArgsConstructor
+public class ActivityStatistics {
+    private int month;
+    private double hours;
 }

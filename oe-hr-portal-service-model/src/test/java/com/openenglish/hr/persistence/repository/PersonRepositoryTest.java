@@ -62,4 +62,15 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
                     assertThat(level.getTotalNumber(),is(totalNumber));
                 },Assert::fail);
     }
+
+    @Test
+    public void getAllPersonsPerLevelEmpty(){
+        String salesforcePurchaserId = "12348";
+        final long ZERO_RECORDS = 0;
+
+        List<PersonsPerLevel> personsPerLevel =  personRepository.getAllPersonsPerLevel(salesforcePurchaserId);
+
+        assertNotNull(personsPerLevel);
+        assertEquals(ZERO_RECORDS,personsPerLevel.size());
+    }
 }
