@@ -14,7 +14,7 @@ public class NumberUtils {
     /**
      * Convert minutes to seconds
      * @param minutes
-     * @return
+     * @return number of seconds
      */
     public static int toSeconds(int minutes) {
         return minutes * SECONDS_IN_MINUTE;
@@ -23,7 +23,7 @@ public class NumberUtils {
     /**
      * Convert from seconds to hours
      * @param timeInSeconds time in seconds
-     * @return time hin hours
+     * @return time in hours
      */
     public static double convertSecondsToHours(double timeInSeconds) {
         return timeInSeconds / SECONDS_IN_HOUR;

@@ -75,9 +75,14 @@ public class ActivityService {
      * @param courseTypesNames      target activities
      * @return the total sum of all activities by  month
      */
-    public List<ActivityStatistics> getActivitiesStatistics(String salesforcePurchaserId, int year, List<Integer> courseTypesNames) {
+    public List<ActivityStatistics> getActivitiesStatistics(String salesforcePurchaserId, int year, List<Long> courseTypesNames) {
 
-        LocalDateTime startDate = LocalDateTime.of(year, 1, 1, 0, 0);
+        final int MONTH = 1;
+        final int DAY_OF_MONTH = 1;
+        final int HOUR = 0;
+        final int MINUTE = 0;
+
+        LocalDateTime startDate = LocalDateTime.of(year, MONTH, DAY_OF_MONTH, HOUR, MINUTE);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
         List<PersonCourseSummary> personCourseSummaries = personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypesNames);
@@ -117,8 +122,8 @@ public class ActivityService {
     private Map<CourseTypeEnum, Integer> getSummingTimeByGroupingCourseTypes(List<PersonCourseSummary> personCourseSummaries) {
         return personCourseSummaries
                 .stream()
-                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(personCourseSummary.getCourse().getCourseType().getId().longValue()))
-                .collect(Collectors.groupingBy(personCourseSummary -> CourseTypeEnum.getStatusByValue(personCourseSummary.getCourse().getCourseType().getId().longValue()),
+                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseSummary)))
+                .collect(Collectors.groupingBy(personCourseSummary -> CourseTypeEnum.getStatusByValue(this.getCourseTypeId(personCourseSummary)),
                         Collectors.summingInt(this::getAmountOfTimePerActivity)));
     }
 
@@ -131,7 +136,7 @@ public class ActivityService {
     private Map<Integer, Double> getSummingTimeByGroupingPerMonth(List<PersonCourseSummary> personCourseSummaries) {
         return personCourseSummaries
                 .stream()
-                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(personCourseSummary.getCourse().getCourseType().getId().longValue()))
+                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseSummary)))
                 .collect(Collectors.groupingBy(personCourseSummary -> personCourseSummary.getCreatedDate().getMonth().getValue(),
                                 Collectors.collectingAndThen(
                                         Collectors.summingDouble(this::convertActivitiesOccurrenceToSeconds), NumberUtils::convertSecondsToHours)
@@ -146,7 +151,7 @@ public class ActivityService {
      * @return time for activity
      */
     private int getAmountOfTimePerActivity(PersonCourseSummary personCourseSummary) {
-        return PRACTICE_COURSE_TYPES.contains(personCourseSummary.getCourse().getCourseType().getId().longValue()) ? personCourseSummary.getTimeontask() : ONE_ACTIVITY;
+        return PRACTICE_COURSE_TYPES.contains(this.getCourseTypeId(personCourseSummary)) ? personCourseSummary.getTimeontask() : ONE_ACTIVITY;
     }
 
     /**
@@ -166,7 +171,7 @@ public class ActivityService {
      * @return amount of time in seconds
      */
     private int convertActivitiesOccurrenceToSeconds(PersonCourseSummary personCourseSummary) {
-        CourseTypeEnum courseTypeEnum = CourseTypeEnum.getStatusByValue(personCourseSummary.getCourse().getCourseType().getId().longValue());
+        CourseTypeEnum courseTypeEnum = CourseTypeEnum.getStatusByValue(this.getCourseTypeId(personCourseSummary));
         return convertActivitiesOccurrenceToSeconds(courseTypeEnum, courseTypeEnum == CourseTypeEnum.PRACTICE ? personCourseSummary.getTimeontask() : 1);
     }
 
@@ -195,5 +200,9 @@ public class ActivityService {
                 break;
         }
         return timeInSeconds;
+    }
+
+    private long getCourseTypeId(PersonCourseSummary personCourseSummary){
+        return personCourseSummary.getCourse().getCourseType().getId().longValue();
     }
 }
