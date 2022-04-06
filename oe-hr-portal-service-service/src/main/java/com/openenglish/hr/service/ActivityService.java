@@ -72,10 +72,10 @@ public class ActivityService {
      *
      * @param salesforcePurchaserId id of the owner of the license
      * @param year                  target year
-     * @param courseTypesNames      target activities
+     * @param courseTypeIds      target activities
      * @return the total sum of all activities by  month
      */
-    public List<ActivityStatistics> getActivitiesStatistics(String salesforcePurchaserId, int year, List<Long> courseTypesNames) {
+    public List<ActivityStatistics> getActivitiesStatistics(String salesforcePurchaserId, int year, List<Long> courseTypeIds) {
 
         final int MONTH = 1;
         final int DAY_OF_MONTH = 1;
@@ -85,7 +85,7 @@ public class ActivityService {
         LocalDateTime startDate = LocalDateTime.of(year, MONTH, DAY_OF_MONTH, HOUR, MINUTE);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseSummary> personCourseSummaries = personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypesNames);
+        List<PersonCourseSummary> personCourseSummaries = personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypeIds);
 
         Map<Integer, Double> courseTypeCounting = getSummingTimeByGroupingPerMonth(personCourseSummaries);
 
@@ -203,6 +203,6 @@ public class ActivityService {
     }
 
     private long getCourseTypeId(PersonCourseSummary personCourseSummary){
-        return personCourseSummary.getCourse().getCourseType().getId().longValue();
+        return personCourseSummary.getCourse().getCourseType().getId();
     }
 }
