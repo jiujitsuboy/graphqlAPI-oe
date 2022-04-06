@@ -1,5 +1,6 @@
 package com.openenglish.hr.service;
 
+import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.aggregation.ActivityStatistics;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.persistence.entity.Course;
@@ -13,8 +14,7 @@ import mockit.Tested;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -206,5 +206,107 @@ public class ActivityServiceTest {
         activityStatistics
                 .stream()
                 .forEach(activityStatistic -> assertThat(activityStatistic.getHours(), equalTo(ZERO)));
+    }
+
+    @Test
+    public void getTopThreeStudentsByActivityStatistics(){
+
+        final int PERSONS_SIZE = 3;
+        final long TOP1 = 5L;
+        final long TOP2 = 1L;
+        final long TOP3 = 3L;
+
+        String salesforcePurchaserId = "12345";
+
+        LocalDateTime startDate = LocalDateTime.of(2022,02,01, 0 , 0 ,0);
+
+        PersonCourseSummary personCourseSummary11 = PersonCourseSummary.builder()
+                .person(Person.builder().id(1L).build())
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .createdDate(LocalDateTime.of(2022, 2, 15, 12, 0, 0))
+                .timeontask(50)
+                .build();
+        PersonCourseSummary personCourseSummary12 = PersonCourseSummary.builder()
+                .person(Person.builder().id(1L).build())
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .createdDate(LocalDateTime.of(2022, 2, 19, 14, 0, 0))
+                .timeontask(70)
+                .build();
+        PersonCourseSummary personCourseSummary13 = PersonCourseSummary.builder()
+                .person(Person.builder().id(1L).build())
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .createdDate(LocalDateTime.of(2022, 2, 20, 12, 0, 0))
+                .timeontask(90)
+                .build();
+
+        PersonCourseSummary personCourseSummary21 = PersonCourseSummary.builder()
+                .person(Person.builder().id(2L).build())
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .createdDate(LocalDateTime.of(2022, 2, 21, 10, 0, 0))
+                .timeontask(10)
+                .build();
+
+        PersonCourseSummary personCourseSummary31 = PersonCourseSummary.builder()
+                .person(Person.builder().id(3L).build())
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .createdDate(LocalDateTime.of(2022, 2, 7, 8, 0, 0))
+                .timeontask(30)
+                .build();
+        PersonCourseSummary personCourseSummary32 = PersonCourseSummary.builder()
+                .person(Person.builder().id(3L).build())
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .createdDate(LocalDateTime.of(2022, 2, 7, 12, 0, 0))
+                .timeontask(30)
+                .build();
+        PersonCourseSummary personCourseSummary41 = PersonCourseSummary.builder()
+                .person(Person.builder().id(4L).build())
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .createdDate(LocalDateTime.of(2022, 2, 1, 12, 0, 0))
+                .timeontask(30)
+                .build();
+
+        PersonCourseSummary personCourseSummary51 = PersonCourseSummary.builder()
+                .person(Person.builder().id(5L).build())
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .createdDate(LocalDateTime.of(2022, 2, 4, 12, 0, 0))
+                .timeontask(30)
+                .build();
+        PersonCourseSummary personCourseSummary52 = PersonCourseSummary.builder()
+                .person(Person.builder().id(5L).build())
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .createdDate(LocalDateTime.of(2022, 2, 7, 12, 0, 0))
+                .timeontask(30)
+                .build();
+        PersonCourseSummary personCourseSummary53 = PersonCourseSummary.builder()
+                .person(Person.builder().id(5L).build())
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .createdDate(LocalDateTime.of(2022, 2, 18, 12, 0, 0))
+                .timeontask(30)
+                .build();
+        PersonCourseSummary personCourseSummary54 = PersonCourseSummary.builder()
+                .person(Person.builder().id(5L).build())
+                .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .createdDate(LocalDateTime.of(2022, 2, 11, 12, 0, 0))
+                .timeontask(30)
+                .build();
+
+        List<PersonCourseSummary> personCourseSummaries = List.of(personCourseSummary11, personCourseSummary12, personCourseSummary13,
+                personCourseSummary21,
+                personCourseSummary31, personCourseSummary32,
+                personCourseSummary41,
+                personCourseSummary51, personCourseSummary52,personCourseSummary53, personCourseSummary54);
+
+        new Expectations() {{
+            personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(anyString, (LocalDateTime) any, (LocalDateTime) any, (List<Long>) any);
+            returns(personCourseSummaries);
+        }};
+
+        LinkedHashMap<Person, Long> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, List.of(4L), PERSONS_SIZE);
+        Iterator<Person> persons =  personsTop.keySet().iterator();
+
+        assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
+        assertThat(persons.next().getId(), is(TOP1));
+        assertThat(persons.next().getId(), is(TOP2));
+        assertThat(persons.next().getId(), is(TOP3));
     }
 }

@@ -3,6 +3,8 @@ package com.openenglish.hr.service;
 import com.google.common.base.Preconditions;
 import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
+import com.openenglish.hr.common.dto.PersonActivityTotalDto;
+import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
 import com.openenglish.hr.service.util.NumberUtils;
@@ -96,6 +98,52 @@ public class ActivityService {
                         .hours(NumberUtils.round(courseTypeCounting.getOrDefault(month, 0.0), 2))
                         .build()
         ).collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieve the top number of students with more activities done on the specified date
+     * @param salesforcePurchaserId d of the owner of the license
+     * @param startDate Date to filter the top students
+     * @param courseTypesNames target activities
+     * @param top number of students to return
+     * @return Map with each student and his number of activities
+     */
+    public  LinkedHashMap<Person, Long> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, List<Long> courseTypesNames, int top){
+
+        LocalDateTime endDate = startDate.plusMonths(1).minusSeconds(1);
+
+        List<PersonCourseSummary> personCourseSummaries = personCourseSummaryRepository
+                .findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypesNames);
+
+        Map<Person, Long> courseTypeCountingByPerson = this.getTotalActivityCountGroupedByPerson(personCourseSummaries);
+
+        return this.getTopStudents(courseTypeCountingByPerson, top);
+
+    }
+
+    /**
+     * Sort the students from most active to less and retrieve the specified number
+     * @param courseTypeCountingByPerson Map with students and their respective number of activities
+     * @param top number of students to return
+     * @return ordered map with students and their number of activities
+     */
+    private  LinkedHashMap<Person, Long> getTopStudents(Map<Person, Long> courseTypeCountingByPerson, int top){
+        return courseTypeCountingByPerson.entrySet().stream()
+                .sorted((entry1,entry2)->entry2.getValue().compareTo(entry1.getValue()))
+                .limit(top)
+                .collect(Collectors.toMap(entry->entry.getKey(), entry->entry.getValue(),(x,y)->y, LinkedHashMap::new));
+    }
+
+    /**
+     * Group Person by activity total count
+     * @param personCourseSummaries List of student course activities
+     * @return Map with every activity total count by Person
+     */
+    private Map<Person, Long> getTotalActivityCountGroupedByPerson(List<PersonCourseSummary> personCourseSummaries) {
+        return personCourseSummaries
+                .stream()
+                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseSummary)))
+                .collect(Collectors.groupingBy(personCourseSummary -> personCourseSummary.getPerson(), Collectors.counting()));
     }
 
     /**

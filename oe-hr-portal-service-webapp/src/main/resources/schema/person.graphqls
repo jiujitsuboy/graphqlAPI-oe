@@ -24,3 +24,8 @@
     levelName: String
     totalNumber: Int
  }
+
+ type PersonActivitiesTotal{
+    person: Person
+    totalActivities: Int
+ }

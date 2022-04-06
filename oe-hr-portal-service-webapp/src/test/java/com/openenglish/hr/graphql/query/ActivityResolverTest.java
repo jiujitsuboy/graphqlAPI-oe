@@ -5,6 +5,8 @@ import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.common.dto.ActivityStatisticsDto;
+import com.openenglish.hr.common.dto.PersonActivityTotalDto;
+import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.aggregation.ActivityStatistics;
 import com.openenglish.hr.service.ActivityService;
 import com.openenglish.hr.service.mapper.MappingConfig;
@@ -17,8 +19,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 
@@ -114,5 +120,38 @@ public class ActivityResolverTest {
             assertEquals(expected.getMonth(), received.getMonth());
             assertEquals(expected.getHours(), received.getHours(), 0);
         }
+    }
+
+    @Test
+    public void getTopStudentsByActivityStatistics() {
+
+        LinkedHashMap<Person, Long> personsTop = new LinkedHashMap<>(5);
+        personsTop.put(Person.builder().firstName("Carl").lastName("Thomson").build(), 10L);
+        personsTop.put(Person.builder().firstName("Jake").lastName("Sullivan").build(), 20L);
+        personsTop.put(Person.builder().firstName("Mark").lastName("Foster").build(), 30L);
+
+        Mockito.when(activityService.getTopStudentsByActivityStatistics(anyString(), any(), any(), anyInt())).thenReturn(personsTop);
+
+        String query = "{ " +
+                "  getTopStudentsByActivityStatistics(salesforcePurchaserId:\"12345\", year:2022, month:2, activities: [1,2,3,4,5,6,8,10], top: 3){\n" +
+                "    person{ " +
+                "      firstName " +
+                "      lastName " +
+                "    } " +
+                "    totalActivities " +
+                "  } " +
+                "}";
+        String projection = "data.getTopStudentsByActivityStatistics[*]";
+
+        List<PersonActivityTotalDto> personActivityTotalDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
+        });
+
+        assertNotNull(personActivityTotalDto);
+
+        Iterator<Person> persons =  personsTop.keySet().iterator();
+        assertThat(persons.next().getFirstName(), is(personActivityTotalDto.get(0).getPerson().getFirstName()));
+        assertThat(persons.next().getFirstName(), is(personActivityTotalDto.get(1).getPerson().getFirstName()));
+        assertThat(persons.next().getFirstName(), is(personActivityTotalDto.get(2).getPerson().getFirstName()));
+
     }
 }
