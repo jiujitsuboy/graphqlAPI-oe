@@ -23,31 +23,31 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     private PersonCourseAuditRepository personCourseAuditRepository;
 
     @Test
-    public void findPersonCourseSummaryForCertainYear() {
+    public void findPersonCourseAuditForCertainYear() {
         String salesforcePurchaserId = "12345";
         final int NUMBER_RECORDS_EXPECTED = 13;
         List<Long> courseTypes = List.of(1L, 2L, 3L, 4L, 5L, 8L, 10L);
         LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseSummaries = personCourseAuditRepository.findPersonCourseAuditByPersonDetailsSalesforcePurchaserIdAndDateCompletedBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypes);
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findPersonCourseAuditByPersonDetailsSalesforcePurchaserIdAndDateCompletedBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypes);
 
-        assertEquals(NUMBER_RECORDS_EXPECTED, personCourseSummaries.size());
+        assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
 
-        personCourseSummaries.stream().forEach(personCourseSummary -> assertEquals(startDate.getYear(), personCourseSummary.getDateCompleted().getYear()));
+        personCourseAudits.stream().forEach(personCourseAudit -> assertEquals(startDate.getYear(), personCourseAudit.getDateCompleted().getYear()));
 
     }
 
     @Test
-    public void findPersonCourseSummaryEmptyResultForCertainYear() {
+    public void findPersonCourseAuditEmptyResultForCertainYear() {
         String salesforcePurchaserId = "12347";
         final int NUMBER_RECORDS_EXPECTED = 0;
         List<Long> courseTypes = List.of(1L, 2L, 3L, 4L, 5L, 8L, 10L);
         LocalDateTime startDate = LocalDateTime.of(2021, 01, 01, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseSummaries = personCourseAuditRepository.findPersonCourseAuditByPersonDetailsSalesforcePurchaserIdAndDateCompletedBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypes);
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findPersonCourseAuditByPersonDetailsSalesforcePurchaserIdAndDateCompletedBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypes);
 
-        assertEquals(NUMBER_RECORDS_EXPECTED, personCourseSummaries.size());
+        assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
     }
 }
