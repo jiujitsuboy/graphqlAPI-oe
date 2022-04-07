@@ -24,8 +24,8 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
 
     @Test
     public void findPersonCourseAuditForCertainYear() {
-        String salesforcePurchaserId = "12345";
-        final int NUMBER_RECORDS_EXPECTED = 13;
+        String salesforcePurchaserId = "12347";
+        final int NUMBER_RECORDS_EXPECTED = 16;
         List<Long> courseTypes = List.of(1L, 2L, 3L, 4L, 5L, 8L, 10L);
         LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
