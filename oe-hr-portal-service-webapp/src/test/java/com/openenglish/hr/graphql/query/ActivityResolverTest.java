@@ -1,8 +1,11 @@
 package com.openenglish.hr.graphql.query;
 
+import com.jayway.jsonpath.TypeRef;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
+import com.openenglish.hr.common.dto.ActivityStatisticsDto;
+import com.openenglish.hr.persistence.entity.aggregation.ActivityStatistics;
 import com.openenglish.hr.service.ActivityService;
 import com.openenglish.hr.service.mapper.MappingConfig;
 import org.junit.Test;
@@ -14,8 +17,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 
 @RunWith(SpringRunner.class)
 @Import(MappingConfig.class)
@@ -66,7 +71,48 @@ public class ActivityResolverTest {
         assertEquals(activitiesOverviewExpected.getCompletedUnits(), activitiesOverviewDtos.getCompletedUnits());
         assertEquals(activitiesOverviewExpected.getPracticeHours(), activitiesOverviewDtos.getPracticeHours(), 0);
         assertEquals(activitiesOverviewExpected.getLevelPassed(), activitiesOverviewDtos.getLevelPassed());
-        assertEquals(activitiesOverviewExpected.getTotalHoursUsage(), activitiesOverviewDtos.getTotalHoursUsage(),0);
+        assertEquals(activitiesOverviewExpected.getTotalHoursUsage(), activitiesOverviewDtos.getTotalHoursUsage(), 0);
 
+    }
+
+    @Test
+    public void getActivitiesStatistics() {
+
+        List<ActivityStatistics> activityStatistics =
+                List.of(ActivityStatistics.builder().month(1).hours(0).build(),
+                        ActivityStatistics.builder().month(2).hours(10).build(),
+                        ActivityStatistics.builder().month(3).hours(20).build(),
+                        ActivityStatistics.builder().month(4).hours(0).build(),
+                        ActivityStatistics.builder().month(5).hours(0).build(),
+                        ActivityStatistics.builder().month(6).hours(0).build(),
+                        ActivityStatistics.builder().month(7).hours(0).build(),
+                        ActivityStatistics.builder().month(8).hours(0).build(),
+                        ActivityStatistics.builder().month(9).hours(0).build(),
+                        ActivityStatistics.builder().month(10).hours(0).build(),
+                        ActivityStatistics.builder().month(11).hours(0).build(),
+                        ActivityStatistics.builder().month(12).hours(0).build()
+                );
+        Mockito.when(activityService.getActivitiesStatistics(anyString(), anyInt(), any())).thenReturn(activityStatistics);
+
+        String query = "{ " +
+                "  getActivitiesStatistics(salesforcePurchaserId:\"12345\", year: 2022, activities: [1]){ " +
+                "    month " +
+                "    hours" +
+                "    }" +
+                "}";
+        String projection = "data.getActivitiesStatistics[*]";
+        List<ActivityStatisticsDto> activitiesOverviewDtos = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
+        });
+
+        assertNotNull(activitiesOverviewDtos);
+
+        for (int index = 0; index < activitiesOverviewDtos.size(); index++) {
+
+            ActivityStatistics expected = activityStatistics.get(index);
+            ActivityStatisticsDto received = activitiesOverviewDtos.get(index);
+
+            assertEquals(expected.getMonth(), received.getMonth());
+            assertEquals(expected.getHours(), received.getHours(), 0);
+        }
     }
 }

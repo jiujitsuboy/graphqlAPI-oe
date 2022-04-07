@@ -7,3 +7,8 @@
      practiceHours: Float
      totalHoursUsage: Float
  }
+
+ type ActivitiesStatistics{
+    month: String
+    hours: Float
+ }
