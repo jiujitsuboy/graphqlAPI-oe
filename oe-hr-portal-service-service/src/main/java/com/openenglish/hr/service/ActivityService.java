@@ -159,7 +159,7 @@ public class ActivityService {
         return personCoursesAudits
                 .stream()
                 .filter(personCourseAudits -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseAudits.getCourse())))
-                .collect(Collectors.groupingBy(personCourseSummary -> personCourseSummary.getDateCompleted().getMonth().getValue(),
+                .collect(Collectors.groupingBy(personCourseAudit -> personCourseAudit.getDateCompleted().getMonth().getValue(),
                                 Collectors.collectingAndThen(
                                         Collectors.summingDouble(this::convertActivitiesOccurrenceToSeconds), NumberUtils::convertSecondsToHours)
                         )
@@ -184,17 +184,6 @@ public class ActivityService {
      */
     private int convertActivitiesOccurrenceToSeconds(Map.Entry<CourseTypeEnum, Integer> entry) {
         return convertActivitiesOccurrenceToSeconds(entry.getKey(), entry.getValue());
-    }
-
-    /**
-     * For every type of activity calculate the corresponding amount of time in seconds
-     *
-     * @param personCourseSummary List of student course activities
-     * @return amount of time in seconds
-     */
-    private int convertActivitiesOccurrenceToSeconds(PersonCourseSummary personCourseSummary) {
-        CourseTypeEnum courseTypeEnum = CourseTypeEnum.getStatusByValue(this.getCourseTypeId(personCourseSummary.getCourse()));
-        return convertActivitiesOccurrenceToSeconds(courseTypeEnum, courseTypeEnum == CourseTypeEnum.PRACTICE ? personCourseSummary.getTimeontask() : 1);
     }
 
     /**
