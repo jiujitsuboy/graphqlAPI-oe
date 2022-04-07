@@ -3,7 +3,10 @@ package com.openenglish.hr.service;
 import com.google.common.base.Preconditions;
 import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
+import com.openenglish.hr.persistence.entity.Course;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
+import com.openenglish.hr.persistence.entity.PersonCourseAudit;
+import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
 import com.openenglish.hr.service.util.NumberUtils;
 import com.openenglish.hr.persistence.entity.aggregation.ActivityStatistics;
@@ -40,6 +43,8 @@ public class ActivityService {
     );
 
     private final PersonCourseSummaryRepository personCourseSummaryRepository;
+    private final PersonCourseAuditRepository personCourseAuditRepository;
+
 
     /**
      * Group and sum the time of each CourseType activity
@@ -52,7 +57,7 @@ public class ActivityService {
 
         List<PersonCourseSummary> personCourseSummaries = personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserId(salesforcePurchaserId);
 
-        Map<CourseTypeEnum, Integer> courseTypeCounting = getSummingTimeByGroupingCourseTypes(personCourseSummaries);
+        Map<CourseTypeEnum, Integer> courseTypeCounting = getSummingTimeByGroupingCourseTypesCourseSummary(personCourseSummaries);
 
         double totalTimeInHours = getTotalTimeInHours(courseTypeCounting);
 
@@ -85,9 +90,9 @@ public class ActivityService {
         LocalDateTime startDate = LocalDateTime.of(year, MONTH, DAY_OF_MONTH, HOUR, MINUTE);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseSummary> personCourseSummaries = personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypeIds);
+        List<PersonCourseAudit> personCourseAudit = personCourseAuditRepository.findPersonCourseAuditByPersonDetailsSalesforcePurchaserIdAndDateCompletedBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypeIds);
 
-        Map<Integer, Double> courseTypeCounting = getSummingTimeByGroupingPerMonth(personCourseSummaries);
+        Map<Integer, Double> courseTypeCounting = getSummingTimeByGroupingPerMonthCourseAudit(personCourseAudit);
 
         //Generate all 12 months
         return IntStream.rangeClosed(1, 12).boxed().map(month ->
@@ -119,25 +124,42 @@ public class ActivityService {
      * @param personCourseSummaries List of student course activities
      * @return Map with every activity and the amount of minutes
      */
-    private Map<CourseTypeEnum, Integer> getSummingTimeByGroupingCourseTypes(List<PersonCourseSummary> personCourseSummaries) {
+    private Map<CourseTypeEnum, Integer> getSummingTimeByGroupingCourseTypesCourseSummary(List<PersonCourseSummary> personCourseSummaries) {
         return personCourseSummaries
                 .stream()
-                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseSummary)))
-                .collect(Collectors.groupingBy(personCourseSummary -> CourseTypeEnum.getStatusByValue(this.getCourseTypeId(personCourseSummary)),
+                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseSummary.getCourse())))
+                .collect(Collectors.groupingBy(personCourseSummary -> CourseTypeEnum.getStatusByValue(this.getCourseTypeId(personCourseSummary.getCourse())),
                         Collectors.summingInt(this::getAmountOfTimePerActivity)));
     }
 
     /**
      * Group and sum every activity by month and year
      *
-     * @param personCourseSummaries List of student course activities
+     * @param personCoursesAudit List of student course activities
      * @return Map with every activity and the amount of minutes per month
      */
-    private Map<Integer, Double> getSummingTimeByGroupingPerMonth(List<PersonCourseSummary> personCourseSummaries) {
-        return personCourseSummaries
+    private Map<Integer, Double> getSummingTimeByGroupingPerMonthCourseAudit(List<PersonCourseAudit> personCoursesAudit) {
+        return personCoursesAudit
                 .stream()
-                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseSummary)))
-                .collect(Collectors.groupingBy(personCourseSummary -> personCourseSummary.getCreatedDate().getMonth().getValue(),
+                .filter(personCourseAudit -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseAudit.getCourse())))
+                .collect(Collectors.groupingBy(personCourseAudit -> personCourseAudit.getDateCompleted().getMonth().getValue(),
+                                Collectors.collectingAndThen(
+                                        Collectors.summingDouble(this::convertActivitiesOccurrenceToSeconds), NumberUtils::convertSecondsToHours)
+                        )
+                );
+    }
+
+    /**
+     * Group and sum every activity by month and year
+     *
+     * @param personCoursesAudits List of student course activities
+     * @return Map with every activity and the amount of minutes per month
+     */
+    private Map<Integer, Double> getSummingTimeByGroupingPerMonth(List<PersonCourseAudit> personCoursesAudits) {
+        return personCoursesAudits
+                .stream()
+                .filter(personCourseAudits -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseAudits.getCourse())))
+                .collect(Collectors.groupingBy(personCourseSummary -> personCourseSummary.getDateCompleted().getMonth().getValue(),
                                 Collectors.collectingAndThen(
                                         Collectors.summingDouble(this::convertActivitiesOccurrenceToSeconds), NumberUtils::convertSecondsToHours)
                         )
@@ -151,7 +173,7 @@ public class ActivityService {
      * @return time for activity
      */
     private int getAmountOfTimePerActivity(PersonCourseSummary personCourseSummary) {
-        return PRACTICE_COURSE_TYPES.contains(this.getCourseTypeId(personCourseSummary)) ? personCourseSummary.getTimeontask() : ONE_ACTIVITY;
+        return PRACTICE_COURSE_TYPES.contains(this.getCourseTypeId(personCourseSummary.getCourse())) ? personCourseSummary.getTimeontask() : ONE_ACTIVITY;
     }
 
     /**
@@ -160,7 +182,7 @@ public class ActivityService {
      * @param entry Map with every activity and the amount of minutes
      * @return amount of time in seconds
      */
-    private Integer convertActivitiesOccurrenceToSeconds(Map.Entry<CourseTypeEnum, Integer> entry) {
+    private int convertActivitiesOccurrenceToSeconds(Map.Entry<CourseTypeEnum, Integer> entry) {
         return convertActivitiesOccurrenceToSeconds(entry.getKey(), entry.getValue());
     }
 
@@ -171,8 +193,19 @@ public class ActivityService {
      * @return amount of time in seconds
      */
     private int convertActivitiesOccurrenceToSeconds(PersonCourseSummary personCourseSummary) {
-        CourseTypeEnum courseTypeEnum = CourseTypeEnum.getStatusByValue(this.getCourseTypeId(personCourseSummary));
+        CourseTypeEnum courseTypeEnum = CourseTypeEnum.getStatusByValue(this.getCourseTypeId(personCourseSummary.getCourse()));
         return convertActivitiesOccurrenceToSeconds(courseTypeEnum, courseTypeEnum == CourseTypeEnum.PRACTICE ? personCourseSummary.getTimeontask() : 1);
+    }
+
+    /**
+     * For every type of activity calculate the corresponding amount of time in seconds
+     *
+     * @param personCourseAudit List of student course activities
+     * @return amount of time in seconds
+     */
+    private int convertActivitiesOccurrenceToSeconds(PersonCourseAudit personCourseAudit) {
+        CourseTypeEnum courseTypeEnum = CourseTypeEnum.getStatusByValue(this.getCourseTypeId(personCourseAudit.getCourse()));
+        return convertActivitiesOccurrenceToSeconds(courseTypeEnum, courseTypeEnum == CourseTypeEnum.PRACTICE ? personCourseAudit.getTimeontask() : 1);
     }
 
     /**
@@ -202,7 +235,7 @@ public class ActivityService {
         return timeInSeconds;
     }
 
-    private long getCourseTypeId(PersonCourseSummary personCourseSummary){
-        return personCourseSummary.getCourse().getCourseType().getId();
+    private long getCourseTypeId(Course course){
+        return course.getCourseType().getId();
     }
 }

@@ -1,10 +1,12 @@
 package com.openenglish.hr.service;
 
+import com.openenglish.hr.persistence.entity.Course;
+import com.openenglish.hr.persistence.entity.PersonCourseAudit;
 import com.openenglish.hr.persistence.entity.aggregation.ActivityStatistics;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
-import com.openenglish.hr.persistence.entity.Course;
 import com.openenglish.hr.persistence.entity.CourseType;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
+import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
 import com.openenglish.hr.service.util.NumberUtils;
 import mockit.Expectations;
@@ -23,6 +25,8 @@ public class ActivityServiceTest {
 
     @Injectable
     private PersonCourseSummaryRepository personCourseSummaryRepository;
+    @Injectable
+    private PersonCourseAuditRepository personCourseAuditRepository;
     @Tested
     private ActivityService activityService;
 
@@ -128,55 +132,55 @@ public class ActivityServiceTest {
         final double ZERO = 0.0;
         final int MONTHS_OF_YEAR = 12;
 
-        PersonCourseSummary personCourseSummary11 = PersonCourseSummary.builder()
+        PersonCourseAudit personCourseAudit11 = PersonCourseAudit.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
-                .createdDate(LocalDateTime.of(2022, 1, 15, 12, 0, 0))
+                .dateCompleted(LocalDateTime.of(2022, 1, 15, 12, 0, 0))
                 .timeontask(50)
                 .build();
-        PersonCourseSummary personCourseSummary12 = PersonCourseSummary.builder()
+        PersonCourseAudit personCourseAudit12 = PersonCourseAudit.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
-                .createdDate(LocalDateTime.of(2022, 1, 19, 14, 0, 0))
+                .dateCompleted(LocalDateTime.of(2022, 1, 19, 14, 0, 0))
                 .timeontask(70)
                 .build();
-        PersonCourseSummary personCourseSummary13 = PersonCourseSummary.builder()
+        PersonCourseAudit personCourseAudit13 = PersonCourseAudit.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
-                .createdDate(LocalDateTime.of(2022, 1, 20, 12, 0, 0))
+                .dateCompleted(LocalDateTime.of(2022, 1, 20, 12, 0, 0))
                 .timeontask(90)
                 .build();
 
-        PersonCourseSummary personCourseSummary21 = PersonCourseSummary.builder()
+        PersonCourseAudit personCourseAudit21 = PersonCourseAudit.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
-                .createdDate(LocalDateTime.of(2022, 1, 21, 10, 0, 0))
+                .dateCompleted(LocalDateTime.of(2022, 1, 21, 10, 0, 0))
                 .timeontask(10)
                 .build();
-        PersonCourseSummary personCourseSummary22 = PersonCourseSummary.builder()
+        PersonCourseAudit personCourseAudit22 = PersonCourseAudit.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
-                .createdDate(LocalDateTime.of(2022, 2, 15, 12, 0, 0))
+                .dateCompleted(LocalDateTime.of(2022, 2, 15, 12, 0, 0))
                 .timeontask(10)
                 .build();
 
-        PersonCourseSummary personCourseSummary31 = PersonCourseSummary.builder()
+        PersonCourseAudit personCourseAudit31 = PersonCourseAudit.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
-                .createdDate(LocalDateTime.of(2022, 2, 7, 8, 0, 0))
+                .dateCompleted(LocalDateTime.of(2022, 2, 7, 8, 0, 0))
                 .timeontask(30)
                 .build();
-        PersonCourseSummary personCourseSummary32 = PersonCourseSummary.builder()
+        PersonCourseAudit personCourseAudit32 = PersonCourseAudit.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
-                .createdDate(LocalDateTime.of(2022, 2, 7, 12, 0, 0))
+                .dateCompleted(LocalDateTime.of(2022, 2, 7, 12, 0, 0))
                 .timeontask(30)
                 .build();
-        PersonCourseSummary personCourseSummary33 = PersonCourseSummary.builder()
+        PersonCourseAudit personCourseAudit33 = PersonCourseAudit.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
-                .createdDate(LocalDateTime.of(2022, 3, 1, 12, 0, 0))
+                .dateCompleted(LocalDateTime.of(2022, 3, 1, 12, 0, 0))
                 .timeontask(30)
                 .build();
 
-        List<PersonCourseSummary> personCourseSummaries = List.of(personCourseSummary11, personCourseSummary12, personCourseSummary13,
-                personCourseSummary21, personCourseSummary22, personCourseSummary31, personCourseSummary32, personCourseSummary33);
+        List<PersonCourseAudit> personCourseAudits = List.of(personCourseAudit11, personCourseAudit12, personCourseAudit13,
+                personCourseAudit21, personCourseAudit22, personCourseAudit31, personCourseAudit32, personCourseAudit33);
 
         new Expectations() {{
-            personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(anyString, (LocalDateTime) any, (LocalDateTime) any, (List<Long>) any);
-            returns(personCourseSummaries);
+            personCourseAuditRepository.findPersonCourseAuditByPersonDetailsSalesforcePurchaserIdAndDateCompletedBetweenAndCourseCourseTypeIdIn(anyString, (LocalDateTime) any, (LocalDateTime) any, (List<Long>) any);
+            returns(personCourseAudits);
         }};
 
         List<ActivityStatistics> activityStatistics = activityService.getActivitiesStatistics(salesforcePurchaserId, 0, List.of(1L, 2L));
@@ -194,11 +198,11 @@ public class ActivityServiceTest {
         final double ZERO = 0.0;
         final int MONTHS_OF_YEAR = 12;
 
-        List<PersonCourseSummary> personCourseSummaries = new ArrayList<>();
+        List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
         new Expectations() {{
-            personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(anyString, (LocalDateTime) any, (LocalDateTime) any, (List<Long>) any);
-            returns(personCourseSummaries);
+            personCourseAuditRepository.findPersonCourseAuditByPersonDetailsSalesforcePurchaserIdAndDateCompletedBetweenAndCourseCourseTypeIdIn(anyString, (LocalDateTime) any, (LocalDateTime) any, (List<Long>) any);
+            returns(personCourseAudits);
         }};
 
         List<ActivityStatistics> activityStatistics = activityService.getActivitiesStatistics(salesforcePurchaserId, 0, List.of(1L, 2L));
