@@ -2,5 +2,5 @@ type Query{
   getPersons(salesforcePurchaserId: String): [Person]!
   getAllPersonsByLevel(salesforcePurchaserId: String): [PersonsPerLevel]!
   getAllActivitiesOverview(salesforcePurchaserId: String): ActivitiesOverview
-  getActivityStatistics(salesforcePurchaserId: String, year: Int, activity: Int): [ActivityStatistics]!
+  getYearActivityStatistics(salesforcePurchaserId: String, year: Int, activity: Int): YearActivityStatistics!
 }

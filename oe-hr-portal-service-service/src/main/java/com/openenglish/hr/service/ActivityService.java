@@ -6,10 +6,11 @@ import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.persistence.entity.Course;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
 import com.openenglish.hr.persistence.entity.PersonCourseAudit;
+import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
 import com.openenglish.hr.service.util.NumberUtils;
-import com.openenglish.hr.persistence.entity.aggregation.ActivityStatistics;
+import com.openenglish.hr.persistence.entity.aggregation.MonthActivityStatistics;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -81,7 +82,7 @@ public class ActivityService {
      * @param courseTypeId          target activities
      * @return the total sum of all activities by  month
      */
-    public List<ActivityStatistics> getActivityStatistics(String salesforcePurchaserId, int year, long courseTypeId) {
+    public YearActivityStatistics getActivityStatistics(String salesforcePurchaserId, int year, long courseTypeId) {
 
         final int MONTH = 1;
         final int DAY_OF_MONTH = 1;
@@ -98,12 +99,18 @@ public class ActivityService {
         Map<Integer, Double> courseTypeCounting = getSummingTimeByGroupingPerMonthCourseAudit(personCourseAudit, courseTypeEnum);
 
         //Generate all 12 months
-        return IntStream.rangeClosed(1, 12).boxed().map(month ->
-                ActivityStatistics.builder()
+        List<MonthActivityStatistics> activityStatistics = IntStream.rangeClosed(1, 12).boxed().map(month ->
+                MonthActivityStatistics.builder()
                         .month(month)
                         .value(NumberUtils.round(courseTypeCounting.getOrDefault(month, 0.0), 2))
                         .build()
         ).collect(Collectors.toList());
+
+        double yearActivityValue = activityStatistics.stream().mapToDouble(monthStatistic -> monthStatistic.getValue()).sum();
+
+        return YearActivityStatistics.builder()
+                .monthsActivityStatistics(activityStatistics)
+                .total(yearActivityValue).build();
     }
 
     /**

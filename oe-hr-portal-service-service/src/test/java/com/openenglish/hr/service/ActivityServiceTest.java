@@ -2,10 +2,10 @@ package com.openenglish.hr.service;
 
 import com.openenglish.hr.persistence.entity.Course;
 import com.openenglish.hr.persistence.entity.PersonCourseAudit;
-import com.openenglish.hr.persistence.entity.aggregation.ActivityStatistics;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.persistence.entity.CourseType;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
+import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
 import com.openenglish.hr.service.util.NumberUtils;
@@ -196,12 +196,12 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        List<ActivityStatistics> activityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR,LIVE_CLASSES_TYPE);
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR,LIVE_CLASSES_TYPE);
 
-        assertEquals(MONTHS_OF_YEAR, activityStatistics.size());
-        assertEquals(januaryTotalCount , activityStatistics.get(JANUARY_INDEX).getValue(),0);
-        assertEquals(februaryTotalCount , activityStatistics.get(FEBRUARY_INDEX).getValue(),0);
-        assertEquals(marchTotalCount , activityStatistics.get(MARCH_INDEX).getValue(),0);
+        assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
+        assertEquals(januaryTotalCount , yearActivityStatistics.getMonthsActivityStatistics().get(JANUARY_INDEX).getValue(),0);
+        assertEquals(februaryTotalCount , yearActivityStatistics.getMonthsActivityStatistics().get(FEBRUARY_INDEX).getValue(),0);
+        assertEquals(marchTotalCount , yearActivityStatistics.getMonthsActivityStatistics().get(MARCH_INDEX).getValue(),0);
 
     }
 
@@ -274,12 +274,13 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        List<ActivityStatistics> activityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR,PRACTICE_TYPE);
-        assertEquals(MONTHS_OF_YEAR, activityStatistics.size());
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR,PRACTICE_TYPE);
+        assertNotNull(yearActivityStatistics);
+        assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
 
-        assertEquals(januaryTotalHours , activityStatistics.get(JANUARY_INDEX).getValue(),0);
-        assertEquals(februaryTotalHours , activityStatistics.get(FEBRUARY_INDEX).getValue(),0);
-        assertEquals(marchTotalHours , activityStatistics.get(MARCH_INDEX).getValue(),0);
+        assertEquals(januaryTotalHours , yearActivityStatistics.getMonthsActivityStatistics().get(JANUARY_INDEX).getValue(),0);
+        assertEquals(februaryTotalHours , yearActivityStatistics.getMonthsActivityStatistics().get(FEBRUARY_INDEX).getValue(),0);
+        assertEquals(marchTotalHours , yearActivityStatistics.getMonthsActivityStatistics().get(MARCH_INDEX).getValue(),0);
     }
 
     @Test
@@ -295,9 +296,11 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        List<ActivityStatistics> activityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, 0, 1L);
-        assertEquals(MONTHS_OF_YEAR, activityStatistics.size());
-        activityStatistics
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, 0, 1L);
+
+        assertNotNull(yearActivityStatistics);
+        assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
+        yearActivityStatistics.getMonthsActivityStatistics()
                 .stream()
                 .forEach(activityStatistic -> assertThat(activityStatistic.getValue(), equalTo(ZERO)));
     }
