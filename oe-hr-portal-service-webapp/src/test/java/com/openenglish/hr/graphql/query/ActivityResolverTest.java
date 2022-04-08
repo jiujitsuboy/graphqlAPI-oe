@@ -79,28 +79,28 @@ public class ActivityResolverTest {
     public void getActivitiesStatistics() {
 
         List<ActivityStatistics> activityStatistics =
-                List.of(ActivityStatistics.builder().month(1).hours(0).build(),
-                        ActivityStatistics.builder().month(2).hours(10).build(),
-                        ActivityStatistics.builder().month(3).hours(20).build(),
-                        ActivityStatistics.builder().month(4).hours(0).build(),
-                        ActivityStatistics.builder().month(5).hours(0).build(),
-                        ActivityStatistics.builder().month(6).hours(0).build(),
-                        ActivityStatistics.builder().month(7).hours(0).build(),
-                        ActivityStatistics.builder().month(8).hours(0).build(),
-                        ActivityStatistics.builder().month(9).hours(0).build(),
-                        ActivityStatistics.builder().month(10).hours(0).build(),
-                        ActivityStatistics.builder().month(11).hours(0).build(),
-                        ActivityStatistics.builder().month(12).hours(0).build()
+                List.of(ActivityStatistics.builder().month(1).value(0).build(),
+                        ActivityStatistics.builder().month(2).value(10).build(),
+                        ActivityStatistics.builder().month(3).value(20).build(),
+                        ActivityStatistics.builder().month(4).value(0).build(),
+                        ActivityStatistics.builder().month(5).value(0).build(),
+                        ActivityStatistics.builder().month(6).value(0).build(),
+                        ActivityStatistics.builder().month(7).value(0).build(),
+                        ActivityStatistics.builder().month(8).value(0).build(),
+                        ActivityStatistics.builder().month(9).value(0).build(),
+                        ActivityStatistics.builder().month(10).value(0).build(),
+                        ActivityStatistics.builder().month(11).value(0).build(),
+                        ActivityStatistics.builder().month(12).value(0).build()
                 );
-        Mockito.when(activityService.getActivitiesStatistics(anyString(), anyInt(), any())).thenReturn(activityStatistics);
+        Mockito.when(activityService.getActivityStatistics(anyString(), anyInt(), anyLong())).thenReturn(activityStatistics);
 
         String query = "{ " +
-                "  getActivitiesStatistics(salesforcePurchaserId:\"12345\", year: 2022, activities: [1]){ " +
+                "  getActivityStatistics(salesforcePurchaserId:\"12345\", year: 2022, activity: 1){ " +
                 "    month " +
-                "    hours" +
+                "    value" +
                 "    }" +
                 "}";
-        String projection = "data.getActivitiesStatistics[*]";
+        String projection = "data.getActivityStatistics[*]";
         List<ActivityStatisticsDto> activitiesOverviewDtos = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
         });
 
@@ -112,7 +112,7 @@ public class ActivityResolverTest {
             ActivityStatisticsDto received = activitiesOverviewDtos.get(index);
 
             assertEquals(expected.getMonth(), received.getMonth());
-            assertEquals(expected.getHours(), received.getHours(), 0);
+            assertEquals(expected.getValue(), received.getValue(), 0);
         }
     }
 }

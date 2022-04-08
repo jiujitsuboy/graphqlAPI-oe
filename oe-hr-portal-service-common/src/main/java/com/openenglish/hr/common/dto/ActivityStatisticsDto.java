@@ -7,5 +7,5 @@ import lombok.Data;
 @Builder
 public class ActivityStatisticsDto {
     private int month;
-    private double hours;
+    private double value;
 }

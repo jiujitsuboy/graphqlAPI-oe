@@ -9,5 +9,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class ActivityStatistics {
     private int month;
-    private double hours;
+    private double value;
 }

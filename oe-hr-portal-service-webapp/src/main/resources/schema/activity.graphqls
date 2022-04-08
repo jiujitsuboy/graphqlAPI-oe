@@ -8,7 +8,7 @@
      totalHoursUsage: Float
  }
 
- type ActivitiesStatistics{
+ type ActivityStatistics{
     month: String
-    hours: Float
+    value: Float
  }

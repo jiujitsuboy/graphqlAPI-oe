@@ -24,15 +24,10 @@ public class ActivityResolver {
         return activityService.getCurrentMonthActivitiesOverview(salesforcePurchaserId);
     }
 
-    @DgsData(parentType = "Query", field = "getActivitiesStatistics")
-    public List<ActivityStatisticsDto> getActivitiesStatistics(String salesforcePurchaserId, int year, List<Integer> activities) {
+    @DgsData(parentType = "Query", field = "getActivityStatistics")
+    public List<ActivityStatisticsDto> getActivityStatistics(String salesforcePurchaserId, int year, long activity) {
 
-        //Cast from int to long so hibernate don't complain, because graphql resolver don't respect the contract of List<Long> and replace it by List<Integer>
-        List<Long> activitiesCasted = activities.stream()
-                .map(Integer::longValue)
-                .collect(Collectors.toList());
-
-        List<ActivityStatistics> activityStatistics = activityService.getActivitiesStatistics(salesforcePurchaserId, year, activitiesCasted);
+        List<ActivityStatistics> activityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, year, activity);
 
         return activityStatistics.stream()
                 .map(activityStatistic -> mapper.map(activityStatistic, ActivityStatisticsDto.class))
