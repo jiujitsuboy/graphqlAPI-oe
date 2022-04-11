@@ -12,7 +12,9 @@ import com.openenglish.hr.service.util.NumberUtils;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,6 +31,8 @@ public class ActivityServiceTest {
     private PersonCourseAuditRepository personCourseAuditRepository;
     @Tested
     private ActivityService activityService;
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void getCurrentMonthActivitiesOverview() {
@@ -129,7 +133,7 @@ public class ActivityServiceTest {
     @Test
     public void getLiveClassesStatistics() {
         String salesforcePurchaserId = "12345";
-        final long LIVE_CLASSES_TYPE = 1;
+        final long LIVE_CLASSES_ID = 1;
         final int YEAR = 2022;
         final int JANUARY = 1;
         final int FEBRUARY = 2;
@@ -196,7 +200,7 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR,LIVE_CLASSES_TYPE);
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR,LIVE_CLASSES_ID);
 
         assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
         assertEquals(januaryTotalCount , yearActivityStatistics.getMonthsActivityStatistics().get(JANUARY_INDEX).getValue(),0);
@@ -208,7 +212,7 @@ public class ActivityServiceTest {
     @Test
     public void getPracticeStatistics() {
         String salesforcePurchaserId = "12345";
-        final long PRACTICE_TYPE = 3;
+        final long PRACTICE_ID = 3;
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
         final int JANUARY = 1;
@@ -274,7 +278,7 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR,PRACTICE_TYPE);
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR,PRACTICE_ID);
         assertNotNull(yearActivityStatistics);
         assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
 
@@ -288,6 +292,8 @@ public class ActivityServiceTest {
         String salesforcePurchaserId = "12345";
         final double ZERO = 0.0;
         final int MONTHS_OF_YEAR = 12;
+        final int YEAR = 2022;
+        final long LIVE_CLASSES_ID = 1;
 
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
@@ -296,12 +302,72 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, 0, 1L);
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES_ID);
 
         assertNotNull(yearActivityStatistics);
         assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
         yearActivityStatistics.getMonthsActivityStatistics()
                 .stream()
                 .forEach(activityStatistic -> assertThat(activityStatistic.getValue(), equalTo(ZERO)));
+    }
+
+    @Test
+    public void getStatisticsInvalidSalesforcePurchaserId() {
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
+
+        String salesforcePurchaserId = "";
+        final int YEAR = 2022;
+        final long LIVE_CLASSES_ID = 1;
+
+        List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
+
+        new Expectations() {{
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, anyLong);
+            returns(personCourseAudits);
+        }};
+
+        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES_ID);
+    }
+
+    @Test
+    public void getStatisticsInvalidActivity() {
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("courseTypeId should be a value among [1,2,3,4,5,6,8,9,10]");
+
+        String salesforcePurchaserId = "12345";
+        final int YEAR = 2022;
+        final long INVALID_ACTIVITY_ID = 7;
+
+        List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
+
+        new Expectations() {{
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, anyLong);
+            returns(personCourseAudits);
+        }};
+
+        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, INVALID_ACTIVITY_ID);
+    }
+
+    @Test
+    public void getStatisticsInvalidYear() {
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("year should be a valid year number over 1990");
+
+        String salesforcePurchaserId = "12345";
+        final int YEAR = 1900;
+        final long LIVE_CLASSES_ID = 1;
+
+        List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
+
+        new Expectations() {{
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, anyLong);
+            returns(personCourseAudits);
+        }};
+
+        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES_ID);
     }
 }

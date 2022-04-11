@@ -89,6 +89,10 @@ public class ActivityService {
         final int HOUR = 0;
         final int MINUTE = 0;
 
+        Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
+        Preconditions.checkArgument(COURSE_TYPES_OF_INTEREST.contains(courseTypeId),"courseTypeId should be a value among [1,2,3,4,5,6,8,9,10]");
+        Preconditions.checkArgument(year>2006, "year should be a valid year number over 1990");
+
         CourseTypeEnum courseTypeEnum = CourseTypeEnum.getStatusByValue(courseTypeId);
 
         LocalDateTime startDate = LocalDateTime.of(year, MONTH, DAY_OF_MONTH, HOUR, MINUTE);
@@ -98,19 +102,30 @@ public class ActivityService {
 
         Map<Integer, Double> courseTypeCounting = getSummingTimeByGroupingPerMonthCourseAudit(personCourseAudit, courseTypeEnum);
 
-        //Generate all 12 months
-        List<MonthActivityStatistics> activityStatistics = IntStream.rangeClosed(1, 12).boxed().map(month ->
-                MonthActivityStatistics.builder()
-                        .month(month)
-                        .value(NumberUtils.round(courseTypeCounting.getOrDefault(month, 0.0), 2))
-                        .build()
-        ).collect(Collectors.toList());
+        List<MonthActivityStatistics> activityStatistics = mapActivityStatisticsToMonthsOfYear(courseTypeCounting);
 
         double yearActivityValue = activityStatistics.stream().mapToDouble(monthStatistic -> monthStatistic.getValue()).sum();
 
         return YearActivityStatistics.builder()
                 .monthsActivityStatistics(activityStatistics)
                 .total(yearActivityValue).build();
+    }
+
+    /**
+     * Map to each month the corresponding statictis from the year searched.
+     * @param courseTypeCounting Map with every activity and the amount of minutes per month
+     * @return List with a MonthActivityStatistics per each month of the year.
+     */
+    private List<MonthActivityStatistics> mapActivityStatisticsToMonthsOfYear(Map<Integer, Double> courseTypeCounting){
+        final int JANUARY = 1;
+        final int DECEMBER = 12;
+
+        return IntStream.rangeClosed(JANUARY, DECEMBER).boxed().map(month ->
+                MonthActivityStatistics.builder()
+                        .month(month)
+                        .value(NumberUtils.round(courseTypeCounting.getOrDefault(month, 0.0), 2))
+                        .build()
+        ).collect(Collectors.toList());
     }
 
     /**
@@ -179,17 +194,6 @@ public class ActivityService {
      */
     private int convertActivitiesOccurrenceToSeconds(Map.Entry<CourseTypeEnum, Integer> entry) {
         return convertActivitiesOccurrenceToSeconds(entry.getKey(), entry.getValue());
-    }
-
-    /**
-     * For every type of activity calculate the corresponding amount of time in seconds
-     *
-     * @param personCourseAudit List of student course activities
-     * @return amount of time in seconds
-     */
-    private int convertActivitiesOccurrenceToSeconds(PersonCourseAudit personCourseAudit) {
-        CourseTypeEnum courseTypeEnum = CourseTypeEnum.getStatusByValue(this.getCourseTypeId(personCourseAudit.getCourse()));
-        return convertActivitiesOccurrenceToSeconds(courseTypeEnum, courseTypeEnum == CourseTypeEnum.PRACTICE ? personCourseAudit.getTimeontask() : 1);
     }
 
     /**
