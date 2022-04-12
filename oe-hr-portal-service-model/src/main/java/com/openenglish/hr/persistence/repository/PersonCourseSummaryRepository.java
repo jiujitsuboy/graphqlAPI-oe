@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface PersonCourseSummaryRepository extends JpaRepository<PersonCourseSummary, Long> {
     List<PersonCourseSummary> findPersonCourseSummaryByPersonDetailsSalesforcePurchaserId(String salesforcePurchaserId);
-    List<PersonCourseSummary> findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(String salesforcePurchaserId, LocalDateTime startDate, LocalDateTime endDate, List<Long> courseTypes);
+    List<PersonCourseSummary> findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(String salesforcePurchaserId, LocalDateTime startDate, LocalDateTime endDate, List<Long> courseTypesNames);
 }

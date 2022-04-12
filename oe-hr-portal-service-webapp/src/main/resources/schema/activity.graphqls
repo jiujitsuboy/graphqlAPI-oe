@@ -8,7 +8,12 @@
      totalHoursUsage: Float
  }
 
- type ActivitiesStatistics{
-    month: String
-    hours: Float
+ type YearActivityStatistics{
+    monthsActivityStatistics: [monthsActivityStatistics]!
+    total: Float
+ }
+
+ type monthsActivityStatistics{
+    month: Int
+    value: Float
  }
