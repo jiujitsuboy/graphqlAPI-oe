@@ -91,7 +91,6 @@ public class ActivityService {
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
         Preconditions.checkArgument(COURSE_TYPES_OF_INTEREST.contains(courseTypeId),"courseTypeId should be a value among [1,2,3,4,5,6,8,9,10]");
-        Preconditions.checkArgument(year>2006, "year should be a valid year number over 1990");
 
         CourseTypeEnum courseTypeEnum = CourseTypeEnum.getStatusByValue(courseTypeId);
 
@@ -168,7 +167,7 @@ public class ActivityService {
         //Select strategy to sum the activities according to the type (Practice: sum timeontask and the total is converted to hours, other Activities: sum the number of occurrence)
         Collector<PersonCourseAudit, ?, Double> collectorStatistics = courseTypeEnum == CourseTypeEnum.PRACTICE ?
                 Collectors.collectingAndThen(Collectors.summingDouble(PersonCourseAudit::getTimeontask), NumberUtils::convertSecondsToHours) :
-                Collectors.summingDouble((PersonCourseAudit personCourseAudit) -> 1);
+                Collectors.summingDouble((PersonCourseAudit personCourseAudit) -> ONE_ACTIVITY);
 
         return personCoursesAudit
                 .stream()

@@ -350,24 +350,4 @@ public class ActivityServiceTest {
 
         activityService.getActivityStatistics(salesforcePurchaserId, YEAR, INVALID_ACTIVITY_ID);
     }
-
-    @Test
-    public void getStatisticsInvalidYear() {
-
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("year should be a valid year number over 1990");
-
-        String salesforcePurchaserId = "12345";
-        final int YEAR = 1900;
-        final long LIVE_CLASSES_ID = 1;
-
-        List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
-
-        new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, anyLong);
-            returns(personCourseAudits);
-        }};
-
-        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES_ID);
-    }
 }
