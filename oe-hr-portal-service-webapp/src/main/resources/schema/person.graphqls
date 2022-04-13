@@ -27,5 +27,5 @@
 
  type PersonActivitiesTotal{
     person: Person
-    totalActivities: Int
+    totalActivities: Float
  }

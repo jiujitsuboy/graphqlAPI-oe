@@ -133,15 +133,15 @@ public class ActivityResolverTest {
     @Test
     public void getTopStudentsByActivityStatistics() {
 
-        LinkedHashMap<Person, Long> personsTop = new LinkedHashMap<>(5);
-        personsTop.put(Person.builder().firstName("Carl").lastName("Thomson").build(), 10L);
-        personsTop.put(Person.builder().firstName("Jake").lastName("Sullivan").build(), 20L);
-        personsTop.put(Person.builder().firstName("Mark").lastName("Foster").build(), 30L);
+        LinkedHashMap<Person, Double> personsTop = new LinkedHashMap<>(5);
+        personsTop.put(Person.builder().firstName("Carl").lastName("Thomson").build(), 10.0);
+        personsTop.put(Person.builder().firstName("Jake").lastName("Sullivan").build(), 20.0);
+        personsTop.put(Person.builder().firstName("Mark").lastName("Foster").build(), 30.0);
 
-        Mockito.when(activityService.getTopStudentsByActivityStatistics(anyString(), any(), any(), anyInt())).thenReturn(personsTop);
+        Mockito.when(activityService.getTopStudentsByActivityStatistics(anyString(), any(), anyLong(), anyInt())).thenReturn(personsTop);
 
         String query = "{ " +
-                "  getTopStudentsByActivityStatistics(salesforcePurchaserId:\"12345\", year:2022, month:2, activities: [1,2,3,4,5,6,8,10], top: 3){\n" +
+                "  getTopStudentsByActivityStatistics(salesforcePurchaserId:\"12345\", year:2022, month:2, activity: 1, top: 3){\n" +
                 "    person{ " +
                 "      firstName " +
                 "      lastName " +

@@ -1,5 +1,6 @@
 package com.openenglish.hr.service;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
@@ -100,7 +101,8 @@ public class ActivityService {
 
         List<PersonCourseAudit> personCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeId);
 
-        Map<Integer, Double> courseTypeCounting = getSummingTimeByGroupingPerMonthCourseAudit(personCourseAudit, courseTypeEnum);
+        Map<Integer, Double> courseTypeCounting = (Map<Integer, Double>) getTotalActivityCountGroupedByCustomCriteria(personCourseAudit, courseTypeEnum, this::getActivityMonth);
+
 
         List<MonthActivityStatistics> activityStatistics = mapActivityStatisticsToMonthsOfYear(courseTypeCounting);
 
@@ -111,6 +113,44 @@ public class ActivityService {
         return YearActivityStatistics.builder()
                 .monthsActivityStatistics(activityStatistics)
                 .total(yearActivityValue).build();
+    }
+
+    /**
+     * Retrieve the top number of students with more activities done on the specified date
+     * @param salesforcePurchaserId d of the owner of the license
+     * @param startDate Date to filter the top students
+     * @param courseTypeId target activity
+     * @param top number of students to return
+     * @return Map with each student and his number of activities
+     */
+    public  LinkedHashMap<Person, Double> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, long courseTypeId, int top){
+
+        Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
+        Preconditions.checkArgument(COURSE_TYPES_OF_INTEREST.contains(courseTypeId),"courseTypeId should be a value among [1,2,3,4,5,6,8,9,10]");
+
+        CourseTypeEnum courseTypeEnum = CourseTypeEnum.getStatusByValue(courseTypeId);
+
+        LocalDateTime endDate = startDate.plusMonths(1).minusSeconds(1);
+
+        List<PersonCourseAudit> personCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeId);
+
+        Map<Person, Double> courseTypeCountingByPerson = (Map<Person, Double>) getTotalActivityCountGroupedByCustomCriteria(personCourseAudit, courseTypeEnum, PersonCourseAudit::getPerson);
+
+        return this.getTopStudents(courseTypeCountingByPerson, top);
+
+    }
+
+    /**
+     * Sort the students from most active to less and retrieve the specified number
+     * @param courseTypeCountingByPerson Map with students and their respective number of activities
+     * @param top number of students to return
+     * @return ordered map with students and their number of activities
+     */
+    private  LinkedHashMap<Person, Double> getTopStudents(Map<Person, Double> courseTypeCountingByPerson, int top){
+        return courseTypeCountingByPerson.entrySet().stream()
+                .sorted((entry1,entry2)->entry2.getValue().compareTo(entry1.getValue()))
+                .limit(top)
+                .collect(Collectors.toMap(entry->entry.getKey(), entry->entry.getValue(),(x,y)->y, LinkedHashMap::new));
     }
 
     /**
@@ -125,72 +165,11 @@ public class ActivityService {
         return IntStream.rangeClosed(JANUARY, DECEMBER)
                 .boxed()
                 .map(month ->
-                MonthActivityStatistics.builder()
-                        .month(month)
-                        .value(NumberUtils.round(courseTypeCounting.getOrDefault(month, 0.0), 2))
-                        .build()
-        ).collect(Collectors.toList());
-    }
-
-    /**
-     * Retrieve the top number of students with more activities done on the specified date
-     * @param salesforcePurchaserId d of the owner of the license
-     * @param startDate Date to filter the top students
-     * @param courseTypesNames target activities
-     * @param top number of students to return
-     * @return Map with each student and his number of activities
-     */
-    public  LinkedHashMap<Person, Long> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, List<Long> courseTypesNames, int top){
-
-        LocalDateTime endDate = startDate.plusMonths(1).minusSeconds(1);
-
-        List<PersonCourseSummary> personCourseSummaries = personCourseSummaryRepository
-                .findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypesNames);
-
-        Map<Person, Long> courseTypeCountingByPerson = this.getTotalActivityCountGroupedByPerson(personCourseSummaries);
-
-        return this.getTopStudents(courseTypeCountingByPerson, top);
-
-    }
-
-    /**
-     * Sort the students from most active to less and retrieve the specified number
-     * @param courseTypeCountingByPerson Map with students and their respective number of activities
-     * @param top number of students to return
-     * @return ordered map with students and their number of activities
-     */
-    private  LinkedHashMap<Person, Long> getTopStudents(Map<Person, Long> courseTypeCountingByPerson, int top){
-        return courseTypeCountingByPerson.entrySet().stream()
-                .sorted((entry1,entry2)->entry2.getValue().compareTo(entry1.getValue()))
-                .limit(top)
-                .collect(Collectors.toMap(entry->entry.getKey(), entry->entry.getValue(),(x,y)->y, LinkedHashMap::new));
-    }
-
-    /**
-     * Group Person by activity total count
-     * @param personCourseSummaries List of student course activities
-     * @return Map with every activity total count by Person
-     */
-    private Map<Person, Long> getTotalActivityCountGroupedByPerson(List<PersonCourseSummary> personCourseSummaries) {
-        return personCourseSummaries
-                .stream()
-                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseSummary.getCourse())))
-                .collect(Collectors.groupingBy(personCourseSummary -> personCourseSummary.getPerson(), Collectors.counting()));
-    }
-
-    /**
-     * Calculate the total time in hours of each course type activity
-     *
-     * @param courseTypeCounting Map with every activity and the amount of minutes and seconds for each one
-     * @return the total sum of all activities
-     */
-    private double getTotalTimeInHours(Map<CourseTypeEnum, Integer> courseTypeCounting) {
-
-        return NumberUtils.convertSecondsToHours((double) courseTypeCounting
-                .entrySet()
-                .stream()
-                .mapToInt(this::convertActivitiesOccurrenceToSeconds)
-                .sum());
+                        MonthActivityStatistics.builder()
+                                .month(month)
+                                .value(NumberUtils.round(courseTypeCounting.getOrDefault(month, 0.0), 2))
+                                .build()
+                ).collect(Collectors.toList());
     }
 
     /**
@@ -208,22 +187,24 @@ public class ActivityService {
     }
 
     /**
-     * Group and sum every activity by month and year
-     *
-     * @param personCoursesAudit List of student course activities
-     * @return Map with every activity and the amount of minutes per month
+     * * Group Persons by custom criteria
+     * @param personCourseAudits personCourseAudits List of student course activities
+     * @param courseTypeEnum type of activity
+     * @param groupingCriteria Custom grouping criteria
+     * @return Person's Map with the custom criteria result
      */
-    private Map<Integer, Double> getSummingTimeByGroupingPerMonthCourseAudit(List<PersonCourseAudit> personCoursesAudit, CourseTypeEnum courseTypeEnum) {
+    private Map<?, ? extends Number> getTotalActivityCountGroupedByCustomCriteria(List<PersonCourseAudit> personCourseAudits, CourseTypeEnum courseTypeEnum, Function<PersonCourseAudit, ?> groupingCriteria) {
 
         //Select strategy to sum the activities according to the type (Practice: sum timeontask and the total is converted to hours, other Activities: sum the number of occurrence)
         Collector<PersonCourseAudit, ?, Double> collectorStatistics = courseTypeEnum == CourseTypeEnum.PRACTICE ?
                 Collectors.collectingAndThen(Collectors.summingDouble(PersonCourseAudit::getTimeontask), NumberUtils::convertSecondsToHours) :
                 Collectors.summingDouble((PersonCourseAudit personCourseAudit) -> ONE_ACTIVITY);
 
-        return personCoursesAudit
+
+        return personCourseAudits
                 .stream()
-                .filter(personCourseAudit -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseAudit.getCourse())))
-                .collect(Collectors.groupingBy(this::getActivityMonth, collectorStatistics));
+                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseSummary.getCourse())))
+                .collect(Collectors.groupingBy(groupingCriteria::apply, collectorStatistics));
     }
 
     /**
@@ -234,6 +215,21 @@ public class ActivityService {
      */
     private int getAmountOfTimePerActivity(PersonCourseSummary personCourseSummary) {
         return PRACTICE_COURSE_TYPES.contains(this.getCourseTypeId(personCourseSummary.getCourse())) ? personCourseSummary.getTimeontask() : ONE_ACTIVITY;
+    }
+
+    /**
+     * Calculate the total time in hours of each course type activity
+     *
+     * @param courseTypeCounting Map with every activity and the amount of minutes and seconds for each one
+     * @return the total sum of all activities
+     */
+    private double getTotalTimeInHours(Map<CourseTypeEnum, Integer> courseTypeCounting) {
+
+        return NumberUtils.convertSecondsToHours((double) courseTypeCounting
+                .entrySet()
+                .stream()
+                .mapToInt(this::convertActivitiesOccurrenceToSeconds)
+                .sum());
     }
 
     /**
