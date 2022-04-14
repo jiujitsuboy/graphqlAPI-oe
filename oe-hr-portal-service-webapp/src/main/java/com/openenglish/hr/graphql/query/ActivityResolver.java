@@ -30,7 +30,7 @@ public class ActivityResolver {
     }
 
     @DgsData(parentType = "Query", field = "getYearActivityStatistics")
-    public YearActivityStatisticsDto getYearActivityStatistics(String salesforcePurchaserId, int year, long activity) {
+    public YearActivityStatisticsDto getYearActivityStatistics(String salesforcePurchaserId, int year, String activity) {
 
         YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, year, activity);
 
@@ -38,7 +38,7 @@ public class ActivityResolver {
     }
 
     @DgsData(parentType = "Query", field = "getTopStudentsByActivityStatistics")
-    public List<PersonActivityTotalDto> getTopStudentsByActivityStatistics(String salesforcePurchaserId, int year, int month, long activity, int top) {
+    public List<PersonActivityTotalDto> getTopStudentsByActivityStatistics(String salesforcePurchaserId, int year, int month, String activity, int top) {
 
         LocalDateTime localDateTime = LocalDateTime.of(year, month, 1, 0, 0, 0);
 

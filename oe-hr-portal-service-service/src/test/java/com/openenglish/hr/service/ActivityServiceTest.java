@@ -1,5 +1,6 @@
 package com.openenglish.hr.service;
 
+import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.persistence.entity.*;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
@@ -93,8 +94,8 @@ public class ActivityServiceTest {
         double totalMinutesUsageNumObtained = (groupClassesNumObtained * NumberUtils.toSeconds(ActivityService.MINUTES_PER_LIVE_CLASS)) + (privateClassesNumObtained * NumberUtils.toSeconds(ActivityService.MINUTES_PER_PRIVATE_CLASS)) +
                 ((completedLessonsNumObtained + completedUnitsNumObtained) * NumberUtils.toSeconds(ActivityService.MINUTES_PER_LESSON_UNIT_ASSESSMENT)) + (practiceHoursNumObtained);
 
-        practiceHoursNumObtained = NumberUtils.round(NumberUtils.convertSecondsToHours(practiceHoursNumObtained), 2);
-        totalMinutesUsageNumObtained = NumberUtils.round(NumberUtils.convertSecondsToHours(totalMinutesUsageNumObtained), 2);
+        practiceHoursNumObtained = NumberUtils.round(NumberUtils.convertSecondsToHours(practiceHoursNumObtained));
+        totalMinutesUsageNumObtained = NumberUtils.round(NumberUtils.convertSecondsToHours(totalMinutesUsageNumObtained));
 
         assertThat(groupClassesNumObtained, is(activitiesOverviewDto.getGroupClasses()));
         assertThat(privateClassesNumObtained, is(activitiesOverviewDto.getPrivateClasses()));
@@ -133,7 +134,7 @@ public class ActivityServiceTest {
     @Test
     public void getLiveClassesStatistics() {
         String salesforcePurchaserId = "12345";
-        final long LIVE_CLASSES_ID = 1;
+        final String LIVE_CLASSES = CourseTypeEnum.LIVE_CLASS.getName();
         final int YEAR = 2022;
         final int JANUARY = 1;
         final int FEBRUARY = 2;
@@ -200,7 +201,7 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES_ID);
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES);
 
         assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
         assertEquals(januaryTotalCount, yearActivityStatistics.getMonthsActivityStatistics().get(JANUARY_INDEX).getValue(), 0);
@@ -212,7 +213,7 @@ public class ActivityServiceTest {
     @Test
     public void getPracticeStatistics() {
         String salesforcePurchaserId = "12345";
-        final long PRACTICE_ID = 3;
+        final String PRACTICE = CourseTypeEnum.PRACTICE.getName();
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
         final int JANUARY = 1;
@@ -269,16 +270,16 @@ public class ActivityServiceTest {
         List<PersonCourseAudit> personCourseAudits = List.of(personCourseAuditJAN1, personCourseAuditJAN2, personCourseAuditJAN3,
                 personCourseAuditJAN4, personCourseAuditFEB1, personCourseAuditFEB2, personCourseAuditFEB3, personCourseAuditMAR1);
 
-        double januaryTotalHours = NumberUtils.round((personCourseAuditJAN1.getTimeontask() + personCourseAuditJAN2.getTimeontask() + personCourseAuditJAN3.getTimeontask() + personCourseAuditJAN4.getTimeontask()) / 3600.0, 2);
-        double februaryTotalHours = NumberUtils.round((personCourseAuditFEB1.getTimeontask() + personCourseAuditFEB2.getTimeontask() + personCourseAuditFEB3.getTimeontask()) / 3600.0, 2);
-        double marchTotalHours = NumberUtils.round((personCourseAuditMAR1.getTimeontask()) / 3600.0, 2);
+        double januaryTotalHours = NumberUtils.round((personCourseAuditJAN1.getTimeontask() + personCourseAuditJAN2.getTimeontask() + personCourseAuditJAN3.getTimeontask() + personCourseAuditJAN4.getTimeontask()) / 3600.0);
+        double februaryTotalHours = NumberUtils.round((personCourseAuditFEB1.getTimeontask() + personCourseAuditFEB2.getTimeontask() + personCourseAuditFEB3.getTimeontask()) / 3600.0);
+        double marchTotalHours = NumberUtils.round((personCourseAuditMAR1.getTimeontask()) / 3600.0);
 
         new Expectations() {{
             personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
             returns(personCourseAudits);
         }};
 
-        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, PRACTICE_ID);
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, PRACTICE);
         assertNotNull(yearActivityStatistics);
         assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
 
@@ -293,7 +294,7 @@ public class ActivityServiceTest {
         final double ZERO = 0.0;
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
-        final long LIVE_CLASSES_ID = 1;
+        final String LIVE_CLASSES = CourseTypeEnum.LIVE_CLASS.getName();
 
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
@@ -302,7 +303,7 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES_ID);
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES);
 
         assertNotNull(yearActivityStatistics);
         assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
@@ -319,7 +320,7 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "";
         final int YEAR = 2022;
-        final long LIVE_CLASSES_ID = 1;
+        final String LIVE_CLASSES = CourseTypeEnum.LIVE_CLASS.getName();
 
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
@@ -328,18 +329,18 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES_ID);
+        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES);
     }
 
     @Test
     public void getStatisticsInvalidActivity() {
 
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("courseTypeId should be a value among [1,2,3,4,5,6,8,9,10]");
-
         String salesforcePurchaserId = "12345";
         final int YEAR = 2022;
-        final long INVALID_ACTIVITY_ID = 7;
+        final String INVALID_ACTIVITY_ID = "Remote";
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage(String.format("Invalid courseTypeName %s", INVALID_ACTIVITY_ID));
 
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
@@ -355,7 +356,7 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsByPracticeActivityStatistics() {
 
         final int PERSONS_SIZE = 3;
-        final long PRACTICE_ID = 3;
+        final String PRACTICE = CourseTypeEnum.PRACTICE.getName();
         final long TOP1 = 1L;
         final long TOP2 = 4L;
         final long TOP3 = 2L;
@@ -414,7 +415,7 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, PRACTICE_ID, PERSONS_SIZE);
+        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, PRACTICE, PERSONS_SIZE);
         Iterator<Long> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
@@ -427,7 +428,7 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsByLiveClassesActivityStatistics() {
 
         final int PERSONS_SIZE = 3;
-        final long LIVE_CLASSES_ID = 1;
+        final String LIVE_CLASSES = CourseTypeEnum.LIVE_CLASS.getName();
         final long TOP1 = 1L;
         final long TOP2 = 4L;
         final long TOP3 = 2L;
@@ -442,69 +443,69 @@ public class ActivityServiceTest {
 
         PersonCourseAudit person1CourseAudit1 = PersonCourseAudit.builder()
                 .person(Person.builder().id(1L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(LIVE_CLASSES_ID).build()).build())
+                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
                 .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 15, 12, 0, 0))
                 .timeontask(50)
                 .build();
         PersonCourseAudit person1CourseAudit2 = PersonCourseAudit.builder()
                 .person(Person.builder().id(1L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(LIVE_CLASSES_ID).build()).build())
+                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
                 .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 19, 14, 0, 0))
                 .timeontask(70)
                 .build();
         PersonCourseAudit person1CourseAudit3 = PersonCourseAudit.builder()
                 .person(Person.builder().id(1L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(LIVE_CLASSES_ID).build()).build())
+                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
                 .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 20, 12, 0, 0))
                 .timeontask(90)
                 .build();
 
         PersonCourseAudit person1CourseAudit4 = PersonCourseAudit.builder()
                 .person(Person.builder().id(1L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(LIVE_CLASSES_ID).build()).build())
+                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
                 .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 21, 10, 0, 0))
                 .timeontask(10)
                 .build();
         PersonCourseAudit person2CourseAudit1 = PersonCourseAudit.builder()
                 .person(Person.builder().id(2L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(LIVE_CLASSES_ID).build()).build())
+                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
                 .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 22, 10, 0, 0))
                 .timeontask(10)
                 .build();
         PersonCourseAudit person2CourseAudit2 = PersonCourseAudit.builder()
                 .person(Person.builder().id(2L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(LIVE_CLASSES_ID).build()).build())
+                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
                 .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 23, 10, 0, 0))
                 .timeontask(10)
                 .build();
         PersonCourseAudit person4CourseAudit1 = PersonCourseAudit.builder()
                 .person(Person.builder().id(4L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(LIVE_CLASSES_ID).build()).build())
+                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
                 .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 15, 12, 0, 0))
                 .timeontask(10)
                 .build();
 
         PersonCourseAudit person4CourseAudit2 = PersonCourseAudit.builder()
                 .person(Person.builder().id(4L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(LIVE_CLASSES_ID).build()).build())
+                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
                 .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 7, 8, 0, 0))
                 .timeontask(30)
                 .build();
         PersonCourseAudit person4CourseAudit3 = PersonCourseAudit.builder()
                 .person(Person.builder().id(4L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(LIVE_CLASSES_ID).build()).build())
+                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
                 .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 5, 8, 0, 0))
                 .timeontask(30)
                 .build();
         PersonCourseAudit person3CourseAudit1 = PersonCourseAudit.builder()
                 .person(Person.builder().id(3L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(LIVE_CLASSES_ID).build()).build())
+                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
                 .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 7, 12, 0, 0))
                 .timeontask(30)
                 .build();
         PersonCourseAudit person5CourseAudit1 = PersonCourseAudit.builder()
                 .person(Person.builder().id(5L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(LIVE_CLASSES_ID).build()).build())
+                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
                 .dateCompleted(LocalDateTime.of(YEAR, MARCH, 1, 12, 0, 0))
                 .timeontask(30)
                 .build();
@@ -520,7 +521,7 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LIVE_CLASSES_ID, PERSONS_SIZE);
+        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LIVE_CLASSES, PERSONS_SIZE);
         Iterator<Long> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
@@ -533,7 +534,7 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsByLevelAssesmentsActivityStatistics() {
 
         final int PERSONS_SIZE = 3;
-        final long LEVEL_ASSESMENT_ID = 6;
+        final String LEVEL_ASSESMENT = CourseTypeEnum.LEVEL_ASSESSMENT.getName();
         final long TOP1 = 110005L;
         final long TOP2 = 110002L;
         final long TOP3 = 110001L;
@@ -607,11 +608,11 @@ public class ActivityServiceTest {
         List<LevelsPassedByPerson> levelsPassedByPersons = List.of(levelsPassedByPerson1,levelsPassedByPerson2,levelsPassedByPerson3,levelsPassedByPerson4,levelsPassedByPerson5);
 
         new Expectations() {{
-            levelTestRepository.getPersonLevelIdByUpdateDateBetween((LocalDateTime) any, (LocalDateTime) any);
+            levelTestRepository.getPersonLevelIdByUpdateDateBetween(anyString, (LocalDateTime) any, (LocalDateTime) any);
             returns(levelsPassedByPersons);
         }};
 
-        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT_ID, PERSONS_SIZE);
+        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT, PERSONS_SIZE);
         Iterator<Long> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
@@ -624,7 +625,7 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsInvalidSalesforcePurchaserId() {
 
         final int PERSONS_SIZE = 3;
-        final long LEVEL_ASSESMENT_ID = 6;
+        final String LEVEL_ASSESMENT = CourseTypeEnum.LEVEL_ASSESSMENT.getName();
         final int YEAR = 2022;
         final int FEBRUARY = 2;
 
@@ -639,23 +640,23 @@ public class ActivityServiceTest {
         List<LevelsPassedByPerson> levelsPassedByPersons = new ArrayList<>();
 
         new Expectations() {{
-            levelTestRepository.getPersonLevelIdByUpdateDateBetween((LocalDateTime) any, (LocalDateTime) any);
+            levelTestRepository.getPersonLevelIdByUpdateDateBetween(anyString, (LocalDateTime) any, (LocalDateTime) any);
             returns(levelsPassedByPersons);
         }};
 
-        activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT_ID, PERSONS_SIZE);
+        activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT, PERSONS_SIZE);
     }
 
     @Test
     public void getTopThreeStudentsInvalidActivity() {
 
         final int PERSONS_SIZE = 3;
-        final long INVALID_ACTIVITY_ID = 7;
+        final String INVALID_ACTIVITY = "Demo";
         final int YEAR = 2022;
         final int FEBRUARY = 2;
 
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("courseTypeId should be a value among [1,2,3,4,5,6,8,9,10]");
+        expectedException.expectMessage(String.format("Invalid courseTypeName %s",INVALID_ACTIVITY));
 
 
         String salesforcePurchaserId = "12345";
@@ -665,10 +666,10 @@ public class ActivityServiceTest {
         List<LevelsPassedByPerson> levelsPassedByPersons = new ArrayList<>();
 
         new Expectations() {{
-            levelTestRepository.getPersonLevelIdByUpdateDateBetween((LocalDateTime) any, (LocalDateTime) any);
+            levelTestRepository.getPersonLevelIdByUpdateDateBetween(anyString, (LocalDateTime) any, (LocalDateTime) any);
             returns(levelsPassedByPersons);
         }};
 
-        activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, INVALID_ACTIVITY_ID, PERSONS_SIZE);
+        activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, INVALID_ACTIVITY, PERSONS_SIZE);
     }
 }

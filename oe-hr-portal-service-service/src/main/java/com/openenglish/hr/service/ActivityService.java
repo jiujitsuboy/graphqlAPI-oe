@@ -38,15 +38,15 @@ public class ActivityService {
             CourseTypeEnum.NEWS.getValue(),
             CourseTypeEnum.IDIOMS.getValue());
     private static final Set<Long> GROUP_CLASSES_TYPE = Set.of(CourseTypeEnum.LIVE_CLASS.getValue(), CourseTypeEnum.PRIVATE_CLASS.getValue());
-    private static final Set<Long> COURSE_TYPES_OF_INTEREST = Set.of(
-            CourseTypeEnum.LIVE_CLASS.getValue(),
-            CourseTypeEnum.PRIVATE_CLASS.getValue(),
-            CourseTypeEnum.LESSON.getValue(),
-            CourseTypeEnum.UNIT_ASSESSMENT.getValue(),
-            CourseTypeEnum.LEVEL_ASSESSMENT.getValue(),
-            CourseTypeEnum.PRACTICE.getValue(),
-            CourseTypeEnum.NEWS.getValue(),
-            CourseTypeEnum.IDIOMS.getValue()
+    private static final Set<String> COURSE_TYPES_OF_INTEREST = Set.of(
+            CourseTypeEnum.LIVE_CLASS.getName(),
+            CourseTypeEnum.PRIVATE_CLASS.getName(),
+            CourseTypeEnum.LESSON.getName(),
+            CourseTypeEnum.UNIT_ASSESSMENT.getName(),
+            CourseTypeEnum.LEVEL_ASSESSMENT.getName(),
+            CourseTypeEnum.PRACTICE.getName(),
+            CourseTypeEnum.NEWS.getName(),
+            CourseTypeEnum.IDIOMS.getName()
     );
 
     private final PersonCourseSummaryRepository personCourseSummaryRepository;
@@ -74,9 +74,9 @@ public class ActivityService {
                 .privateClasses(courseTypeCounting.getOrDefault(CourseTypeEnum.PRIVATE_CLASS, 0).longValue())
                 .completedLessons(courseTypeCounting.getOrDefault(CourseTypeEnum.LESSON, 0).longValue())
                 .completedUnits(courseTypeCounting.getOrDefault(CourseTypeEnum.UNIT_ASSESSMENT, 0).longValue())
-                .practiceHours(NumberUtils.round(NumberUtils.convertSecondsToHours(courseTypeCounting.getOrDefault(CourseTypeEnum.PRACTICE, 0).doubleValue()), 2))
+                .practiceHours(NumberUtils.round(NumberUtils.convertSecondsToHours(courseTypeCounting.getOrDefault(CourseTypeEnum.PRACTICE, 0).doubleValue())))
                 .levelPassed(courseTypeCounting.getOrDefault(CourseTypeEnum.LEVEL_ASSESSMENT, 0).longValue())
-                .totalHoursUsage(NumberUtils.round(totalTimeInHours, 2))
+                .totalHoursUsage(NumberUtils.round(totalTimeInHours))
                 .build();
     }
 
@@ -85,10 +85,10 @@ public class ActivityService {
      *
      * @param salesforcePurchaserId id of the owner of the license
      * @param year                  target year
-     * @param courseTypeId          target activities
+     * @param courseTypeName          target activities
      * @return the total sum of all activities by  month
      */
-    public YearActivityStatistics getActivityStatistics(String salesforcePurchaserId, int year, long courseTypeId) {
+    public YearActivityStatistics getActivityStatistics(String salesforcePurchaserId, int year, String courseTypeName) {
 
         final int MONTH = 1;
         final int DAY_OF_MONTH = 1;
@@ -96,14 +96,14 @@ public class ActivityService {
         final int MINUTE = 0;
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        Preconditions.checkArgument(COURSE_TYPES_OF_INTEREST.contains(courseTypeId), "courseTypeId should be a value among [1,2,3,4,5,6,8,9,10]");
+        Preconditions.checkArgument(COURSE_TYPES_OF_INTEREST.contains(courseTypeName), String.format("Invalid courseTypeName %s", courseTypeName));
 
-        CourseTypeEnum courseTypeEnum = CourseTypeEnum.getStatusByValue(courseTypeId);
+        CourseTypeEnum courseTypeEnum = getCourseTypeEnum(courseTypeName);
 
         LocalDateTime startDate = LocalDateTime.of(year, MONTH, DAY_OF_MONTH, HOUR, MINUTE);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, Set.of(courseTypeId));
+        List<PersonCourseAudit> personCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, Set.of(courseTypeEnum.getValue()));
 
         Map<Integer, Double> courseTypeCounting = (Map<Integer, Double>) getTotalActivityCountGroupedByCustomCriteria(personCourseAudit, courseTypeEnum, this::getActivityMonth);
 
@@ -124,28 +124,28 @@ public class ActivityService {
      *
      * @param salesforcePurchaserId d of the owner of the license
      * @param startDate             Date to filter the top students
-     * @param courseTypeId          target activity
+     * @param courseTypeName          target activity
      * @param top                   number of students to return
      * @return Map with each student and his number of activities
      */
-    public LinkedHashMap<Long, Double> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, long courseTypeId, int top) {
+    public LinkedHashMap<Long, Double> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, String courseTypeName, int top) {
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        Preconditions.checkArgument(COURSE_TYPES_OF_INTEREST.contains(courseTypeId), "courseTypeId should be a value among [1,2,3,4,5,6,8,9,10]");
+        Preconditions.checkArgument(COURSE_TYPES_OF_INTEREST.contains(courseTypeName), String.format("Invalid courseTypeName %s", courseTypeName));
 
         Map<Long, Double> courseTypeCountingByPerson = null;
 
-        CourseTypeEnum courseTypeEnum = CourseTypeEnum.getStatusByValue(courseTypeId);
+        CourseTypeEnum courseTypeEnum = getCourseTypeEnum(courseTypeName);
 
         //If the courseTypeId is LIVE_CLASS or PRIVATE_CLASS, both ids are used to retrieve the activities
-        Set<Long> coursesTypeId = GROUP_CLASSES_TYPE.contains(courseTypeEnum) ?
+        Set<Long> coursesTypeId = GROUP_CLASSES_TYPE.contains(courseTypeEnum.getValue()) ?
                 GROUP_CLASSES_TYPE.stream().collect(Collectors.toSet()) :
-                Set.of(courseTypeId);
+                Set.of(courseTypeEnum.getValue());
 
         LocalDateTime endDate = startDate.plusMonths(1).minusSeconds(1);
 
         if (courseTypeEnum == CourseTypeEnum.LEVEL_ASSESSMENT) {
-            List<LevelsPassedByPerson> LevelsPassedByPersons = levelTestRepository.getPersonLevelIdByUpdateDateBetween(startDate, endDate);
+            List<LevelsPassedByPerson> LevelsPassedByPersons = levelTestRepository.getPersonLevelIdByUpdateDateBetween(salesforcePurchaserId, startDate, endDate);
 
             courseTypeCountingByPerson = LevelsPassedByPersons.stream().collect(Collectors.toMap(entry -> entry.getPersonId(), entry -> entry.getTotalNumber()));
         } else {
@@ -169,7 +169,7 @@ public class ActivityService {
         return courseTypeCountingByPerson.entrySet().stream()
                 .sorted((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()))
                 .limit(top)
-                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> NumberUtils.round(entry.getValue(), 2), (x, y) -> y, LinkedHashMap::new));
+                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> NumberUtils.round(entry.getValue()), (x, y) -> y, LinkedHashMap::new));
     }
 
     /**
@@ -187,7 +187,7 @@ public class ActivityService {
                 .map(month ->
                         MonthActivityStatistics.builder()
                                 .month(month)
-                                .value(NumberUtils.round(courseTypeCounting.getOrDefault(month, 0.0), 2))
+                                .value(NumberUtils.round(courseTypeCounting.getOrDefault(month, 0.0)))
                                 .build()
                 ).collect(Collectors.toList());
     }
@@ -201,8 +201,8 @@ public class ActivityService {
     private Map<CourseTypeEnum, Integer> getSummingTimeByGroupingCourseTypesCourseSummary(List<PersonCourseSummary> personCourseSummaries) {
         return personCourseSummaries
                 .stream()
-                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseSummary.getCourse())))
-                .collect(Collectors.groupingBy(personCourseSummary -> CourseTypeEnum.getStatusByValue(this.getCourseTypeId(personCourseSummary.getCourse())),
+                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeEnum(personCourseSummary.getCourse()).getName()))
+                .collect(Collectors.groupingBy(personCourseSummary -> getCourseTypeEnum(personCourseSummary.getCourse()),
                         Collectors.summingInt(this::getAmountOfTimePerActivity)));
     }
 
@@ -224,7 +224,7 @@ public class ActivityService {
 
         return personCourseAudits
                 .stream()
-                .filter(personCourseAudit -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeId(personCourseAudit.getCourse())))
+                .filter(personCourseAudit -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeEnum(personCourseAudit.getCourse()).getName()))
                 .collect(Collectors.groupingBy(groupingCriteria::apply, collectorStatistics));
     }
 
@@ -235,7 +235,7 @@ public class ActivityService {
      * @return time for activity
      */
     private int getAmountOfTimePerActivity(PersonCourseSummary personCourseSummary) {
-        return PRACTICE_COURSE_TYPES.contains(this.getCourseTypeId(personCourseSummary.getCourse())) ? personCourseSummary.getTimeontask() : ONE_ACTIVITY;
+        return PRACTICE_COURSE_TYPES.contains(this.getCourseTypeEnum(personCourseSummary.getCourse()).getValue()) ? personCourseSummary.getTimeontask() : ONE_ACTIVITY;
     }
 
     /**
@@ -291,13 +291,21 @@ public class ActivityService {
     }
 
     /**
-     * gets the course type id from a course
-     *
-     * @param course course
-     * @return course type id
+     * Get from the course the name of the course type
+     * @param course Course instance
+     * @return Course type enum
      */
-    private long getCourseTypeId(Course course) {
-        return course.getCourseType().getId();
+    private CourseTypeEnum getCourseTypeEnum(Course course){
+        return CourseTypeEnum.getStatusByValue(course.getCourseType().getId());
+    }
+
+    /**
+     * Get a CourseTypeEnum from his string value representation
+     * @param courseTypeName name of the enum value
+     * @return Course type enum
+     */
+    private CourseTypeEnum getCourseTypeEnum(String courseTypeName){
+        return CourseTypeEnum.valueOf(courseTypeName.replace(" ","_").toUpperCase());
     }
 
     /**
