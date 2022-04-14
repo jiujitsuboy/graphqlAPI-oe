@@ -26,6 +26,6 @@
  }
 
  type PersonActivitiesTotal{
-    person: Person
+    personId: Int
     totalActivities: Float
  }

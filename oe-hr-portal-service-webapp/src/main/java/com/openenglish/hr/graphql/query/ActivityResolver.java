@@ -42,12 +42,12 @@ public class ActivityResolver {
 
         LocalDateTime localDateTime = LocalDateTime.of(year, month, 1, 0, 0, 0);
 
-        LinkedHashMap<Person, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, localDateTime, activity, top);
+        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, localDateTime, activity, top);
 
         return personsTop.entrySet().stream()
                 .map(entry -> PersonActivityTotalDto
                         .builder()
-                            .person(mapper.map(entry.getKey(), PersonDto.class))
+                        .personId(entry.getKey())
                         .totalActivities(entry.getValue())
                         .build()
                 )

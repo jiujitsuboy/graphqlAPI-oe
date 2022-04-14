@@ -2,7 +2,9 @@ package com.openenglish.hr.service;
 
 import com.openenglish.hr.persistence.entity.*;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
+import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
 import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
+import com.openenglish.hr.persistence.repository.LevelTestRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
 import com.openenglish.hr.service.util.NumberUtils;
@@ -14,10 +16,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -28,6 +27,8 @@ public class ActivityServiceTest {
     private PersonCourseSummaryRepository personCourseSummaryRepository;
     @Injectable
     private PersonCourseAuditRepository personCourseAuditRepository;
+    @Injectable
+    private LevelTestRepository levelTestRepository;
     @Tested
     private ActivityService activityService;
     @Rule
@@ -195,7 +196,7 @@ public class ActivityServiceTest {
 
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, anyLong);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
             returns(personCourseAudits);
         }};
 
@@ -273,7 +274,7 @@ public class ActivityServiceTest {
         double marchTotalHours = NumberUtils.round((personCourseAuditMAR1.getTimeontask()) / 3600.0, 2);
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, anyLong);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
             returns(personCourseAudits);
         }};
 
@@ -297,7 +298,7 @@ public class ActivityServiceTest {
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, anyLong);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
             returns(personCourseAudits);
         }};
 
@@ -323,7 +324,7 @@ public class ActivityServiceTest {
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, anyLong);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
             returns(personCourseAudits);
         }};
 
@@ -343,7 +344,7 @@ public class ActivityServiceTest {
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, anyLong);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
             returns(personCourseAudits);
         }};
 
@@ -409,17 +410,17 @@ public class ActivityServiceTest {
                 person5CourseAudit);
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, anyLong);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
             returns(personCourseAudits);
         }};
 
-        LinkedHashMap<Person, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, PRACTICE_ID, PERSONS_SIZE);
-        Iterator<Person> persons = personsTop.keySet().iterator();
+        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, PRACTICE_ID, PERSONS_SIZE);
+        Iterator<Long> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
-        assertThat(persons.next().getId(), is(TOP1));
-        assertThat(persons.next().getId(), is(TOP2));
-        assertThat(persons.next().getId(), is(TOP3));
+        assertThat(persons.next(), is(TOP1));
+        assertThat(persons.next(), is(TOP2));
+        assertThat(persons.next(), is(TOP3));
     }
 
     @Test
@@ -515,16 +516,159 @@ public class ActivityServiceTest {
                 person5CourseAudit1);
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, anyLong);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
             returns(personCourseAudits);
         }};
 
-        LinkedHashMap<Person, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LIVE_CLASSES_ID, PERSONS_SIZE);
-        Iterator<Person> persons = personsTop.keySet().iterator();
+        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LIVE_CLASSES_ID, PERSONS_SIZE);
+        Iterator<Long> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
-        assertThat(persons.next().getId(), is(TOP1));
-        assertThat(persons.next().getId(), is(TOP2));
-        assertThat(persons.next().getId(), is(TOP3));
+        assertThat(persons.next(), is(TOP1));
+        assertThat(persons.next(), is(TOP2));
+        assertThat(persons.next(), is(TOP3));
+    }
+
+    @Test
+    public void getTopThreeStudentsByLevelAssesmentsActivityStatistics() {
+
+        final int PERSONS_SIZE = 3;
+        final long LEVEL_ASSESMENT_ID = 6;
+        final long TOP1 = 110005L;
+        final long TOP2 = 110002L;
+        final long TOP3 = 110001L;
+        final int YEAR = 2022;
+        final int FEBRUARY = 2;
+
+        String salesforcePurchaserId = "12345";
+
+        LocalDateTime startDate = LocalDateTime.of(YEAR, FEBRUARY, 1, 0, 0, 0);
+
+        LevelsPassedByPerson levelsPassedByPerson1 = new LevelsPassedByPerson() {
+            @Override
+            public long getPersonId() {
+                return 110001;
+            }
+
+            @Override
+            public double getTotalNumber() {
+                return 10;
+            }
+        };
+
+        LevelsPassedByPerson levelsPassedByPerson2 = new LevelsPassedByPerson() {
+            @Override
+            public long getPersonId() {
+                return 110002;
+            }
+
+            @Override
+            public double getTotalNumber() {
+                return 20;
+            }
+        };
+
+        LevelsPassedByPerson levelsPassedByPerson3 = new LevelsPassedByPerson() {
+            @Override
+            public long getPersonId() {
+                return 110003;
+            }
+
+            @Override
+            public double getTotalNumber() {
+                return 5;
+            }
+        };
+
+        LevelsPassedByPerson levelsPassedByPerson4 = new LevelsPassedByPerson() {
+            @Override
+            public long getPersonId() {
+                return 110004;
+            }
+
+            @Override
+            public double getTotalNumber() {
+                return 1;
+            }
+        };
+
+        LevelsPassedByPerson levelsPassedByPerson5 = new LevelsPassedByPerson() {
+            @Override
+            public long getPersonId() {
+                return 110005;
+            }
+
+            @Override
+            public double getTotalNumber() {
+                return 30;
+            }
+        };
+
+        List<LevelsPassedByPerson> levelsPassedByPersons = List.of(levelsPassedByPerson1,levelsPassedByPerson2,levelsPassedByPerson3,levelsPassedByPerson4,levelsPassedByPerson5);
+
+        new Expectations() {{
+            levelTestRepository.getPersonLevelIdByUpdateDateBetween((LocalDateTime) any, (LocalDateTime) any);
+            returns(levelsPassedByPersons);
+        }};
+
+        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT_ID, PERSONS_SIZE);
+        Iterator<Long> persons = personsTop.keySet().iterator();
+
+        assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
+        assertThat(persons.next(), is(TOP1));
+        assertThat(persons.next(), is(TOP2));
+        assertThat(persons.next(), is(TOP3));
+    }
+
+    @Test
+    public void getTopThreeStudentsInvalidSalesforcePurchaserId() {
+
+        final int PERSONS_SIZE = 3;
+        final long LEVEL_ASSESMENT_ID = 6;
+        final int YEAR = 2022;
+        final int FEBRUARY = 2;
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
+
+
+        String salesforcePurchaserId = "";
+
+        LocalDateTime startDate = LocalDateTime.of(YEAR, FEBRUARY, 1, 0, 0, 0);
+
+        List<LevelsPassedByPerson> levelsPassedByPersons = new ArrayList<>();
+
+        new Expectations() {{
+            levelTestRepository.getPersonLevelIdByUpdateDateBetween((LocalDateTime) any, (LocalDateTime) any);
+            returns(levelsPassedByPersons);
+        }};
+
+        activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT_ID, PERSONS_SIZE);
+    }
+
+    @Test
+    public void getTopThreeStudentsInvalidActivity() {
+
+        final int PERSONS_SIZE = 3;
+        final long INVALID_ACTIVITY_ID = 7;
+        final int YEAR = 2022;
+        final int FEBRUARY = 2;
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("courseTypeId should be a value among [1,2,3,4,5,6,8,9,10]");
+
+
+        String salesforcePurchaserId = "12345";
+
+        LocalDateTime startDate = LocalDateTime.of(YEAR, FEBRUARY, 1, 0, 0, 0);
+
+        List<LevelsPassedByPerson> levelsPassedByPersons = new ArrayList<>();
+
+        new Expectations() {{
+            levelTestRepository.getPersonLevelIdByUpdateDateBetween((LocalDateTime) any, (LocalDateTime) any);
+            returns(levelsPassedByPersons);
+        }};
+
+        activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, INVALID_ACTIVITY_ID, PERSONS_SIZE);
     }
 }

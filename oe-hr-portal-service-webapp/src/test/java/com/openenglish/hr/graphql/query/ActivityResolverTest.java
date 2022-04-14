@@ -133,19 +133,24 @@ public class ActivityResolverTest {
     @Test
     public void getTopStudentsByActivityStatistics() {
 
-        LinkedHashMap<Person, Double> personsTop = new LinkedHashMap<>(5);
-        personsTop.put(Person.builder().firstName("Carl").lastName("Thomson").build(), 10.0);
-        personsTop.put(Person.builder().firstName("Jake").lastName("Sullivan").build(), 20.0);
-        personsTop.put(Person.builder().firstName("Mark").lastName("Foster").build(), 30.0);
+        LinkedHashMap<Long, Double> personsTop = new LinkedHashMap<>(5);
+//        personsTop.put(Person.builder().firstName("Carl").lastName("Thomson").build(), 10.0);
+//        personsTop.put(Person.builder().firstName("Jake").lastName("Sullivan").build(), 20.0);
+//        personsTop.put(Person.builder().firstName("Mark").lastName("Foster").build(), 30.0);
+
+        long person1Id = 10004L;
+        long person2Id = 10005L;
+        long person3Id = 10006L;
+
+        personsTop.put(person1Id, 10.0);
+        personsTop.put(person2Id, 20.0);
+        personsTop.put(person3Id, 30.0);
 
         Mockito.when(activityService.getTopStudentsByActivityStatistics(anyString(), any(), anyLong(), anyInt())).thenReturn(personsTop);
 
         String query = "{ " +
                 "  getTopStudentsByActivityStatistics(salesforcePurchaserId:\"12345\", year:2022, month:2, activity: 1, top: 3){\n" +
-                "    person{ " +
-                "      firstName " +
-                "      lastName " +
-                "    } " +
+                "    personId" +
                 "    totalActivities " +
                 "  } " +
                 "}";
@@ -156,10 +161,10 @@ public class ActivityResolverTest {
 
         assertNotNull(personActivityTotalDto);
 
-        Iterator<Person> persons =  personsTop.keySet().iterator();
-        assertThat(persons.next().getFirstName(), is(personActivityTotalDto.get(0).getPerson().getFirstName()));
-        assertThat(persons.next().getFirstName(), is(personActivityTotalDto.get(1).getPerson().getFirstName()));
-        assertThat(persons.next().getFirstName(), is(personActivityTotalDto.get(2).getPerson().getFirstName()));
+        Iterator<Long> personsId =  personsTop.keySet().iterator();
+        assertThat(personsId.next(), is(personActivityTotalDto.get(0).getPersonId()));
+        assertThat(personsId.next(), is(personActivityTotalDto.get(1).getPersonId()));
+        assertThat(personsId.next(), is(personActivityTotalDto.get(2).getPersonId()));
 
     }
 }

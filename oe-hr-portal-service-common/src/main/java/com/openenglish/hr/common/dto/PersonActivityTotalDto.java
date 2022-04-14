@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class PersonActivityTotalDto {
-    private PersonDto person;
+    private long personId;
     private double totalActivities;
 }
