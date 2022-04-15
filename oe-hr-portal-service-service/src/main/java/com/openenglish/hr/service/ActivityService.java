@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.List;
@@ -38,15 +40,15 @@ public class ActivityService {
     private static final Set<Long> PRACTICE_COURSE_TYPES = Set.of(CourseTypeEnum.PRACTICE.getValue(),
             CourseTypeEnum.NEWS.getValue(),
             CourseTypeEnum.IDIOMS.getValue());
-    private static final Set<String> COURSE_TYPES_OF_INTEREST = Set.of(
-            CourseTypeEnum.LIVE_CLASS.getName(),
-            CourseTypeEnum.PRIVATE_CLASS.getName(),
-            CourseTypeEnum.LESSON.getName(),
-            CourseTypeEnum.UNIT_ASSESSMENT.getName(),
-            CourseTypeEnum.LEVEL_ASSESSMENT.getName(),
-            CourseTypeEnum.PRACTICE.getName(),
-            CourseTypeEnum.NEWS.getName(),
-            CourseTypeEnum.IDIOMS.getName()
+    private static final Set<Long> COURSE_TYPES_OF_INTEREST = Set.of(
+            CourseTypeEnum.LIVE_CLASS.getValue(),
+            CourseTypeEnum.PRIVATE_CLASS.getValue(),
+            CourseTypeEnum.LESSON.getValue(),
+            CourseTypeEnum.UNIT_ASSESSMENT.getValue(),
+            CourseTypeEnum.LEVEL_ASSESSMENT.getValue(),
+            CourseTypeEnum.PRACTICE.getValue(),
+            CourseTypeEnum.NEWS.getValue(),
+            CourseTypeEnum.IDIOMS.getValue()
     );
 
     private final PersonCourseSummaryRepository personCourseSummaryRepository;
@@ -98,14 +100,16 @@ public class ActivityService {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
         Preconditions.checkArgument(!CollectionUtils.isEmpty(courseTypeEnums), "courseTypesEnum should not be null or empty");
 
-        Set<Long> courseTypeIds = courseTypeEnums.stream().map(CourseTypeEnum::getValue).collect(Collectors.toSet());
+        Set<Long> courseTypeIds = getCourseTypesIds(courseTypeEnums);
 
         LocalDateTime startDate = LocalDateTime.of(year, MONTH, DAY_OF_MONTH, HOUR, MINUTE);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
         List<PersonCourseAudit> personCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
 
-        Map<Integer, Double> courseTypeCounting = (Map<Integer, Double>) getTotalActivityCountGroupedByCustomCriteria(personCourseAudit, (CourseTypeEnum) getFirstElementFromSet(courseTypeEnums), this::getActivityMonth);
+        Map<Integer, Double> courseTypeCounting = (Map<Integer, Double>)
+                getTotalActivityCountGroupedByCustomCriteria(personCourseAudit, (CourseTypeEnum) getFirstElementFromSet(courseTypeEnums),
+                        this::getActivityMonth);
 
 
         List<MonthActivityStatistics> activityStatistics = mapActivityStatisticsToMonthsOfYear(courseTypeCounting);
@@ -136,7 +140,7 @@ public class ActivityService {
         Map<Long, Double> courseTypeCountingByPerson = null;
         LocalDateTime endDate = startDate.plusMonths(1).minusSeconds(1);
 
-        Set<Long> courseTypeIds = courseTypeEnums.stream().map(CourseTypeEnum::getValue).collect(Collectors.toSet());
+        Set<Long> courseTypeIds = getCourseTypesIds(courseTypeEnums);
 
         if (isLevelAssessment(courseTypeEnums)) {
             List<LevelsPassedByPerson> LevelsPassedByPersons = levelTestRepository.getLevelTestsByPurchaserIdUpdateDateBetween(salesforcePurchaserId, startDate, endDate);
@@ -151,23 +155,6 @@ public class ActivityService {
     }
 
     /**
-     * Retrieve the first element of the specified set
-     * @param set collection
-     * @return first element
-     */
-    private Object getFirstElementFromSet(Set<?> set){
-        return set.stream().iterator().next();
-    }
-    /**
-     * validate if the specified course type is a level course
-     * @param courseTypesEnum target activity
-     * @return boolean
-     */
-    private boolean isLevelAssessment(Set<CourseTypeEnum>  courseTypesEnum){
-        return courseTypesEnum.contains(CourseTypeEnum.LEVEL_ASSESSMENT);
-    }
-
-    /**
      * Sort the students from most active to less and retrieve the specified number
      *
      * @param courseTypeCountingByPerson Map with students and their respective number of activities
@@ -175,10 +162,13 @@ public class ActivityService {
      * @return ordered map with students and their number of activities
      */
     private LinkedHashMap<Long, Double> getTopStudents(Map<Long, Double> courseTypeCountingByPerson, int top) {
+
+        BinaryOperator<Double> mappingFunction = (key, value) -> value;
+
         return courseTypeCountingByPerson.entrySet().stream()
                 .sorted((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()))
                 .limit(top)
-                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> NumberUtils.round(entry.getValue()), (x, y) -> y, LinkedHashMap::new));
+                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> NumberUtils.round(entry.getValue()), mappingFunction::apply, LinkedHashMap::new));
     }
 
     /**
@@ -210,7 +200,7 @@ public class ActivityService {
     private Map<CourseTypeEnum, Integer> getSummingTimeByGroupingCourseTypesCourseSummary(List<PersonCourseSummary> personCourseSummaries) {
         return personCourseSummaries
                 .stream()
-                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeEnum(personCourseSummary.getCourse()).getName()))
+                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeEnum(personCourseSummary.getCourse()).getValue()))
                 .collect(Collectors.groupingBy(personCourseSummary -> getCourseTypeEnum(personCourseSummary.getCourse()),
                         Collectors.summingInt(this::getAmountOfTimePerActivity)));
     }
@@ -233,7 +223,7 @@ public class ActivityService {
 
         return personCourseAudits
                 .stream()
-                .filter(personCourseAudit -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeEnum(personCourseAudit.getCourse()).getName()))
+                .filter(personCourseAudit -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeEnum(personCourseAudit.getCourse()).getValue()))
                 .collect(Collectors.groupingBy(groupingCriteria::apply, collectorStatistics));
     }
 
@@ -300,6 +290,23 @@ public class ActivityService {
     }
 
     /**
+     * Retrieve the first element of the specified set
+     * @param set collection
+     * @return first element
+     */
+    private Object getFirstElementFromSet(Set<?> set){
+        return set.stream().iterator().next();
+    }
+    /**
+     * validate if the specified course type is a level course
+     * @param courseTypesEnum target activity
+     * @return boolean
+     */
+    private boolean isLevelAssessment(Set<CourseTypeEnum>  courseTypesEnum){
+        return courseTypesEnum.contains(CourseTypeEnum.LEVEL_ASSESSMENT);
+    }
+
+    /**
      * Get from the course the name of the course type
      * @param course Course instance
      * @return Course type enum
@@ -309,12 +316,12 @@ public class ActivityService {
     }
 
     /**
-     * Get a CourseTypeEnum from his string value representation
-     * @param courseTypeName name of the enum value
-     * @return Course type enum
+     * Gets a set with the ids of the corresponding CourseTypeEnums in the received Set
+     * @param courseTypeEnums Set of CourseTypeEnums
+     * @return Set of CourseTypeEnum Ids
      */
-    private CourseTypeEnum getCourseTypeEnum(String courseTypeName){
-        return CourseTypeEnum.valueOf(courseTypeName.replace(" ","_").toUpperCase());
+    private Set<Long> getCourseTypesIds(Set<CourseTypeEnum> courseTypeEnums){
+        return courseTypeEnums.stream().map(CourseTypeEnum::getValue).collect(Collectors.toSet());
     }
 
     /**
