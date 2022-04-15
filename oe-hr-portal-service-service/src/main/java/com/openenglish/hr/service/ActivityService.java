@@ -150,6 +150,11 @@ public class ActivityService {
 
     }
 
+    /**
+     * Retrieve the first element of the specified set
+     * @param set collection
+     * @return first element
+     */
     private Object getFirstElementFromSet(Set<?> set){
         return set.stream().iterator().next();
     }
