@@ -138,8 +138,9 @@ public class ActivityService {
         CourseTypeEnum courseTypeEnum = getCourseTypeEnum(courseTypeName);
 
         //If the courseTypeId is LIVE_CLASS or PRIVATE_CLASS, both ids are used to retrieve the activities
-        Set<Long> coursesTypeId = GROUP_CLASSES_TYPE.contains(courseTypeEnum.getValue()) ?
-                GROUP_CLASSES_TYPE.stream().collect(Collectors.toSet()) :
+        Set<Long> coursesTypeId =
+                GROUP_CLASSES_TYPE.contains(courseTypeEnum.getValue()) ? GROUP_CLASSES_TYPE.stream().collect(Collectors.toSet()) :
+                PRACTICE_COURSE_TYPES.contains(courseTypeEnum.getValue()) ? PRACTICE_COURSE_TYPES.stream().collect(Collectors.toSet()):
                 Set.of(courseTypeEnum.getValue());
 
         LocalDateTime endDate = startDate.plusMonths(1).minusSeconds(1);
