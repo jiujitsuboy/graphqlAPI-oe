@@ -102,10 +102,10 @@ public class ActivityResolverTest {
                 .monthsActivityStatistics(monthsActivityStatistics)
                 .total(30).build();
 
-        Mockito.when(activityService.getActivityStatistics(anyString(), anyInt(), anyString())).thenReturn(yearActivityStatistics);
+        Mockito.when(activityService.getActivityStatistics(anyString(), anyInt(), any())).thenReturn(yearActivityStatistics);
 
         String query = "{ " +
-                "  getYearActivityStatistics(salesforcePurchaserId:\"12345\", year: 2022, activity: \"Live Class\"){ " +
+                "  getYearActivityStatistics(salesforcePurchaserId:\"12345\", year: 2022, activity: LIVE_CLASS){ " +
                 "    total " +
                 "    monthsActivityStatistics{ " +
                 "       month " +
@@ -142,10 +142,10 @@ public class ActivityResolverTest {
         personsTop.put(person2Id, 20.0);
         personsTop.put(person3Id, 30.0);
 
-        Mockito.when(activityService.getTopStudentsByActivityStatistics(anyString(), any(), anyString(), anyInt())).thenReturn(personsTop);
+        Mockito.when(activityService.getTopStudentsByActivityStatistics(anyString(), any(), any(), anyInt())).thenReturn(personsTop);
 
         String query = "{ " +
-                "  getTopStudentsByActivityStatistics(salesforcePurchaserId:\"12345\", year:2022, month:2, activity: \"Live Class\", top: 3){\n" +
+                "  getTopStudentsByActivityStatistics(salesforcePurchaserId:\"12345\", year:2022, month:2, activity: LIVE_CLASS, top: 3){ " +
                 "    personId" +
                 "    totalActivities " +
                 "  } " +

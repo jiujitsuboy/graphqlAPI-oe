@@ -15,6 +15,7 @@ import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
 import com.openenglish.hr.service.util.NumberUtils;
 import com.openenglish.hr.persistence.entity.aggregation.MonthActivityStatistics;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +38,6 @@ public class ActivityService {
     private static final Set<Long> PRACTICE_COURSE_TYPES = Set.of(CourseTypeEnum.PRACTICE.getValue(),
             CourseTypeEnum.NEWS.getValue(),
             CourseTypeEnum.IDIOMS.getValue());
-    private static final Set<Long> GROUP_CLASSES_TYPE = Set.of(CourseTypeEnum.LIVE_CLASS.getValue(), CourseTypeEnum.PRIVATE_CLASS.getValue());
     private static final Set<String> COURSE_TYPES_OF_INTEREST = Set.of(
             CourseTypeEnum.LIVE_CLASS.getName(),
             CourseTypeEnum.PRIVATE_CLASS.getName(),
@@ -85,10 +85,10 @@ public class ActivityService {
      *
      * @param salesforcePurchaserId id of the owner of the license
      * @param year                  target year
-     * @param courseTypeName          target activities
+     * @param courseTypesEnum       target activities
      * @return the total sum of all activities by  month
      */
-    public YearActivityStatistics getActivityStatistics(String salesforcePurchaserId, int year, String courseTypeName) {
+    public YearActivityStatistics getActivityStatistics(String salesforcePurchaserId, int year, Set<CourseTypeEnum>  courseTypesEnum) {
 
         final int MONTH = 1;
         final int DAY_OF_MONTH = 1;
@@ -96,16 +96,16 @@ public class ActivityService {
         final int MINUTE = 0;
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        Preconditions.checkArgument(COURSE_TYPES_OF_INTEREST.contains(courseTypeName), String.format("Invalid courseTypeName %s", courseTypeName));
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(courseTypesEnum), "courseTypesEnum should not be null or empty");
 
-        CourseTypeEnum courseTypeEnum = getCourseTypeEnum(courseTypeName);
+        Set<Long> coursesTypeId = courseTypesEnum.stream().map(CourseTypeEnum::getValue).collect(Collectors.toSet());
 
         LocalDateTime startDate = LocalDateTime.of(year, MONTH, DAY_OF_MONTH, HOUR, MINUTE);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, Set.of(courseTypeEnum.getValue()));
+        List<PersonCourseAudit> personCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, coursesTypeId);
 
-        Map<Integer, Double> courseTypeCounting = (Map<Integer, Double>) getTotalActivityCountGroupedByCustomCriteria(personCourseAudit, courseTypeEnum, this::getActivityMonth);
+        Map<Integer, Double> courseTypeCounting = (Map<Integer, Double>) getTotalActivityCountGroupedByCustomCriteria(personCourseAudit, courseTypesEnum.stream().iterator().next(), this::getActivityMonth);
 
 
         List<MonthActivityStatistics> activityStatistics = mapActivityStatisticsToMonthsOfYear(courseTypeCounting);
@@ -124,39 +124,39 @@ public class ActivityService {
      *
      * @param salesforcePurchaserId d of the owner of the license
      * @param startDate             Date to filter the top students
-     * @param courseTypeName          target activity
+     * @param courseTypesEnum       target activities
      * @param top                   number of students to return
      * @return Map with each student and his number of activities
      */
-    public LinkedHashMap<Long, Double> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, String courseTypeName, int top) {
+    public LinkedHashMap<Long, Double> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, Set<CourseTypeEnum>  courseTypesEnum, int top) {
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        Preconditions.checkArgument(COURSE_TYPES_OF_INTEREST.contains(courseTypeName), String.format("Invalid courseTypeName %s", courseTypeName));
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(courseTypesEnum), "courseTypesEnum should not be null or empty");
 
         Map<Long, Double> courseTypeCountingByPerson = null;
-
-        CourseTypeEnum courseTypeEnum = getCourseTypeEnum(courseTypeName);
-
-        //If the courseTypeId is LIVE_CLASS or PRIVATE_CLASS, both ids are used to retrieve the activities
-        Set<Long> coursesTypeId =
-                GROUP_CLASSES_TYPE.contains(courseTypeEnum.getValue()) ? GROUP_CLASSES_TYPE.stream().collect(Collectors.toSet()) :
-                PRACTICE_COURSE_TYPES.contains(courseTypeEnum.getValue()) ? PRACTICE_COURSE_TYPES.stream().collect(Collectors.toSet()):
-                Set.of(courseTypeEnum.getValue());
-
         LocalDateTime endDate = startDate.plusMonths(1).minusSeconds(1);
 
-        if (courseTypeEnum == CourseTypeEnum.LEVEL_ASSESSMENT) {
-            List<LevelsPassedByPerson> LevelsPassedByPersons = levelTestRepository.getPersonLevelIdByUpdateDateBetween(salesforcePurchaserId, startDate, endDate);
+        Set<Long> coursesTypeId = courseTypesEnum.stream().map(CourseTypeEnum::getValue).collect(Collectors.toSet());
 
+        if (isCourseTypeLevel(courseTypesEnum)) {
+            List<LevelsPassedByPerson> LevelsPassedByPersons = levelTestRepository.getPersonLevelIdByUpdateDateBetween(salesforcePurchaserId, startDate, endDate);
             courseTypeCountingByPerson = LevelsPassedByPersons.stream().collect(Collectors.toMap(entry -> entry.getPersonId(), entry -> entry.getTotalNumber()));
         } else {
             List<PersonCourseAudit> personCoursesAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, coursesTypeId);
-
-            courseTypeCountingByPerson = (Map<Long, Double>) getTotalActivityCountGroupedByCustomCriteria(personCoursesAudit, courseTypeEnum, (PersonCourseAudit personCourseAudit) -> personCourseAudit.getPerson().getId());
+            courseTypeCountingByPerson = (Map<Long, Double>) getTotalActivityCountGroupedByCustomCriteria(personCoursesAudit, courseTypesEnum.stream().iterator().next(), (PersonCourseAudit personCourseAudit) -> personCourseAudit.getPerson().getId());
         }
 
         return this.getTopStudents(courseTypeCountingByPerson, top);
 
+    }
+
+    /**
+     * validate if the specified course type is a level course
+     * @param courseTypesEnum target activity
+     * @return boolean
+     */
+    private boolean isCourseTypeLevel(Set<CourseTypeEnum>  courseTypesEnum){
+        return courseTypesEnum.contains(CourseTypeEnum.LEVEL_ASSESSMENT);
     }
 
     /**
@@ -218,7 +218,7 @@ public class ActivityService {
     private Map<?, ? extends Number> getTotalActivityCountGroupedByCustomCriteria(List<PersonCourseAudit> personCourseAudits, CourseTypeEnum courseTypeEnum, Function<PersonCourseAudit, ?> groupingCriteria) {
 
         //Select strategy to sum the activities according to the type (Practice: sum timeontask and the total is converted to hours, other Activities: sum the number of occurrence)
-        Collector<PersonCourseAudit, ?, Double> collectorStatistics = courseTypeEnum == CourseTypeEnum.PRACTICE ?
+        Collector<PersonCourseAudit, ?, Double> collectorStatistics = PRACTICE_COURSE_TYPES.contains(courseTypeEnum.getValue()) ?
                 Collectors.collectingAndThen(Collectors.summingDouble(PersonCourseAudit::getTimeontask), NumberUtils::convertSecondsToHours) :
                 Collectors.summingDouble((PersonCourseAudit personCourseAudit) -> ONE_ACTIVITY);
 

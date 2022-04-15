@@ -134,7 +134,7 @@ public class ActivityServiceTest {
     @Test
     public void getLiveClassesStatistics() {
         String salesforcePurchaserId = "12345";
-        final String LIVE_CLASSES = CourseTypeEnum.LIVE_CLASS.getName();
+        final Set<CourseTypeEnum> LIVE_CLASSES = Set.of(CourseTypeEnum.LIVE_CLASS);
         final int YEAR = 2022;
         final int JANUARY = 1;
         final int FEBRUARY = 2;
@@ -213,7 +213,7 @@ public class ActivityServiceTest {
     @Test
     public void getPracticeStatistics() {
         String salesforcePurchaserId = "12345";
-        final String PRACTICE = CourseTypeEnum.PRACTICE.getName();
+        final Set<CourseTypeEnum> PRACTICE = Set.of(CourseTypeEnum.PRACTICE);
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
         final int JANUARY = 1;
@@ -294,7 +294,7 @@ public class ActivityServiceTest {
         final double ZERO = 0.0;
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
-        final String LIVE_CLASSES = CourseTypeEnum.LIVE_CLASS.getName();
+        final Set<CourseTypeEnum> LIVE_CLASSES = Set.of(CourseTypeEnum.LIVE_CLASS);
 
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
@@ -320,7 +320,7 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "";
         final int YEAR = 2022;
-        final String LIVE_CLASSES = CourseTypeEnum.LIVE_CLASS.getName();
+        final Set<CourseTypeEnum> LIVE_CLASSES = Set.of(CourseTypeEnum.LIVE_CLASS);
 
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
@@ -337,10 +337,10 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "12345";
         final int YEAR = 2022;
-        final String INVALID_ACTIVITY_ID = "Remote";
+        final Set<CourseTypeEnum> INVALID_ACTIVITY_ID = null;
 
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage(String.format("Invalid courseTypeName %s", INVALID_ACTIVITY_ID));
+        expectedException.expectMessage("courseTypesEnum should not be null or empty");
 
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
@@ -356,7 +356,7 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsByPracticeActivityStatistics() {
 
         final int PERSONS_SIZE = 3;
-        final String PRACTICE = CourseTypeEnum.PRACTICE.getName();
+        final Set<CourseTypeEnum> PRACTICE = Set.of(CourseTypeEnum.PRACTICE);
         final long TOP1 = 1L;
         final long TOP2 = 4L;
         final long TOP3 = 2L;
@@ -428,7 +428,7 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsByLiveClassesActivityStatistics() {
 
         final int PERSONS_SIZE = 3;
-        final String LIVE_CLASSES = CourseTypeEnum.LIVE_CLASS.getName();
+        final Set<CourseTypeEnum> LIVE_CLASSES = Set.of(CourseTypeEnum.LIVE_CLASS);
         final long TOP1 = 1L;
         final long TOP2 = 4L;
         final long TOP3 = 2L;
@@ -534,7 +534,7 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsByLevelAssesmentsActivityStatistics() {
 
         final int PERSONS_SIZE = 3;
-        final String LEVEL_ASSESMENT = CourseTypeEnum.LEVEL_ASSESSMENT.getName();
+        final Set<CourseTypeEnum> LEVEL_ASSESMENT = Set.of(CourseTypeEnum.LEVEL_ASSESSMENT);
         final long TOP1 = 110005L;
         final long TOP2 = 110002L;
         final long TOP3 = 110001L;
@@ -625,7 +625,7 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsInvalidSalesforcePurchaserId() {
 
         final int PERSONS_SIZE = 3;
-        final String LEVEL_ASSESMENT = CourseTypeEnum.LEVEL_ASSESSMENT.getName();
+        final Set<CourseTypeEnum> LEVEL_ASSESMENT = Set.of(CourseTypeEnum.LEVEL_ASSESSMENT);
         final int YEAR = 2022;
         final int FEBRUARY = 2;
 
@@ -651,12 +651,12 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsInvalidActivity() {
 
         final int PERSONS_SIZE = 3;
-        final String INVALID_ACTIVITY = "Demo";
+        final Set<CourseTypeEnum> INVALID_ACTIVITY = null;
         final int YEAR = 2022;
         final int FEBRUARY = 2;
 
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage(String.format("Invalid courseTypeName %s",INVALID_ACTIVITY));
+        expectedException.expectMessage("courseTypesEnum should not be null or empty");
 
 
         String salesforcePurchaserId = "12345";
