@@ -29,7 +29,7 @@ public class LevelTestRepositoryTest extends AbstractPersistenceTest {
         LocalDateTime startDate = LocalDateTime.of(YEAR, FEBRUARY, 01, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<LevelsPassedByPerson> levelsPassedByPersons = levelTestRepository.getPersonLevelIdByUpdateDateBetween(salesforcePurchaserId, startDate, endDate);
+        List<LevelsPassedByPerson> levelsPassedByPersons = levelTestRepository.getLevelTestsByPurchaserIdUpdateDateBetween(salesforcePurchaserId, startDate, endDate);
         assertEquals(NUMBER_RECORDS_EXPECTED, levelsPassedByPersons.size());
 
     }
@@ -41,7 +41,7 @@ public class LevelTestRepositoryTest extends AbstractPersistenceTest {
         LocalDateTime startDate = LocalDateTime.of(YEAR, MARCH, 01, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<LevelsPassedByPerson> levelsPassedByPersons = levelTestRepository.getPersonLevelIdByUpdateDateBetween(salesforcePurchaserId, startDate, endDate);
+        List<LevelsPassedByPerson> levelsPassedByPersons = levelTestRepository.getLevelTestsByPurchaserIdUpdateDateBetween(salesforcePurchaserId, startDate, endDate);
         assertEquals(NUMBER_RECORDS_EXPECTED, levelsPassedByPersons.size());
 
     }

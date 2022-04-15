@@ -19,7 +19,7 @@ public interface LevelTestRepository extends JpaRepository<LevelTest, Long> {
             "             pd.salesforce_purchaser_id = :salesforcePurchaserId AND" +
             "             l.updated_date BETWEEN :startDate AND :endDate " +
             "       GROUP BY l.person_id ", nativeQuery = true)
-    List<LevelsPassedByPerson> getPersonLevelIdByUpdateDateBetween(@Param("salesforcePurchaserId") String salesforcePurchaserId,
-                                                                   @Param("startDate") LocalDateTime startDate,
-                                                                   @Param("endDate")LocalDateTime endDate);
+    List<LevelsPassedByPerson> getLevelTestsByPurchaserIdUpdateDateBetween(@Param("salesforcePurchaserId") String salesforcePurchaserId,
+                                                                           @Param("startDate") LocalDateTime startDate,
+                                                                           @Param("endDate")LocalDateTime endDate);
 }

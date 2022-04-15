@@ -608,7 +608,7 @@ public class ActivityServiceTest {
         List<LevelsPassedByPerson> levelsPassedByPersons = List.of(levelsPassedByPerson1,levelsPassedByPerson2,levelsPassedByPerson3,levelsPassedByPerson4,levelsPassedByPerson5);
 
         new Expectations() {{
-            levelTestRepository.getPersonLevelIdByUpdateDateBetween(anyString, (LocalDateTime) any, (LocalDateTime) any);
+            levelTestRepository.getLevelTestsByPurchaserIdUpdateDateBetween(anyString, (LocalDateTime) any, (LocalDateTime) any);
             returns(levelsPassedByPersons);
         }};
 
@@ -640,7 +640,7 @@ public class ActivityServiceTest {
         List<LevelsPassedByPerson> levelsPassedByPersons = new ArrayList<>();
 
         new Expectations() {{
-            levelTestRepository.getPersonLevelIdByUpdateDateBetween(anyString, (LocalDateTime) any, (LocalDateTime) any);
+            levelTestRepository.getLevelTestsByPurchaserIdUpdateDateBetween(anyString, (LocalDateTime) any, (LocalDateTime) any);
             returns(levelsPassedByPersons);
         }};
 
@@ -666,7 +666,7 @@ public class ActivityServiceTest {
         List<LevelsPassedByPerson> levelsPassedByPersons = new ArrayList<>();
 
         new Expectations() {{
-            levelTestRepository.getPersonLevelIdByUpdateDateBetween(anyString, (LocalDateTime) any, (LocalDateTime) any);
+            levelTestRepository.getLevelTestsByPurchaserIdUpdateDateBetween(anyString, (LocalDateTime) any, (LocalDateTime) any);
             returns(levelsPassedByPersons);
         }};
 
