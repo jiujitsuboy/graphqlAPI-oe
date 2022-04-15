@@ -7,6 +7,7 @@ import com.github.springtestdbunit.annotation.DatabaseOperation;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -46,6 +47,35 @@ public class PersonCourseSummaryRepositoryTest extends AbstractPersistenceTest {
         final int NUMBER_RECORDS_EXPECTED = 0;
 
         List<PersonCourseSummary> personCourseSummaries = personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserId(salesforcePurchaserId);
+
+        assertEquals(NUMBER_RECORDS_EXPECTED, personCourseSummaries.size());
+    }
+
+    @Test
+    public void findPersonCourseSummaryForCertainYear() {
+        String salesforcePurchaserId = "12347";
+        final int NUMBER_RECORDS_EXPECTED = 16;
+        List<Long> courseTypeIds = List.of(1L, 2L, 3L, 4L, 5L, 8L, 10L);
+        LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
+        LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
+
+        List<PersonCourseSummary> personCourseSummaries = personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypeIds);
+
+        assertEquals(NUMBER_RECORDS_EXPECTED, personCourseSummaries.size());
+
+        personCourseSummaries.stream().forEach(personCourseSummary -> assertEquals(startDate.getYear(), personCourseSummary.getCreatedDate().getYear()));
+
+    }
+
+    @Test
+    public void findPersonCourseSummaryEmptyResultForCertainYear() {
+        String salesforcePurchaserId = "12347";
+        final int NUMBER_RECORDS_EXPECTED = 0;
+        List<Long> courseTypeIds = List.of(1L, 2L, 3L, 4L, 5L, 8L, 10L);
+        LocalDateTime startDate = LocalDateTime.of(2021, 01, 01, 0, 0);
+        LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
+
+        List<PersonCourseSummary> personCourseSummaries = personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserIdAndCreatedDateBetweenAndCourseCourseTypeIdIn(salesforcePurchaserId, startDate, endDate, courseTypeIds);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseSummaries.size());
     }

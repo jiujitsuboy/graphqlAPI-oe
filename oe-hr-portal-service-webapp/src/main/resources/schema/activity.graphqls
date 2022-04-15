@@ -17,3 +17,11 @@
     month: Int
     value: Float
  }
+
+ enum ActivityType{
+    LIVE_CLASS
+    PRACTICE
+    LESSON
+    UNIT
+    LEVEL
+ }

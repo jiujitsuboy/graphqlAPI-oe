@@ -1,9 +1,11 @@
 package com.openenglish.hr.graphql.query;
 
+import com.jayway.jsonpath.TypeRef;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.common.dto.MonthActivityStatisticsDto;
+import com.openenglish.hr.common.dto.PersonActivityTotalDto;
 import com.openenglish.hr.common.dto.YearActivityStatisticsDto;
 import com.openenglish.hr.persistence.entity.aggregation.MonthActivityStatistics;
 import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
@@ -18,8 +20,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 
@@ -97,10 +102,10 @@ public class ActivityResolverTest {
                 .monthsActivityStatistics(monthsActivityStatistics)
                 .total(30).build();
 
-        Mockito.when(activityService.getActivityStatistics(anyString(), anyInt(), anyLong())).thenReturn(yearActivityStatistics);
+        Mockito.when(activityService.getActivityStatistics(anyString(), anyInt(), any())).thenReturn(yearActivityStatistics);
 
         String query = "{ " +
-                "  getYearActivityStatistics(salesforcePurchaserId:\"12345\", year: 2022, activity: 1){ " +
+                "  getYearActivityStatistics(salesforcePurchaserId:\"12345\", year: 2022, activity: LIVE_CLASS){ " +
                 "    total " +
                 "    monthsActivityStatistics{ " +
                 "       month " +
@@ -122,5 +127,40 @@ public class ActivityResolverTest {
             assertEquals(expected.getMonth(), received.getMonth());
             assertEquals(expected.getValue(), received.getValue(), 0);
         }
+    }
+
+    @Test
+    public void getTopStudentsByActivityStatistics() {
+
+        LinkedHashMap<Long, Double> personsTop = new LinkedHashMap<>(5);
+
+        long person1Id = 10004L;
+        long person2Id = 10005L;
+        long person3Id = 10006L;
+
+        personsTop.put(person1Id, 10.0);
+        personsTop.put(person2Id, 20.0);
+        personsTop.put(person3Id, 30.0);
+
+        Mockito.when(activityService.getTopStudentsByActivityStatistics(anyString(), any(), any(), anyInt())).thenReturn(personsTop);
+
+        String query = "{ " +
+                "  getTopStudentsByActivityStatistics(salesforcePurchaserId:\"12345\", year:2022, month:2, activity: LIVE_CLASS, top: 3){ " +
+                "    personId" +
+                "    totalActivities " +
+                "  } " +
+                "}";
+        String projection = "data.getTopStudentsByActivityStatistics[*]";
+
+        List<PersonActivityTotalDto> personActivityTotalDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
+        });
+
+        assertNotNull(personActivityTotalDto);
+
+        Iterator<Long> personsId =  personsTop.keySet().iterator();
+        assertThat(personsId.next(), is(personActivityTotalDto.get(0).getPersonId()));
+        assertThat(personsId.next(), is(personActivityTotalDto.get(1).getPersonId()));
+        assertThat(personsId.next(), is(personActivityTotalDto.get(2).getPersonId()));
+
     }
 }

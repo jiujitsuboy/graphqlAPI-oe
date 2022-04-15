@@ -24,3 +24,8 @@
     levelName: String
     totalNumber: Int
  }
+
+ type PersonActivitiesTotal{
+    personId: Int
+    totalActivities: Float
+ }

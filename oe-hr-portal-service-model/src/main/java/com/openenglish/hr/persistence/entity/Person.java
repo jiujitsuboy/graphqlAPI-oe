@@ -6,17 +6,17 @@ import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "person")
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Immutable
 public class Person implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
