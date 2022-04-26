@@ -11,8 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+
+import java.time.Clock;
 
 @Configuration
 @ComponentScan(basePackages = {"com.openenglish.hr.service"})
@@ -28,6 +29,11 @@ public class ServiceConfig {
                 //Region not specified explicity, it is grab of the default region configured in the credentials file of the user profile
                 .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
                 .build();
+    }
+
+    @Bean
+    public Clock clockForLocalDateTimes(){
+        return Clock.systemDefaultZone();
     }
 
 }

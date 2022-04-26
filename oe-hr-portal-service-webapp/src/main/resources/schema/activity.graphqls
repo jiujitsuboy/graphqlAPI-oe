@@ -18,6 +18,13 @@
     value: Float
  }
 
+ type ActivitiesPerUserLevel {
+    high: Int
+    mediumHigh: Int
+    mediumLow: Int
+    low: Int
+ }
+
  enum ActivityType{
     LIVE_CLASS
     PRACTICE
