@@ -1,6 +1,7 @@
 package com.openenglish.hr.service;
 
 import com.oe.lp2.enums.CourseTypeEnum;
+import com.openenglish.hr.common.dto.PersonUsageLevelDto;
 import com.openenglish.hr.common.dto.UsageLevelsDto;
 import com.openenglish.hr.persistence.entity.*;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
@@ -738,5 +739,75 @@ public class ActivityServiceTest {
         assertThat(usageLevelsDto.getMediumLow(), is(MEDIUM_LOW_AMOUNT));
         assertThat(usageLevelsDto.getLow(), is(LOW_AMOUNT));
 
+    }
+
+    @Test
+    public void getLeastActiveStudents(){
+
+        final int PERSONS_SIZE = 4;
+
+        LocalDate currentTime = LocalDate.of(2022,04,16);
+        Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        String salesforcePurchaserId = "12345";
+
+        List<UsageLevels> usageLevels = List.of(
+                createUsageLevel(110001, "Patrik", "Smith", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
+                createUsageLevel(110002, "Michale", "Bale", LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
+                createUsageLevel(110003, "Jake", "Sullivan", LocalDateTime.of(2022, 02, 02, 0, 0, 0)),
+                createUsageLevel(110004, "Claire", "Redfield", LocalDateTime.of(2021, 12, 02, 0, 0, 0)),
+                createUsageLevel(110005, "Ana", "Stuart", LocalDateTime.of(2022, 01, 02, 0, 0, 0)),
+                createUsageLevel(110006, "Sam", "Walmart", LocalDateTime.of(2022, 03, 12, 0, 0, 0))
+        );
+
+        new Expectations() {{
+            clock.instant();
+            returns(fixedClock.instant());
+            clock.getZone();
+            returns(fixedClock.getZone());
+
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString);
+            returns(usageLevels);
+        }};
+
+        List<PersonUsageLevelDto> personUsageLevelDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
+        assertEquals(PERSONS_SIZE, personUsageLevelDtos.size());
+
+        personUsageLevelDtos.stream()
+                .forEach(personUsageLevelDto -> ActivityService.LOW_USAGE_TYPES.contains(personUsageLevelDto.getUsageLevel()));
+
+    }
+
+    @Test
+    public void getLeastActiveStudentsEmpty(){
+
+        final int EMPTY_SIZE = 0;
+
+        LocalDate currentTime = LocalDate.of(2022,04,16);
+        Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        String salesforcePurchaserId = "12345";
+
+        List<UsageLevels> usageLevels = List.of(
+                createUsageLevel(110001, "Patrik", "Smith", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
+                createUsageLevel(110002, "Michale", "Bale", LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
+                createUsageLevel(110003, "Jake", "Sullivan", LocalDateTime.of(2022, 03, 20, 0, 0, 0)),
+                createUsageLevel(110004, "Claire", "Redfield", LocalDateTime.of(2023, 04, 02, 0, 0, 0)),
+                createUsageLevel(110005, "Ana", "Stuart", LocalDateTime.of(2022, 04, 02, 0, 0, 0)),
+                createUsageLevel(110006, "Sam", "Walmart", LocalDateTime.of(2022, 03, 29, 0, 0, 0))
+        );
+
+        new Expectations() {{
+            clock.instant();
+            returns(fixedClock.instant());
+            clock.getZone();
+            returns(fixedClock.getZone());
+
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString);
+            returns(usageLevels);
+        }};
+
+        List<PersonUsageLevelDto> personUsageLevelDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
+        assertEquals(EMPTY_SIZE, personUsageLevelDtos.size());
     }
 }

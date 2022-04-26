@@ -4,10 +4,7 @@ import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsData;
 import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.api.model.ActivityTypeEnum;
-import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
-import com.openenglish.hr.common.dto.PersonActivityTotalDto;
-import com.openenglish.hr.common.dto.UsageLevelsDto;
-import com.openenglish.hr.common.dto.YearActivityStatisticsDto;
+import com.openenglish.hr.common.dto.*;
 import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.service.ActivityService;
 import com.openenglish.hr.service.mapper.Mapper;
@@ -66,4 +63,8 @@ public class ActivityResolver {
         return activityService.getActivitiesPerUserLevel(salesforcePurchaserId);
     }
 
+    @DgsData(parentType = "Query", field = "getLeastActiveStudents")
+    public List<PersonUsageLevelDto> getLeastActiveStudents(String salesforcePurchaserId) {
+        return activityService.getLeastActiveStudents(salesforcePurchaserId);
+    }
 }

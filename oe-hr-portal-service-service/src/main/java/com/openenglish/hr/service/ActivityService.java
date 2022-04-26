@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
+import com.openenglish.hr.common.dto.PersonUsageLevelDto;
 import com.openenglish.hr.common.dto.UsageLevelsDto;
 import com.openenglish.hr.persistence.entity.Course;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
@@ -54,6 +55,7 @@ public class ActivityService {
             CourseTypeEnum.NEWS.getValue(),
             CourseTypeEnum.IDIOMS.getValue()
     );
+    public  static final Set<UsageLevelEnum> LOW_USAGE_TYPES = Set.of(UsageLevelEnum.MEDIUM_LOW, UsageLevelEnum.LOW);
 
     private final PersonCourseSummaryRepository personCourseSummaryRepository;
     private final PersonCourseAuditRepository personCourseAuditRepository;
@@ -183,6 +185,22 @@ public class ActivityService {
                 .mediumLow(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.MEDIUM_LOW, 0L))
                 .low(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.LOW, 0L))
                 .build();
+    }
+
+    public List<PersonUsageLevelDto> getLeastActiveStudents(String salesforcePurchaserId) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
+        List<UsageLevels> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
+
+        List<PersonUsageLevelDto> personUsageLevelDtos = usageLevels.stream()
+                .map(usageLevel -> PersonUsageLevelDto
+                        .builder()
+                        .name(String.format("%s %s ",usageLevel.getFirstname(),usageLevel.getLastname()))
+                        .usageLevel(this.mapStudentsToUsageLevel(usageLevel))
+                        .build())
+                .filter(personUsageLevelDto -> LOW_USAGE_TYPES.contains(personUsageLevelDto.getUsageLevel()))
+                .collect(Collectors.toList());
+
+        return personUsageLevelDtos;
     }
 
     /**

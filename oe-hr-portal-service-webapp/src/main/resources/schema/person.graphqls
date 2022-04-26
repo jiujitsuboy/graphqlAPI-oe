@@ -29,3 +29,15 @@
     personId: Int
     totalActivities: Float
  }
+
+ type PersonsUsageLevel {
+    name: String
+    usageLevel : UsageLevel
+ }
+
+ enum UsageLevel{
+     HIGH
+     MEDIUM_HIGH
+     MEDIUM_LOW
+     LOW
+  }
