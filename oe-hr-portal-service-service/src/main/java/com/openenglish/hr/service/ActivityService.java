@@ -174,7 +174,8 @@ public class ActivityService {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
         List<UsageLevels> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
 
-        Map<UsageLevelEnum, Long> usageLevelCountingByPersons = usageLevels.stream().collect(Collectors.groupingBy(this::mapStudentsToUsageLevel,
+        Map<UsageLevelEnum, Long> usageLevelCountingByPersons = usageLevels.stream()
+            .collect(Collectors.groupingBy(this::mapStudentsToUsageLevel,
                 Collectors.summingLong(personCourseAudit -> ONE_ACTIVITY)));
 
         return UsageLevelsDto.builder()
