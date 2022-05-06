@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -90,7 +89,7 @@ public class ActivityService {
      * @param courseTypeEnums       target activities
      * @return the total sum of all activities by  month
      */
-    public YearActivityStatistics getActivityStatistics(String salesforcePurchaserId, int year, Set<CourseTypeEnum>  courseTypeEnums) {
+    public YearActivityStatistics getActivityStatistics(String salesforcePurchaserId, int year, Set<CourseTypeEnum> courseTypeEnums) {
 
         final int MONTH = 1;
         final int DAY_OF_MONTH = 1;
@@ -105,11 +104,16 @@ public class ActivityService {
         LocalDateTime startDate = LocalDateTime.of(year, MONTH, DAY_OF_MONTH, HOUR, MINUTE);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
+        List<PersonCourseAudit> personsCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
+
+        CourseTypeEnum courseTypeEnum = (CourseTypeEnum) getFirstElementFromSet(courseTypeEnums);
+
+        Collector<PersonCourseAudit, ?, Double> collectorStatistics = PRACTICE_COURSE_TYPES.contains(courseTypeEnum.getValue()) ?
+                Collectors.collectingAndThen(Collectors.summingDouble(PersonCourseAudit::getTimeontask), NumberUtils::convertSecondsToHours) :
+                Collectors.summingDouble((PersonCourseAudit personCourseAudit) -> ONE_ACTIVITY);
 
         Map<Integer, Double> courseTypeCounting = (Map<Integer, Double>)
-                getTotalActivityCountGroupedByCustomCriteria(personCourseAudit, (CourseTypeEnum) getFirstElementFromSet(courseTypeEnums),
-                        this::getActivityMonth);
+                getTotalActivityCountGroupedByCustomCriteria(personsCourseAudit, collectorStatistics, this::getActivityMonth);
 
 
         List<MonthActivityStatistics> activityStatistics = mapActivityStatisticsToMonthsOfYear(courseTypeCounting);
@@ -138,16 +142,32 @@ public class ActivityService {
         Preconditions.checkArgument(!CollectionUtils.isEmpty(courseTypeEnums), "courseTypesEnum should not be null or empty");
 
         Map<Long, Double> courseTypeCountingByPerson = null;
-        LocalDateTime endDate = startDate.plusMonths(1).minusSeconds(1);
 
+        LocalDateTime endDate = startDate.plusMonths(1).minusSeconds(1);
         Set<Long> courseTypeIds = getCourseTypesIds(courseTypeEnums);
 
         if (isLevelAssessment(courseTypeEnums)) {
+
             List<LevelsPassedByPerson> levelsPassedByPersons = levelTestRepository.getLevelTestsByPurchaserIdUpdateDateBetween(salesforcePurchaserId, startDate, endDate);
             courseTypeCountingByPerson = levelsPassedByPersons.stream().collect(Collectors.toMap(entry -> entry.getPersonId(), entry -> entry.getTotalNumber()));
+
         } else {
+
             List<PersonCourseAudit> personCoursesAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
-            courseTypeCountingByPerson = (Map<Long, Double>) getTotalActivityCountGroupedByCustomCriteria(personCoursesAudit, (CourseTypeEnum) getFirstElementFromSet(courseTypeEnums), (PersonCourseAudit personCourseAudit) -> personCourseAudit.getPerson().getId());
+
+            CourseTypeEnum courseTypeEnum = (CourseTypeEnum) getFirstElementFromSet(courseTypeEnums);
+
+            Collector<PersonCourseAudit, ?, Double> collectorStatistics = (courseTypeEnums.size() == CourseTypeEnum.values().length) ?
+                    Collectors.collectingAndThen(Collectors.summingDouble(this::getNumberOfSecondsPerActivity), NumberUtils::convertSecondsToHours) :
+                    PRACTICE_COURSE_TYPES.contains(courseTypeEnum.getValue()) ?
+                            Collectors.collectingAndThen(Collectors.summingDouble(PersonCourseAudit::getTimeontask), NumberUtils::convertSecondsToHours) :
+                            Collectors.summingDouble((PersonCourseAudit personCourseAudit2) -> ONE_ACTIVITY);
+
+            courseTypeCountingByPerson = (Map<Long, Double>) getTotalActivityCountGroupedByCustomCriteria(personCoursesAudit,
+                    collectorStatistics,
+                    (PersonCourseAudit personCourseAudit) -> personCourseAudit.getPerson().getId());
+
+
         }
 
         return this.getTopStudents(courseTypeCountingByPerson, top);
@@ -206,20 +226,16 @@ public class ActivityService {
     }
 
     /**
-     * * Group Persons by custom criteria
+     * Group Persons by custom criteria
      *
-     * @param personCourseAudits personCourseAudits List of student course activities
-     * @param courseTypeEnum     type of activity
-     * @param groupingCriteria   Custom grouping criteria
+     * @param personCourseAudits  personCourseAudits List of student course activities
+     * @param collectorStatistics collect strategy for the group
+     * @param groupingCriteria    Custom grouping criteria
      * @return Person's Map with the custom criteria result
      */
-    private Map<?, ? extends Number> getTotalActivityCountGroupedByCustomCriteria(List<PersonCourseAudit> personCourseAudits, CourseTypeEnum courseTypeEnum, Function<PersonCourseAudit, ?> groupingCriteria) {
-
-        //Select strategy to sum the activities according to the type (Practice: sum timeontask and the total is converted to hours, other Activities: sum the number of occurrence)
-        Collector<PersonCourseAudit, ?, Double> collectorStatistics = PRACTICE_COURSE_TYPES.contains(courseTypeEnum.getValue()) ?
-                Collectors.collectingAndThen(Collectors.summingDouble(PersonCourseAudit::getTimeontask), NumberUtils::convertSecondsToHours) :
-                Collectors.summingDouble((PersonCourseAudit personCourseAudit) -> ONE_ACTIVITY);
-
+    private Map<?, ? extends Number> getTotalActivityCountGroupedByCustomCriteria(List<PersonCourseAudit> personCourseAudits,
+                                                                                  Collector<PersonCourseAudit, ?, Double> collectorStatistics,
+                                                                                  Function<PersonCourseAudit, ?> groupingCriteria) {
 
         return personCourseAudits
                 .stream()
@@ -289,38 +305,68 @@ public class ActivityService {
         return timeInSeconds;
     }
 
+    private int getNumberOfSecondsPerActivity(PersonCourseAudit personCourseAudit) {
+
+        CourseTypeEnum courseTypeEnumCurrentPerson = this.getCourseTypeEnum(personCourseAudit.getCourse());
+        int nroSecondActivity = 0;
+
+        if (PRACTICE_COURSE_TYPES.contains(courseTypeEnumCurrentPerson.getValue())) {
+            nroSecondActivity = personCourseAudit.getTimeontask();
+        } else {
+
+            switch (courseTypeEnumCurrentPerson) {
+                case LIVE_CLASS:
+                    nroSecondActivity = NumberUtils.toSeconds(MINUTES_PER_LIVE_CLASS);
+                    break;
+                case PRIVATE_CLASS:
+                    nroSecondActivity = NumberUtils.toSeconds(MINUTES_PER_PRIVATE_CLASS);
+                    break;
+                case LESSON:
+                case UNIT_ASSESSMENT:
+                    nroSecondActivity = NumberUtils.toSeconds(MINUTES_PER_LESSON_UNIT_ASSESSMENT);
+                    break;
+            }
+        }
+        return nroSecondActivity;
+    }
+
     /**
      * Retrieve the first element of the specified set
+     *
      * @param set collection
      * @return first element
      */
-    private Object getFirstElementFromSet(Set<?> set){
+    private Object getFirstElementFromSet(Set<?> set) {
         return set.stream().iterator().next();
     }
+
     /**
      * validate if the specified course type is a level course
+     *
      * @param courseTypesEnum target activity
      * @return boolean
      */
-    private boolean isLevelAssessment(Set<CourseTypeEnum>  courseTypesEnum){
-        return courseTypesEnum.contains(CourseTypeEnum.LEVEL_ASSESSMENT);
+    private boolean isLevelAssessment(Set<CourseTypeEnum> courseTypesEnum) {
+        return courseTypesEnum.size() == 1 && courseTypesEnum.contains(CourseTypeEnum.LEVEL_ASSESSMENT);
     }
 
     /**
      * Get from the course the name of the course type
+     *
      * @param course Course instance
      * @return Course type enum
      */
-    private CourseTypeEnum getCourseTypeEnum(Course course){
+    private CourseTypeEnum getCourseTypeEnum(Course course) {
         return CourseTypeEnum.getStatusByValue(course.getCourseType().getId());
     }
 
     /**
      * Gets a set with the ids of the corresponding CourseTypeEnums in the received Set
+     *
      * @param courseTypeEnums Set of CourseTypeEnums
      * @return Set of CourseTypeEnum Ids
      */
-    private Set<Long> getCourseTypesIds(Set<CourseTypeEnum> courseTypeEnums){
+    private Set<Long> getCourseTypesIds(Set<CourseTypeEnum> courseTypeEnums) {
         return courseTypeEnums.stream().map(CourseTypeEnum::getValue).collect(Collectors.toSet());
     }
 

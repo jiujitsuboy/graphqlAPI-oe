@@ -145,7 +145,7 @@ public class ActivityResolverTest {
         Mockito.when(activityService.getTopStudentsByActivityStatistics(anyString(), any(), any(), anyInt())).thenReturn(personsTop);
 
         String query = "{ " +
-                "  getTopStudentsByActivityStatistics(salesforcePurchaserId:\"12345\", year:2022, month:2, activity: LIVE_CLASS, top: 3){ " +
+                "  getTopStudentsByActivityStatistics(salesforcePurchaserId:\"12345\", year:2022, month:2, activities: [LIVE_CLASS], top: 3){ " +
                 "    personId" +
                 "    totalActivities " +
                 "  } " +
