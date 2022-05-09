@@ -6,7 +6,7 @@ import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.api.model.ActivityTypeEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.common.dto.PersonActivityTotalDto;
-import com.openenglish.hr.common.dto.UsageLevelsDto;
+import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.common.dto.YearActivityStatisticsDto;
 import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.service.ActivityService;
@@ -61,9 +61,9 @@ public class ActivityResolver {
                 .collect(Collectors.toList());
     }
 
-    @DgsData(parentType = "Query", field = "getActivitiesPerUserLevel")
-    public UsageLevelsDto getActivitiesPerUserLevel(String salesforcePurchaserId) {
-        return activityService.getActivitiesPerUserLevel(salesforcePurchaserId);
+    @DgsData(parentType = "Query", field = "getUsageLevelOverview")
+    public UsageLevelOverviewDto getUsageLevelOverview(String salesforcePurchaserId) {
+        return activityService.getUsageLevelOverview(salesforcePurchaserId);
     }
 
 }

@@ -1,7 +1,7 @@
 package com.openenglish.hr.service;
 
 import com.oe.lp2.enums.CourseTypeEnum;
-import com.openenglish.hr.common.dto.UsageLevelsDto;
+import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.persistence.entity.*;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
@@ -731,7 +731,7 @@ public class ActivityServiceTest {
             returns(usageLevels);
         }};
 
-        UsageLevelsDto usageLevelsDto = activityService.getActivitiesPerUserLevel(salesforcePurchaserId);
+        UsageLevelOverviewDto usageLevelsDto = activityService.getUsageLevelOverview(salesforcePurchaserId);
 
         assertThat(usageLevelsDto.getHigh(), is(HIGH_AMOUNT));
         assertThat(usageLevelsDto.getMediumHigh(), is(MEDIUM_HIGH_AMOUNT));
