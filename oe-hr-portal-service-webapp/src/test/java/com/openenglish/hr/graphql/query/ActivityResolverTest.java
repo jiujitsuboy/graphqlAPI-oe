@@ -3,10 +3,7 @@ package com.openenglish.hr.graphql.query;
 import com.jayway.jsonpath.TypeRef;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
-import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
-import com.openenglish.hr.common.dto.MonthActivityStatisticsDto;
-import com.openenglish.hr.common.dto.PersonActivityTotalDto;
-import com.openenglish.hr.common.dto.YearActivityStatisticsDto;
+import com.openenglish.hr.common.dto.*;
 import com.openenglish.hr.persistence.entity.aggregation.MonthActivityStatistics;
 import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.service.ActivityService;
@@ -161,6 +158,38 @@ public class ActivityResolverTest {
         assertThat(personsId.next(), is(personActivityTotalDto.get(0).getPersonId()));
         assertThat(personsId.next(), is(personActivityTotalDto.get(1).getPersonId()));
         assertThat(personsId.next(), is(personActivityTotalDto.get(2).getPersonId()));
+
+    }
+    @Test
+    public void getUsageLevelOverview() {
+
+        UsageLevelOverviewDto usageLevelsDtoExpected = UsageLevelOverviewDto.builder()
+                .high(4L)
+                .mediumHigh(3L)
+                .mediumLow(2L)
+                .low(1L)
+                .build();
+
+        Mockito.when(activityService.getUsageLevelOverview(anyString())).thenReturn(usageLevelsDtoExpected);
+
+        String query = "{ " +
+                "  getUsageLevelOverview(salesforcePurchaserId:\"12345\"){ " +
+                "    high " +
+                "    mediumHigh " +
+                "    mediumLow " +
+                "    low" +
+                "    }" +
+                "}";
+        String projection = "data.getUsageLevelOverview";
+
+        UsageLevelOverviewDto usageLevelsDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, UsageLevelOverviewDto.class);
+
+        assertNotNull(usageLevelsDto);
+
+        assertEquals(usageLevelsDtoExpected.getHigh(), usageLevelsDto.getHigh());
+        assertEquals(usageLevelsDtoExpected.getMediumHigh(), usageLevelsDto.getMediumHigh());
+        assertEquals(usageLevelsDtoExpected.getMediumLow(), usageLevelsDto.getMediumLow());
+        assertEquals(usageLevelsDtoExpected.getLow(), usageLevelsDto.getLow());
 
     }
 }

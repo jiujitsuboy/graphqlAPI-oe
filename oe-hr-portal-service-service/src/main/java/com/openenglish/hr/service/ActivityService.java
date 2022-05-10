@@ -3,11 +3,14 @@ package com.openenglish.hr.service;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.oe.lp2.enums.CourseTypeEnum;
+import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
+import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.persistence.entity.Course;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
 import com.openenglish.hr.persistence.entity.PersonCourseAudit;
 import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
+import com.openenglish.hr.persistence.entity.aggregation.UsageLevels;
 import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.persistence.repository.LevelTestRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
@@ -19,9 +22,10 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -54,6 +58,7 @@ public class ActivityService {
     private final PersonCourseSummaryRepository personCourseSummaryRepository;
     private final PersonCourseAuditRepository personCourseAuditRepository;
     private final LevelTestRepository levelTestRepository;
+    private final Clock clock;
 
 
     /**
@@ -90,7 +95,7 @@ public class ActivityService {
      * @param courseTypeEnums       target activities
      * @return the total sum of all activities by  month
      */
-    public YearActivityStatistics getActivityStatistics(String salesforcePurchaserId, int year, Set<CourseTypeEnum>  courseTypeEnums) {
+    public YearActivityStatistics getActivityStatistics(String salesforcePurchaserId, int year, Set<CourseTypeEnum> courseTypeEnums) {
 
         final int MONTH = 1;
         final int DAY_OF_MONTH = 1;
@@ -126,13 +131,13 @@ public class ActivityService {
     /**
      * Retrieve the top number of students with more activities done on the specified date
      *
-     * @param salesforcePurchaserId d of the owner of the license
+     * @param salesforcePurchaserId Id of the owner of the license
      * @param startDate             Date to filter the top students
      * @param courseTypeEnums       target activities
      * @param top                   number of students to return
      * @return Map with each student and his number of activities
      */
-    public LinkedHashMap<Long, Double> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, Set<CourseTypeEnum>  courseTypeEnums, int top) {
+    public LinkedHashMap<Long, Double> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, Set<CourseTypeEnum> courseTypeEnums, int top) {
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
         Preconditions.checkArgument(!CollectionUtils.isEmpty(courseTypeEnums), "courseTypesEnum should not be null or empty");
@@ -152,6 +157,33 @@ public class ActivityService {
 
         return this.getTopStudents(courseTypeCountingByPerson, top);
 
+    }
+
+    /**
+     * Retrieve the number of students and group then by their corresponding UsageLevel
+     * <p>
+     * HIGH:  last activity completed in the last 10 days
+     * MEDIUM HIGH: last activity completed betwenn last 11 and 30 days
+     * MEDIUM LOW last activity completed betwenn last 31 and 60 days
+     * LOW: last activity completed after the last 61 days
+     *
+     * @param salesforcePurchaserId Id of the owner of the license
+     * @return UsageLevelsDto
+     */
+    public UsageLevelOverviewDto getUsageLevelOverview(String salesforcePurchaserId) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
+        List<UsageLevels> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
+
+        Map<UsageLevelEnum, Long> usageLevelCountingByPersons = usageLevels.stream()
+            .collect(Collectors.groupingBy(this::mapStudentsToUsageLevel,
+                Collectors.summingLong(personCourseAudit -> ONE_ACTIVITY)));
+
+        return UsageLevelOverviewDto.builder()
+                .high(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.HIGH, 0L))
+                .mediumHigh(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.MEDIUM_HIGH, 0L))
+                .mediumLow(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.MEDIUM_LOW, 0L))
+                .low(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.LOW, 0L))
+                .build();
     }
 
     /**
@@ -228,6 +260,30 @@ public class ActivityService {
     }
 
     /**
+     * map students by usage level
+     * @param usageLevel usage level of the student
+     * @return UsageLevelEnum
+     */
+    private UsageLevelEnum mapStudentsToUsageLevel(UsageLevels usageLevel) {
+
+        LocalDateTime currentTime = LocalDateTime.now(clock);
+
+        UsageLevelEnum usageLevelEnum = UsageLevelEnum.LOW;
+
+        long daysBetweenDates = usageLevel.getLastActivity().until(currentTime, ChronoUnit.DAYS);
+
+        if (daysBetweenDates <= 10) {
+            usageLevelEnum = UsageLevelEnum.HIGH;
+        } else if (daysBetweenDates >= 11 && daysBetweenDates <= 30) {
+            usageLevelEnum = UsageLevelEnum.MEDIUM_HIGH;
+        } else if (daysBetweenDates >= 31 && daysBetweenDates <= 60) {
+            usageLevelEnum = UsageLevelEnum.MEDIUM_LOW;
+        }
+        return usageLevelEnum;
+
+    }
+
+    /**
      * return the amount of seconds for Practice activities and return 1 for every other activity
      *
      * @param personCourseSummary List of student course activities
@@ -291,36 +347,41 @@ public class ActivityService {
 
     /**
      * Retrieve the first element of the specified set
+     *
      * @param set collection
      * @return first element
      */
-    private Object getFirstElementFromSet(Set<?> set){
+    private Object getFirstElementFromSet(Set<?> set) {
         return set.stream().iterator().next();
     }
+
     /**
      * validate if the specified course type is a level course
+     *
      * @param courseTypesEnum target activity
      * @return boolean
      */
-    private boolean isLevelAssessment(Set<CourseTypeEnum>  courseTypesEnum){
+    private boolean isLevelAssessment(Set<CourseTypeEnum> courseTypesEnum) {
         return courseTypesEnum.contains(CourseTypeEnum.LEVEL_ASSESSMENT);
     }
 
     /**
      * Get from the course the name of the course type
+     *
      * @param course Course instance
      * @return Course type enum
      */
-    private CourseTypeEnum getCourseTypeEnum(Course course){
+    private CourseTypeEnum getCourseTypeEnum(Course course) {
         return CourseTypeEnum.getStatusByValue(course.getCourseType().getId());
     }
 
     /**
      * Gets a set with the ids of the corresponding CourseTypeEnums in the received Set
+     *
      * @param courseTypeEnums Set of CourseTypeEnums
      * @return Set of CourseTypeEnum Ids
      */
-    private Set<Long> getCourseTypesIds(Set<CourseTypeEnum> courseTypeEnums){
+    private Set<Long> getCourseTypesIds(Set<CourseTypeEnum> courseTypeEnums) {
         return courseTypeEnums.stream().map(CourseTypeEnum::getValue).collect(Collectors.toSet());
     }
 

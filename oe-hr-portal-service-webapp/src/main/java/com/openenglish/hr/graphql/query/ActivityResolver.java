@@ -3,9 +3,10 @@ package com.openenglish.hr.graphql.query;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsData;
 import com.oe.lp2.enums.CourseTypeEnum;
-import com.openenglish.hr.common.api.model.ActivityType;
+import com.openenglish.hr.common.api.model.ActivityTypeEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.common.dto.PersonActivityTotalDto;
+import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.common.dto.YearActivityStatisticsDto;
 import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.service.ActivityService;
@@ -32,7 +33,7 @@ public class ActivityResolver {
     }
 
     @DgsData(parentType = "Query", field = "getYearActivityStatistics")
-    public YearActivityStatisticsDto getYearActivityStatistics(String salesforcePurchaserId, int year, ActivityType activity) {
+    public YearActivityStatisticsDto getYearActivityStatistics(String salesforcePurchaserId, int year, ActivityTypeEnum activity) {
 
         Set<CourseTypeEnum> courseTypeEnums =  ActivityTypeMapper.mapToCourseTypes(activity);
 
@@ -42,7 +43,7 @@ public class ActivityResolver {
     }
 
     @DgsData(parentType = "Query", field = "getTopStudentsByActivityStatistics")
-    public List<PersonActivityTotalDto> getTopStudentsByActivityStatistics(String salesforcePurchaserId, int year, int month, ActivityType activity, int top) {
+    public List<PersonActivityTotalDto> getTopStudentsByActivityStatistics(String salesforcePurchaserId, int year, int month, ActivityTypeEnum activity, int top) {
 
         LocalDateTime localDateTime = LocalDateTime.of(year, month, 1, 0, 0, 0);
 
@@ -59,4 +60,10 @@ public class ActivityResolver {
                 )
                 .collect(Collectors.toList());
     }
+
+    @DgsData(parentType = "Query", field = "getUsageLevelOverview")
+    public UsageLevelOverviewDto getUsageLevelOverview(String salesforcePurchaserId) {
+        return activityService.getUsageLevelOverview(salesforcePurchaserId);
+    }
+
 }
