@@ -30,7 +30,7 @@
     totalActivities: Float
  }
 
- type PersonsUsageLevel {
+ type PersonsUsageLevelOverview {
     name: String
     usageLevel : UsageLevel
  }

@@ -1,7 +1,7 @@
 package com.openenglish.hr.service;
 
 import com.oe.lp2.enums.CourseTypeEnum;
-import com.openenglish.hr.common.dto.PersonUsageLevelDto;
+import com.openenglish.hr.common.dto.PersonUsageLevelOverviewDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.persistence.entity.*;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
@@ -701,7 +701,7 @@ public class ActivityServiceTest {
     }
 
     @Test
-    public void getPersonsPerUserLevel() {
+    public void getPersonsPerUserLevelOverview() {
 
         final long HIGH_AMOUNT = 1;
         final long MEDIUM_HIGH_AMOUNT = 1;
@@ -770,10 +770,10 @@ public class ActivityServiceTest {
             returns(usageLevels);
         }};
 
-        List<PersonUsageLevelDto> personUsageLevelDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
-        assertEquals(PERSONS_SIZE, personUsageLevelDtos.size());
+        List<PersonUsageLevelOverviewDto> personUsageLevelOverviewDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
+        assertEquals(PERSONS_SIZE, personUsageLevelOverviewDtos.size());
 
-        personUsageLevelDtos.stream()
+        personUsageLevelOverviewDtos.stream()
                 .forEach(personUsageLevelDto -> ActivityService.LOW_USAGE_TYPES.contains(personUsageLevelDto.getUsageLevel()));
 
     }
@@ -807,7 +807,7 @@ public class ActivityServiceTest {
             returns(usageLevels);
         }};
 
-        List<PersonUsageLevelDto> personUsageLevelDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
-        assertEquals(EMPTY_SIZE, personUsageLevelDtos.size());
+        List<PersonUsageLevelOverviewDto> personUsageLevelOverviewDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
+        assertEquals(EMPTY_SIZE, personUsageLevelOverviewDtos.size());
     }
 }

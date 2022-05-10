@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PersonUsageLevelDto {
+public class PersonUsageLevelOverviewDto {
 
     private String name;
     private UsageLevelEnum usageLevel;

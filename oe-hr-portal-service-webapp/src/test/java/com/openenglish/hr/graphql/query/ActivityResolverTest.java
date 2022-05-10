@@ -200,12 +200,12 @@ public class ActivityResolverTest {
 
         final int PERSONS_SIZE = 2;
 
-        List<PersonUsageLevelDto> personUsageLevelDtos = List.of(
-                PersonUsageLevelDto.builder()
+        List<PersonUsageLevelOverviewDto> personUsageLevelDtos = List.of(
+                PersonUsageLevelOverviewDto.builder()
                         .name("Patrik Smith")
                         .usageLevel(UsageLevelEnum.MEDIUM_LOW)
                         .build(),
-                PersonUsageLevelDto.builder()
+                PersonUsageLevelOverviewDto.builder()
                         .name("Michale Bale")
                         .usageLevel(UsageLevelEnum.LOW)
                         .build()
@@ -221,7 +221,7 @@ public class ActivityResolverTest {
                 "}";
         String projection = "data.getLeastActiveStudents";
 
-        List<PersonUsageLevelDto> usageLevelDtos = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
+        List<PersonUsageLevelOverviewDto> usageLevelDtos = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
         });
 
         assertEquals(PERSONS_SIZE, usageLevelDtos.size());
