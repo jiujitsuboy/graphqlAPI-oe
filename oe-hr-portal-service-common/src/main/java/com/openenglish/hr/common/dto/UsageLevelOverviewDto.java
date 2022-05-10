@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UsageLevelsDto {
+public class UsageLevelOverviewDto {
     private Long high;
     private Long mediumHigh;
     private Long mediumLow;

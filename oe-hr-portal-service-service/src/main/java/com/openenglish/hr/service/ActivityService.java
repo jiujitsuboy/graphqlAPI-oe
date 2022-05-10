@@ -6,7 +6,7 @@ import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.common.dto.PersonUsageLevelDto;
-import com.openenglish.hr.common.dto.UsageLevelsDto;
+import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.persistence.entity.Course;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
 import com.openenglish.hr.persistence.entity.PersonCourseAudit;
@@ -172,14 +172,15 @@ public class ActivityService {
      * @param salesforcePurchaserId Id of the owner of the license
      * @return UsageLevelsDto
      */
-    public UsageLevelsDto getActivitiesPerUserLevel(String salesforcePurchaserId) {
+    public UsageLevelOverviewDto getUsageLevelOverview(String salesforcePurchaserId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
         List<UsageLevels> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
 
-        Map<UsageLevelEnum, Long> usageLevelCountingByPersons = usageLevels.stream().collect(Collectors.groupingBy(this::mapStudentsToUsageLevel,
+        Map<UsageLevelEnum, Long> usageLevelCountingByPersons = usageLevels.stream()
+            .collect(Collectors.groupingBy(this::mapStudentsToUsageLevel,
                 Collectors.summingLong(personCourseAudit -> ONE_ACTIVITY)));
 
-        return UsageLevelsDto.builder()
+        return UsageLevelOverviewDto.builder()
                 .high(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.HIGH, 0L))
                 .mediumHigh(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.MEDIUM_HIGH, 0L))
                 .mediumLow(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.MEDIUM_LOW, 0L))

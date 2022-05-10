@@ -163,28 +163,28 @@ public class ActivityResolverTest {
     }
 
     @Test
-    public void getActivitiesPerUserLevel() {
+    public void getUsageLevelOverview() {
 
-        UsageLevelsDto usageLevelsDtoExpected = UsageLevelsDto.builder()
+        UsageLevelOverviewDto usageLevelsDtoExpected = UsageLevelOverviewDto.builder()
                 .high(4L)
                 .mediumHigh(3L)
                 .mediumLow(2L)
                 .low(1L)
                 .build();
 
-        Mockito.when(activityService.getActivitiesPerUserLevel(anyString())).thenReturn(usageLevelsDtoExpected);
+        Mockito.when(activityService.getUsageLevelOverview(anyString())).thenReturn(usageLevelsDtoExpected);
 
         String query = "{ " +
-                "  getActivitiesPerUserLevel(salesforcePurchaserId:\"12345\"){ " +
+                "  getUsageLevelOverview(salesforcePurchaserId:\"12345\"){ " +
                 "    high " +
                 "    mediumHigh " +
                 "    mediumLow " +
                 "    low" +
                 "    }" +
                 "}";
-        String projection = "data.getActivitiesPerUserLevel";
+        String projection = "data.getUsageLevelOverview";
 
-        UsageLevelsDto usageLevelsDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, UsageLevelsDto.class);
+        UsageLevelOverviewDto usageLevelsDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, UsageLevelOverviewDto.class);
 
         assertNotNull(usageLevelsDto);
 
