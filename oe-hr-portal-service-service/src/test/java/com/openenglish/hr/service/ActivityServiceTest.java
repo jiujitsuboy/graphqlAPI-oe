@@ -1,7 +1,7 @@
 package com.openenglish.hr.service;
 
 import com.oe.lp2.enums.CourseTypeEnum;
-import com.openenglish.hr.common.dto.PersonUsageLevelOverviewDto;
+import com.openenglish.hr.common.dto.PersonUsageLevelDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.persistence.entity.*;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
@@ -770,7 +770,7 @@ public class ActivityServiceTest {
             returns(usageLevels);
         }};
 
-        List<PersonUsageLevelOverviewDto> personUsageLevelOverviewDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
+        List<PersonUsageLevelDto> personUsageLevelOverviewDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
         assertEquals(PERSONS_SIZE, personUsageLevelOverviewDtos.size());
 
         personUsageLevelOverviewDtos.stream()
@@ -807,7 +807,7 @@ public class ActivityServiceTest {
             returns(usageLevels);
         }};
 
-        List<PersonUsageLevelOverviewDto> personUsageLevelOverviewDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
+        List<PersonUsageLevelDto> personUsageLevelOverviewDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
         assertEquals(EMPTY_SIZE, personUsageLevelOverviewDtos.size());
     }
 }

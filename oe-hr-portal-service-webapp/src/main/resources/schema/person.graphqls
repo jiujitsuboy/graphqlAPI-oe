@@ -31,8 +31,12 @@
  }
 
  type PersonsUsageLevelOverview {
-    name: String
-    usageLevel : UsageLevel
+    person: Person
+    start: String
+    expiration: String
+    usageLevel: UsageLevel
+    remainingDays: Int
+    inactiveDays: Int
  }
 
  enum UsageLevel{

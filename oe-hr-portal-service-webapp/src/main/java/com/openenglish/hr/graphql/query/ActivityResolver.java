@@ -68,7 +68,7 @@ public class ActivityResolver {
     }
 
     @DgsData(parentType = "Query", field = "getLeastActiveStudents")
-    public List<PersonUsageLevelOverviewDto> getLeastActiveStudents(String salesforcePurchaserId) {
+    public List<PersonUsageLevelDto> getLeastActiveStudents(String salesforcePurchaserId) {
         return activityService.getLeastActiveStudents(salesforcePurchaserId);
     }
 }

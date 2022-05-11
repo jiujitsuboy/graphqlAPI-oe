@@ -5,7 +5,7 @@ import com.google.common.base.Preconditions;
 import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
-import com.openenglish.hr.common.dto.PersonUsageLevelOverviewDto;
+import com.openenglish.hr.common.dto.PersonUsageLevelDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.persistence.entity.Course;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
@@ -16,7 +16,7 @@ import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.persistence.repository.LevelTestRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
-import com.openenglish.hr.service.mapper.PersonUsageLevelOverviewDtoMapper;
+import com.openenglish.hr.service.mapper.PersonUsageLevelDtoMapper;
 import com.openenglish.hr.service.util.NumberUtils;
 import com.openenglish.hr.persistence.entity.aggregation.MonthActivityStatistics;
 import lombok.RequiredArgsConstructor;
@@ -189,16 +189,19 @@ public class ActivityService {
                 .build();
     }
 
-    public List<PersonUsageLevelOverviewDto> getLeastActiveStudents(String salesforcePurchaserId) {
+    public List<PersonUsageLevelDto> getLeastActiveStudents(String salesforcePurchaserId) {
+
+        LocalDateTime currentTime = LocalDateTime.now(clock);
+
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
         List<UsageLevels> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
 
-        List<PersonUsageLevelOverviewDto> personUsageLevelOverviewDtos = usageLevels.stream()
-                .map(usageLevel -> PersonUsageLevelOverviewDtoMapper.map(usageLevel,this::mapStudentsToUsageLevel))
+        List<PersonUsageLevelDto> personUsageLevelDtos = usageLevels.stream()
+                .map(usageLevel ->  PersonUsageLevelDtoMapper.map(usageLevel, currentTime, this::mapStudentsToUsageLevel))
                 .filter(personUsageLevelDto -> LOW_USAGE_TYPES.contains(personUsageLevelDto.getUsageLevel()))
                 .collect(Collectors.toList());
 
-        return personUsageLevelOverviewDtos;
+        return personUsageLevelDtos;
     }
 
     /**
@@ -279,7 +282,7 @@ public class ActivityService {
      * @param usageLevel usage level of the student
      * @return UsageLevelEnum
      */
-    private UsageLevelEnum mapStudentsToUsageLevel(UsageLevels usageLevel) {
+    private UsageLevelEnum  mapStudentsToUsageLevel(UsageLevels usageLevel) {
 
         LocalDateTime currentTime = LocalDateTime.now(clock);
 

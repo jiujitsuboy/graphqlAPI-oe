@@ -200,13 +200,19 @@ public class ActivityResolverTest {
 
         final int PERSONS_SIZE = 2;
 
-        List<PersonUsageLevelOverviewDto> personUsageLevelDtos = List.of(
-                PersonUsageLevelOverviewDto.builder()
-                        .name("Patrik Smith")
+        List<PersonUsageLevelDto> personUsageLevelDtos = List.of(
+                PersonUsageLevelDto.builder()
+                        .person(PersonDto.builder()
+                            .firstName("Patrik")
+                            .lastName("Smith")
+                            .build())
                         .usageLevel(UsageLevelEnum.MEDIUM_LOW)
                         .build(),
-                PersonUsageLevelOverviewDto.builder()
-                        .name("Michale Bale")
+                PersonUsageLevelDto.builder()
+                    .person(PersonDto.builder()
+                        .firstName("Michale")
+                        .lastName("Bale")
+                        .build())
                         .usageLevel(UsageLevelEnum.LOW)
                         .build()
         );
@@ -215,19 +221,28 @@ public class ActivityResolverTest {
 
         String query = "{ " +
                 "  getLeastActiveStudents(salesforcePurchaserId:\"12345\"){ " +
-                "    name " +
-                "    usageLevel " +
+                "    person { "
+            + "      firstName "
+            + "      lastName "
+            + "      contactId "
+            + "    }"
+            + "    start "
+            + "    expiration "
+            + "    usageLevel "
+            + "    remainingDays "
+            + "    inactiveDays" +
                 "    }" +
                 "}";
         String projection = "data.getLeastActiveStudents";
 
-        List<PersonUsageLevelOverviewDto> usageLevelDtos = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
+        List<PersonUsageLevelDto> usageLevelDtos = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
         });
 
         assertEquals(PERSONS_SIZE, usageLevelDtos.size());
 
         for (int index = 0; index < personUsageLevelDtos.size(); index++) {
-            assertEquals(personUsageLevelDtos.get(index).getName(), usageLevelDtos.get(index).getName());
+            assertEquals(personUsageLevelDtos.get(index).getPerson().getFirstName(), usageLevelDtos.get(index).getPerson().getFirstName());
+            assertEquals(personUsageLevelDtos.get(index).getPerson().getLastName(), usageLevelDtos.get(index).getPerson().getLastName());
             assertEquals(personUsageLevelDtos.get(index).getUsageLevel(), usageLevelDtos.get(index).getUsageLevel());
         }
     }
