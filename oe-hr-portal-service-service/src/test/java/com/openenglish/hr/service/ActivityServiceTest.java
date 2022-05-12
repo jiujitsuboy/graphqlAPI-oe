@@ -6,11 +6,12 @@ import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.persistence.entity.*;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
-import com.openenglish.hr.persistence.entity.aggregation.UsageLevels;
+import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.persistence.repository.LevelTestRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
+import com.openenglish.hr.service.util.InterfaceUtil;
 import com.openenglish.hr.service.util.NumberUtils;
 import mockit.*;
 import org.junit.Rule;
@@ -676,30 +677,6 @@ public class ActivityServiceTest {
         activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, INVALID_ACTIVITY, PERSONS_SIZE);
     }
 
-    private UsageLevels createUsageLevel(long personId, String firstname, String lastname, LocalDateTime lastActivity) {
-        return new UsageLevels() {
-            @Override
-            public long getPersonId() {
-                return personId;
-            }
-
-            @Override
-            public String getFirstname() {
-                return firstname;
-            }
-
-            @Override
-            public String getLastname() {
-                return lastname;
-            }
-
-            @Override
-            public LocalDateTime getLastActivity() {
-                return lastActivity;
-            }
-        };
-    }
-
     @Test
     public void getPersonsPerUserLevelOverview() {
 
@@ -713,13 +690,13 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "12345";
 
-        List<UsageLevels> usageLevels = List.of(
-                createUsageLevel(110001, "Patrik", "Smith", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
-                createUsageLevel(110002, "Michale", "Bale", LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
-                createUsageLevel(110003, "Jake", "Sullivan", LocalDateTime.of(2022, 02, 02, 0, 0, 0)),
-                createUsageLevel(110004, "Claire", "Redfield", LocalDateTime.of(2021, 12, 02, 0, 0, 0)),
-                createUsageLevel(110005, "Ana", "Stuart", LocalDateTime.of(2022, 01, 02, 0, 0, 0)),
-                createUsageLevel(110006, "Sam", "Walmart", LocalDateTime.of(2022, 03, 12, 0, 0, 0))
+        List<UsageLevel> usageLevels = List.of(
+            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale","sf_synegen321", LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan", "sf_synegen456",LocalDateTime.of(2022, 02, 02, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2021, 12, 02, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 01, 02, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart", "sf_synegen987",LocalDateTime.of(2022, 03, 12, 0, 0, 0))
         );
 
         new Expectations() {{
@@ -751,13 +728,13 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "12345";
 
-        List<UsageLevels> usageLevels = List.of(
-                createUsageLevel(110001, "Patrik", "Smith", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
-                createUsageLevel(110002, "Michale", "Bale", LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
-                createUsageLevel(110003, "Jake", "Sullivan", LocalDateTime.of(2022, 02, 02, 0, 0, 0)),
-                createUsageLevel(110004, "Claire", "Redfield", LocalDateTime.of(2021, 12, 02, 0, 0, 0)),
-                createUsageLevel(110005, "Ana", "Stuart", LocalDateTime.of(2022, 01, 02, 0, 0, 0)),
-                createUsageLevel(110006, "Sam", "Walmart", LocalDateTime.of(2022, 03, 12, 0, 0, 0))
+        List<UsageLevel> usageLevels = List.of(
+            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale","sf_synegen321", LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan", "sf_synegen456",LocalDateTime.of(2022, 02, 02, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2021, 12, 02, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 01, 02, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart","sf_synegen987", LocalDateTime.of(2022, 03, 12, 0, 0, 0))
         );
 
         new Expectations() {{
@@ -788,13 +765,13 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "12345";
 
-        List<UsageLevels> usageLevels = List.of(
-                createUsageLevel(110001, "Patrik", "Smith", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
-                createUsageLevel(110002, "Michale", "Bale", LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
-                createUsageLevel(110003, "Jake", "Sullivan", LocalDateTime.of(2022, 03, 20, 0, 0, 0)),
-                createUsageLevel(110004, "Claire", "Redfield", LocalDateTime.of(2023, 04, 02, 0, 0, 0)),
-                createUsageLevel(110005, "Ana", "Stuart", LocalDateTime.of(2022, 04, 02, 0, 0, 0)),
-                createUsageLevel(110006, "Sam", "Walmart", LocalDateTime.of(2022, 03, 29, 0, 0, 0))
+        List<UsageLevel> usageLevels = List.of(
+            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale", "sf_synegen321",LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan","sf_synegen456", LocalDateTime.of(2022, 03, 20, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2023, 04, 02, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 04, 02, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart", "sf_synegen987",LocalDateTime.of(2022, 03, 29, 0, 0, 0))
         );
 
         new Expectations() {{

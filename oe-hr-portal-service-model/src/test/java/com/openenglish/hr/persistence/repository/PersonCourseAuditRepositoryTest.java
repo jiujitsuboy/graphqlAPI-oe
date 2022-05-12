@@ -4,7 +4,7 @@ import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import com.openenglish.hr.persistence.entity.PersonCourseAudit;
-import com.openenglish.hr.persistence.entity.aggregation.UsageLevels;
+import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,19 +51,19 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     }
 
     @Test
-    public void findfindMaxActivityDateGroupedByPerson(){
+    public void findMaxActivityDateGroupedByPerson(){
         String salesforcePurchaserId = "12347";
         final int NUMBER_RECORDS_EXPECTED = 3;
-        List<UsageLevels> usageLevels =  personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
+        List<UsageLevel> usageLevels =  personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, usageLevels.size());
     }
 
     @Test
-    public void findfindMaxActivityDateGroupedByPersonNonExistingPurchaseId(){
+    public void findMaxActivityDateGroupedByPersonNonExistingPurchaseId(){
         String salesforcePurchaserId = "12348";
         final int NUMBER_RECORDS_EXPECTED = 0;
-        List<UsageLevels> usageLevels =  personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
+        List<UsageLevel> usageLevels =  personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, usageLevels.size());
     }

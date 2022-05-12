@@ -11,7 +11,7 @@ import com.openenglish.hr.persistence.entity.Course;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
 import com.openenglish.hr.persistence.entity.PersonCourseAudit;
 import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
-import com.openenglish.hr.persistence.entity.aggregation.UsageLevels;
+import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.persistence.repository.LevelTestRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
@@ -175,7 +175,7 @@ public class ActivityService {
      */
     public UsageLevelOverviewDto getUsageLevelOverview(String salesforcePurchaserId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        List<UsageLevels> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
+        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
 
         Map<UsageLevelEnum, Long> usageLevelCountingByPersons = usageLevels.stream()
             .collect(Collectors.groupingBy(this::mapStudentsToUsageLevel,
@@ -194,7 +194,7 @@ public class ActivityService {
         LocalDateTime currentTime = LocalDateTime.now(clock);
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        List<UsageLevels> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
+        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
 
         List<PersonUsageLevelDto> personUsageLevelDtos = usageLevels.stream()
                 .map(usageLevel ->  PersonUsageLevelDtoMapper.map(usageLevel, currentTime, this::mapStudentsToUsageLevel))
@@ -282,7 +282,7 @@ public class ActivityService {
      * @param usageLevel usage level of the student
      * @return UsageLevelEnum
      */
-    private UsageLevelEnum  mapStudentsToUsageLevel(UsageLevels usageLevel) {
+    private UsageLevelEnum  mapStudentsToUsageLevel(UsageLevel usageLevel) {
 
         LocalDateTime currentTime = LocalDateTime.now(clock);
 
