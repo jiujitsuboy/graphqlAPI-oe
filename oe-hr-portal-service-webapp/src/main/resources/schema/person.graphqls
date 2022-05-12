@@ -29,3 +29,19 @@
     personId: Int
     totalActivities: Float
  }
+
+ type PersonsUsageLevelOverview {
+    person: Person
+    start: String
+    expiration: String
+    usageLevel: UsageLevel
+    remainingDays: Int
+    inactiveDays: Int
+ }
+
+ enum UsageLevel{
+     HIGH
+     MEDIUM_HIGH
+     MEDIUM_LOW
+     LOW
+  }

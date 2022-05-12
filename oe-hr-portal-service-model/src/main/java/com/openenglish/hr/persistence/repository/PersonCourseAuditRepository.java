@@ -1,7 +1,7 @@
 package com.openenglish.hr.persistence.repository;
 
 import com.openenglish.hr.persistence.entity.PersonCourseAudit;
-import com.openenglish.hr.persistence.entity.aggregation.UsageLevels;
+import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,6 +25,7 @@ public interface PersonCourseAuditRepository extends JpaRepository<PersonCourseA
 
 
     @Query(value="SELECT p.id AS personId," +
+            "p.contactid as contactId," +
             "p.firstname AS firstname," +
             "p.lastname AS lastname," +
             "max(CASE WHEN c.coursetype_id IN (3,8,10) THEN pca.datestarted ELSE pca.datecompleted END) AS lastActivity " +
@@ -35,5 +36,5 @@ public interface PersonCourseAuditRepository extends JpaRepository<PersonCourseA
             "WHERE pd.salesforce_purchaser_id = :salesforcePurchaserId AND " +
             "(c.coursetype_id IN (3,8,10) OR (c.coursetype_id NOT IN (3,8,10) AND pca.datecompleted IS NOT NULL)) " +
             "GROUP BY p.id,p.firstname, p.lastname;", nativeQuery = true)
-    List<UsageLevels> findMaxActivityDateGroupedByPerson(@Param("salesforcePurchaserId") String salesforcePurchaserId);
+    List<UsageLevel> findMaxActivityDateGroupedByPerson(@Param("salesforcePurchaserId") String salesforcePurchaserId);
 }
