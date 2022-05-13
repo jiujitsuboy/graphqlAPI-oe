@@ -3,10 +3,8 @@ package com.openenglish.hr.graphql.query;
 import com.jayway.jsonpath.TypeRef;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
-import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
-import com.openenglish.hr.common.dto.MonthActivityStatisticsDto;
-import com.openenglish.hr.common.dto.PersonActivityTotalDto;
-import com.openenglish.hr.common.dto.YearActivityStatisticsDto;
+import com.openenglish.hr.common.api.model.UsageLevelEnum;
+import com.openenglish.hr.common.dto.*;
 import com.openenglish.hr.persistence.entity.aggregation.MonthActivityStatistics;
 import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.service.ActivityService;
@@ -115,7 +113,7 @@ public class ActivityResolverTest {
                 "}";
         String projection = "data.getYearActivityStatistics";
 
-        YearActivityStatisticsDto yearActivityStatisticsDto =dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, YearActivityStatisticsDto.class);
+        YearActivityStatisticsDto yearActivityStatisticsDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, YearActivityStatisticsDto.class);
 
         assertNotNull(yearActivityStatisticsDto);
 
@@ -157,10 +155,95 @@ public class ActivityResolverTest {
 
         assertNotNull(personActivityTotalDto);
 
-        Iterator<Long> personsId =  personsTop.keySet().iterator();
+        Iterator<Long> personsId = personsTop.keySet().iterator();
         assertThat(personsId.next(), is(personActivityTotalDto.get(0).getPersonId()));
         assertThat(personsId.next(), is(personActivityTotalDto.get(1).getPersonId()));
         assertThat(personsId.next(), is(personActivityTotalDto.get(2).getPersonId()));
 
+    }
+
+    @Test
+    public void getUsageLevelOverview() {
+
+        UsageLevelOverviewDto usageLevelsDtoExpected = UsageLevelOverviewDto.builder()
+                .high(4L)
+                .mediumHigh(3L)
+                .mediumLow(2L)
+                .low(1L)
+                .build();
+
+        Mockito.when(activityService.getUsageLevelOverview(anyString())).thenReturn(usageLevelsDtoExpected);
+
+        String query = "{ " +
+                "  getUsageLevelOverview(salesforcePurchaserId:\"12345\"){ " +
+                "    high " +
+                "    mediumHigh " +
+                "    mediumLow " +
+                "    low" +
+                "    }" +
+                "}";
+        String projection = "data.getUsageLevelOverview";
+
+        UsageLevelOverviewDto usageLevelsDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, UsageLevelOverviewDto.class);
+
+        assertNotNull(usageLevelsDto);
+
+        assertEquals(usageLevelsDtoExpected.getHigh(), usageLevelsDto.getHigh());
+        assertEquals(usageLevelsDtoExpected.getMediumHigh(), usageLevelsDto.getMediumHigh());
+        assertEquals(usageLevelsDtoExpected.getMediumLow(), usageLevelsDto.getMediumLow());
+        assertEquals(usageLevelsDtoExpected.getLow(), usageLevelsDto.getLow());
+
+    }
+
+    @Test
+    public void getLeastActiveStudents() {
+
+        final int PERSONS_SIZE = 2;
+
+        List<PersonUsageLevelDto> personUsageLevelDtos = List.of(
+                PersonUsageLevelDto.builder()
+                        .person(PersonDto.builder()
+                            .firstName("Patrik")
+                            .lastName("Smith")
+                            .build())
+                        .usageLevel(UsageLevelEnum.MEDIUM_LOW)
+                        .build(),
+                PersonUsageLevelDto.builder()
+                    .person(PersonDto.builder()
+                        .firstName("Michale")
+                        .lastName("Bale")
+                        .build())
+                        .usageLevel(UsageLevelEnum.LOW)
+                        .build()
+        );
+
+        Mockito.when(activityService.getLeastActiveStudents(anyString())).thenReturn(personUsageLevelDtos);
+
+        String query = "{ " +
+                "  getLeastActiveStudents(salesforcePurchaserId:\"12345\"){ " +
+                "    person { "
+            + "      firstName "
+            + "      lastName "
+            + "      contactId "
+            + "    }"
+            + "    start "
+            + "    expiration "
+            + "    usageLevel "
+            + "    remainingDays "
+            + "    inactiveDays" +
+                "    }" +
+                "}";
+        String projection = "data.getLeastActiveStudents";
+
+        List<PersonUsageLevelDto> usageLevelDtos = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
+        });
+
+        assertEquals(PERSONS_SIZE, usageLevelDtos.size());
+
+        for (int index = 0; index < personUsageLevelDtos.size(); index++) {
+            assertEquals(personUsageLevelDtos.get(index).getPerson().getFirstName(), usageLevelDtos.get(index).getPerson().getFirstName());
+            assertEquals(personUsageLevelDtos.get(index).getPerson().getLastName(), usageLevelDtos.get(index).getPerson().getLastName());
+            assertEquals(personUsageLevelDtos.get(index).getUsageLevel(), usageLevelDtos.get(index).getUsageLevel());
+        }
     }
 }

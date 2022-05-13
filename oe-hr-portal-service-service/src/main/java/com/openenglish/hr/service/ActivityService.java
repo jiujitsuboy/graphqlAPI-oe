@@ -3,15 +3,20 @@ package com.openenglish.hr.service;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.oe.lp2.enums.CourseTypeEnum;
+import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
+import com.openenglish.hr.common.dto.PersonUsageLevelDto;
+import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.persistence.entity.Course;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
 import com.openenglish.hr.persistence.entity.PersonCourseAudit;
 import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
+import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.persistence.repository.LevelTestRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
+import com.openenglish.hr.service.mapper.PersonUsageLevelDtoMapper;
 import com.openenglish.hr.service.util.NumberUtils;
 import com.openenglish.hr.persistence.entity.aggregation.MonthActivityStatistics;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +24,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collector;
@@ -49,10 +56,12 @@ public class ActivityService {
             CourseTypeEnum.NEWS.getValue(),
             CourseTypeEnum.IDIOMS.getValue()
     );
+    public  static final Set<UsageLevelEnum> LOW_USAGE_TYPES = Set.of(UsageLevelEnum.MEDIUM_LOW, UsageLevelEnum.LOW);
 
     private final PersonCourseSummaryRepository personCourseSummaryRepository;
     private final PersonCourseAuditRepository personCourseAuditRepository;
     private final LevelTestRepository levelTestRepository;
+    private final Clock clock;
 
 
     /**
@@ -130,13 +139,13 @@ public class ActivityService {
     /**
      * Retrieve the top number of students with more activities done on the specified date
      *
-     * @param salesforcePurchaserId d of the owner of the license
+     * @param salesforcePurchaserId Id of the owner of the license
      * @param startDate             Date to filter the top students
      * @param courseTypeEnums       target activities
      * @param top                   number of students to return
      * @return Map with each student and his number of activities
      */
-    public LinkedHashMap<Long, Double> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, Set<CourseTypeEnum>  courseTypeEnums, int top) {
+    public LinkedHashMap<Long, Double> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, Set<CourseTypeEnum> courseTypeEnums, int top) {
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
         Preconditions.checkArgument(!CollectionUtils.isEmpty(courseTypeEnums), "courseTypesEnum should not be null or empty");
@@ -172,6 +181,48 @@ public class ActivityService {
 
         return this.getTopStudents(courseTypeCountingByPerson, top);
 
+    }
+
+    /**
+     * Retrieve the number of students and group then by their corresponding UsageLevel
+     * <p>
+     * HIGH:  last activity completed in the last 10 days
+     * MEDIUM HIGH: last activity completed betwenn last 11 and 30 days
+     * MEDIUM LOW last activity completed betwenn last 31 and 60 days
+     * LOW: last activity completed after the last 61 days
+     *
+     * @param salesforcePurchaserId Id of the owner of the license
+     * @return UsageLevelsDto
+     */
+    public UsageLevelOverviewDto getUsageLevelOverview(String salesforcePurchaserId) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
+        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
+
+        Map<UsageLevelEnum, Long> usageLevelCountingByPersons = usageLevels.stream()
+            .collect(Collectors.groupingBy(this::mapStudentsToUsageLevel,
+                Collectors.summingLong(personCourseAudit -> ONE_ACTIVITY)));
+
+        return UsageLevelOverviewDto.builder()
+                .high(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.HIGH, 0L))
+                .mediumHigh(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.MEDIUM_HIGH, 0L))
+                .mediumLow(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.MEDIUM_LOW, 0L))
+                .low(usageLevelCountingByPersons.getOrDefault(UsageLevelEnum.LOW, 0L))
+                .build();
+    }
+
+    public List<PersonUsageLevelDto> getLeastActiveStudents(String salesforcePurchaserId) {
+
+        LocalDateTime currentTime = LocalDateTime.now(clock);
+
+        Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
+        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
+
+        List<PersonUsageLevelDto> personUsageLevelDtos = usageLevels.stream()
+                .map(usageLevel ->  PersonUsageLevelDtoMapper.map(usageLevel, currentTime, this::mapStudentsToUsageLevel))
+                .filter(personUsageLevelDto -> LOW_USAGE_TYPES.contains(personUsageLevelDto.getUsageLevel()))
+                .collect(Collectors.toList());
+
+        return personUsageLevelDtos;
     }
 
     /**
@@ -241,6 +292,30 @@ public class ActivityService {
                 .stream()
                 .filter(personCourseAudit -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeEnum(personCourseAudit.getCourse()).getValue()))
                 .collect(Collectors.groupingBy(groupingCriteria::apply, collectorStatistics));
+    }
+
+    /**
+     * map students by usage level
+     * @param usageLevel usage level of the student
+     * @return UsageLevelEnum
+     */
+    private UsageLevelEnum  mapStudentsToUsageLevel(UsageLevel usageLevel) {
+
+        LocalDateTime currentTime = LocalDateTime.now(clock);
+
+        UsageLevelEnum usageLevelEnum = UsageLevelEnum.LOW;
+
+        long daysBetweenDates = usageLevel.getLastActivity().until(currentTime, ChronoUnit.DAYS);
+
+        if (daysBetweenDates <= 10) {
+            usageLevelEnum = UsageLevelEnum.HIGH;
+        } else if (daysBetweenDates >= 11 && daysBetweenDates <= 30) {
+            usageLevelEnum = UsageLevelEnum.MEDIUM_HIGH;
+        } else if (daysBetweenDates >= 31 && daysBetweenDates <= 60) {
+            usageLevelEnum = UsageLevelEnum.MEDIUM_LOW;
+        }
+        return usageLevelEnum;
+
     }
 
     /**
