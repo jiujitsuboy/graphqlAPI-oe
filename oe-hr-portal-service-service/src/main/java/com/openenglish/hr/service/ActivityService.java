@@ -115,15 +115,10 @@ public class ActivityService {
 
         List<PersonCourseAudit> personsCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
 
-        CourseTypeEnum courseTypeEnum = (CourseTypeEnum) getFirstElementFromSet(courseTypeEnums);
-
-        Collector<PersonCourseAudit, ?, Double> collectorStatistics = PRACTICE_COURSE_TYPES.contains(courseTypeEnum.getValue()) ?
-                Collectors.collectingAndThen(Collectors.summingDouble(PersonCourseAudit::getTimeontask), NumberUtils::convertSecondsToHours) :
-                Collectors.summingDouble((PersonCourseAudit personCourseAudit) -> ONE_ACTIVITY);
+        Collector<PersonCourseAudit, ?, Double> collectorStatistics = this.getCollectingStrategy(courseTypeEnums);;
 
         Map<Integer, Double> courseTypeCounting = (Map<Integer, Double>)
                 getTotalActivityCountGroupedByCustomCriteria(personsCourseAudit, collectorStatistics, this::getActivityMonth);
-
 
         List<MonthActivityStatistics> activityStatistics = mapActivityStatisticsToMonthsOfYear(courseTypeCounting);
 
@@ -164,13 +159,7 @@ public class ActivityService {
 
             List<PersonCourseAudit> personCoursesAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
 
-            CourseTypeEnum courseTypeEnum = (CourseTypeEnum) getFirstElementFromSet(courseTypeEnums);
-
-            Collector<PersonCourseAudit, ?, Double> collectorStatistics = (courseTypeEnums.size() == CourseTypeEnum.values().length) ?
-                    Collectors.collectingAndThen(Collectors.summingDouble(this::getNumberOfSecondsPerActivity), NumberUtils::convertSecondsToHours) :
-                    PRACTICE_COURSE_TYPES.contains(courseTypeEnum.getValue()) ?
-                            Collectors.collectingAndThen(Collectors.summingDouble(PersonCourseAudit::getTimeontask), NumberUtils::convertSecondsToHours) :
-                            Collectors.summingDouble((PersonCourseAudit personCourseAudit2) -> ONE_ACTIVITY);
+            Collector<PersonCourseAudit, ?, Double> collectorStatistics = this.getCollectingStrategy(courseTypeEnums);
 
             courseTypeCountingByPerson = (Map<Long, Double>) getTotalActivityCountGroupedByCustomCriteria(personCoursesAudit,
                     collectorStatistics,
@@ -260,6 +249,41 @@ public class ActivityService {
                                 .value(NumberUtils.round(courseTypeCounting.getOrDefault(month, 0.0)))
                                 .build()
                 ).collect(Collectors.toList());
+    }
+
+    /**
+     * Select which collecting strategy to use for grouping and summing activities types
+     * @param courseTypeEnums courses type to group
+     * @return Collector strategy
+     */
+    private Collector<PersonCourseAudit, ?, Double> getCollectingStrategy(Set<CourseTypeEnum> courseTypeEnums){
+
+        Collector<PersonCourseAudit, ?, Double> collectorStatistics = null;
+
+        CourseTypeEnum courseTypeEnum = (CourseTypeEnum) getFirstElementFromSet(courseTypeEnums);
+
+        /*
+           To calculate the Active hour. we need to convert every record retrieved from the DB into seconds
+           (no practices activities,  for each record use the factor (60,30,25) and then convert them to seconds),
+            and after summing all this seconds then we converted to hours.
+         */
+        if(courseTypeEnums.size() == COURSE_TYPES_OF_INTEREST.size()){
+            collectorStatistics = Collectors.collectingAndThen(Collectors.summingDouble(this::getNumberOfSecondsPerActivity), NumberUtils::convertSecondsToHours);
+        }
+        /*
+            If is practices, we just sum the seconds from each practice and  then we converted to hours.
+         */
+        else if (PRACTICE_COURSE_TYPES.contains(courseTypeEnum.getValue())){
+            collectorStatistics = Collectors.collectingAndThen(Collectors.summingDouble(PersonCourseAudit::getTimeontask), NumberUtils::convertSecondsToHours);
+        }
+        /*
+            For other types we are only counting the number of activities, no the time in seconds
+         */
+        else{
+            collectorStatistics = Collectors.summingDouble((PersonCourseAudit personCourseAudit) -> ONE_ACTIVITY);
+        }
+
+        return collectorStatistics;
     }
 
     /**
@@ -380,6 +404,11 @@ public class ActivityService {
         return timeInSeconds;
     }
 
+    /**
+     * Return the amount of seconds spends on the type of Activity
+     * @param personCourseAudit activity entry
+     * @return number of seconds spend on the activity
+     */
     private int getNumberOfSecondsPerActivity(PersonCourseAudit personCourseAudit) {
 
         CourseTypeEnum courseTypeEnumCurrentPerson = this.getCourseTypeEnum(personCourseAudit.getCourse());
