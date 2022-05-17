@@ -138,6 +138,7 @@ public class ActivityServiceTest {
     @Test
     public void getLiveClassesStatistics() {
         String salesforcePurchaserId = "12345";
+        final Long PERSON_ID = null;
         final Set<CourseTypeEnum> LIVE_CLASSES = Set.of(CourseTypeEnum.LIVE_CLASS);
         final int YEAR = 2022;
         final int JANUARY = 1;
@@ -205,7 +206,7 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES);
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, PERSON_ID);
 
         assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
         assertEquals(januaryTotalCount, yearActivityStatistics.getMonthsActivityStatistics().get(JANUARY_INDEX).getValue(), 0);
@@ -217,6 +218,7 @@ public class ActivityServiceTest {
     @Test
     public void getPracticeStatistics() {
         String salesforcePurchaserId = "12345";
+        final Long PERSON_ID = null;
         final Set<CourseTypeEnum> PRACTICE = Set.of(CourseTypeEnum.PRACTICE);
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
@@ -283,7 +285,7 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, PRACTICE);
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, PRACTICE, PERSON_ID);
         assertNotNull(yearActivityStatistics);
         assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
 
@@ -295,6 +297,7 @@ public class ActivityServiceTest {
     @Test
     public void getActivitiesStatisticsEmpty() {
         String salesforcePurchaserId = "12345";
+        final Long PERSON_ID = null;
         final double ZERO = 0.0;
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
@@ -307,7 +310,7 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES);
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, PERSON_ID);
 
         assertNotNull(yearActivityStatistics);
         assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
@@ -323,6 +326,7 @@ public class ActivityServiceTest {
         expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
 
         String salesforcePurchaserId = "";
+        final Long PERSON_ID = null;
         final int YEAR = 2022;
         final Set<CourseTypeEnum> LIVE_CLASSES = Set.of(CourseTypeEnum.LIVE_CLASS);
 
@@ -333,13 +337,14 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES);
+        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, PERSON_ID);
     }
 
     @Test
     public void getStatisticsInvalidActivity() {
 
         String salesforcePurchaserId = "12345";
+        final Long PERSON_ID = null;
         final int YEAR = 2022;
         final Set<CourseTypeEnum> INVALID_ACTIVITY_ID = null;
 
@@ -353,7 +358,7 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, INVALID_ACTIVITY_ID);
+        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, INVALID_ACTIVITY_ID, PERSON_ID);
     }
 
     @Test
@@ -786,5 +791,205 @@ public class ActivityServiceTest {
 
         List<PersonUsageLevelDto> personUsageLevelOverviewDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
         assertEquals(EMPTY_SIZE, personUsageLevelOverviewDtos.size());
+    }
+
+    @Test
+    public void getLiveClassesStatisticsByPersonId() {
+        String salesforcePurchaserId = "12345";
+        final long PERSON_ID = 11L;
+        final Set<CourseTypeEnum> LIVE_CLASSES = Set.of(CourseTypeEnum.LIVE_CLASS);
+        final int YEAR = 2022;
+        final int JANUARY = 1;
+        final int FEBRUARY = 2;
+        final int MARCH = 3;
+        final int JANUARY_INDEX = 0;
+        final int FEBRUARY_INDEX = 1;
+        final int MARCH_INDEX = 2;
+        final int MONTHS_OF_YEAR = 12;
+
+        PersonCourseAudit personCourseAudit1 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 15, 12, 0, 0))
+            .timeontask(50)
+            .build();
+        PersonCourseAudit personCourseAudit2 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 19, 14, 0, 0))
+            .timeontask(70)
+            .build();
+        PersonCourseAudit personCourseAudit3 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 20, 12, 0, 0))
+            .timeontask(90)
+            .build();
+
+        PersonCourseAudit personCourseAudit4 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 21, 10, 0, 0))
+            .timeontask(10)
+            .build();
+        PersonCourseAudit personCourseAudit5 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 15, 12, 0, 0))
+            .timeontask(10)
+            .build();
+
+        PersonCourseAudit personCourseAudit6 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 7, 8, 0, 0))
+            .timeontask(30)
+            .build();
+        PersonCourseAudit personCourseAudit7 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 7, 12, 0, 0))
+            .timeontask(30)
+            .build();
+        PersonCourseAudit personCourseAudit8 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, MARCH, 1, 12, 0, 0))
+            .timeontask(30)
+            .build();
+
+        List<PersonCourseAudit> personCourseAudits = List.of(personCourseAudit1, personCourseAudit2, personCourseAudit3,
+            personCourseAudit4, personCourseAudit5, personCourseAudit6, personCourseAudit7, personCourseAudit8);
+
+
+        double januaryTotalCount = personCourseAudits.stream().filter(personCourseAudit -> personCourseAudit.getDateCompleted().getMonth().getValue() == JANUARY).count();
+        double februaryTotalCount = personCourseAudits.stream().filter(personCourseAudit -> personCourseAudit.getDateCompleted().getMonth().getValue() == FEBRUARY).count();
+        double marchTotalCount = personCourseAudits.stream().filter(personCourseAudit -> personCourseAudit.getDateCompleted().getMonth().getValue() == MARCH).count();
+
+
+        new Expectations() {{
+            personCourseAuditRepository.findActivityStatisticsByPerson(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyLong);
+            returns(personCourseAudits);
+        }};
+
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, PERSON_ID);
+
+        assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
+        assertEquals(januaryTotalCount, yearActivityStatistics.getMonthsActivityStatistics().get(JANUARY_INDEX).getValue(), 0);
+        assertEquals(februaryTotalCount, yearActivityStatistics.getMonthsActivityStatistics().get(FEBRUARY_INDEX).getValue(), 0);
+        assertEquals(marchTotalCount, yearActivityStatistics.getMonthsActivityStatistics().get(MARCH_INDEX).getValue(), 0);
+
+    }
+
+    @Test
+    public void getPracticeStatisticsByPersonId() {
+        String salesforcePurchaserId = "12345";
+        final Long PERSON_ID = 11L;
+        final Set<CourseTypeEnum> PRACTICE = Set.of(CourseTypeEnum.PRACTICE);
+        final int MONTHS_OF_YEAR = 12;
+        final int YEAR = 2022;
+        final int JANUARY = 1;
+        final int FEBRUARY = 2;
+        final int MARCH = 3;
+        final int JANUARY_INDEX = 0;
+        final int FEBRUARY_INDEX = 1;
+        final int MARCH_INDEX = 2;
+
+
+        PersonCourseAudit personCourseAuditJAN1 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 15, 12, 0, 0))
+            .timeontask(50)
+            .build();
+        PersonCourseAudit personCourseAuditJAN2 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 19, 14, 0, 0))
+            .timeontask(70)
+            .build();
+        PersonCourseAudit personCourseAuditJAN3 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 20, 12, 0, 0))
+            .timeontask(90)
+            .build();
+
+        PersonCourseAudit personCourseAuditJAN4 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 21, 10, 0, 0))
+            .timeontask(10)
+            .build();
+        PersonCourseAudit personCourseAuditFEB1 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 15, 12, 0, 0))
+            .timeontask(10)
+            .build();
+
+        PersonCourseAudit personCourseAuditFEB2 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 7, 8, 0, 0))
+            .timeontask(30)
+            .build();
+        PersonCourseAudit personCourseAuditFEB3 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 7, 12, 0, 0))
+            .timeontask(30)
+            .build();
+        PersonCourseAudit personCourseAuditMAR1 = PersonCourseAudit.builder()
+            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, MARCH, 1, 12, 0, 0))
+            .timeontask(30)
+            .build();
+
+        List<PersonCourseAudit> personCourseAudits = List.of(personCourseAuditJAN1, personCourseAuditJAN2, personCourseAuditJAN3,
+            personCourseAuditJAN4, personCourseAuditFEB1, personCourseAuditFEB2, personCourseAuditFEB3, personCourseAuditMAR1);
+
+        double januaryTotalHours = NumberUtils.round((personCourseAuditJAN1.getTimeontask() + personCourseAuditJAN2.getTimeontask() + personCourseAuditJAN3.getTimeontask() + personCourseAuditJAN4.getTimeontask()) / 3600.0);
+        double februaryTotalHours = NumberUtils.round((personCourseAuditFEB1.getTimeontask() + personCourseAuditFEB2.getTimeontask() + personCourseAuditFEB3.getTimeontask()) / 3600.0);
+        double marchTotalHours = NumberUtils.round((personCourseAuditMAR1.getTimeontask()) / 3600.0);
+
+        new Expectations() {{
+            personCourseAuditRepository.findActivityStatisticsByPerson(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyLong);
+            returns(personCourseAudits);
+        }};
+
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, PRACTICE, PERSON_ID);
+        assertNotNull(yearActivityStatistics);
+        assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
+
+        assertEquals(januaryTotalHours, yearActivityStatistics.getMonthsActivityStatistics().get(JANUARY_INDEX).getValue(), 0);
+        assertEquals(februaryTotalHours, yearActivityStatistics.getMonthsActivityStatistics().get(FEBRUARY_INDEX).getValue(), 0);
+        assertEquals(marchTotalHours, yearActivityStatistics.getMonthsActivityStatistics().get(MARCH_INDEX).getValue(), 0);
+    }
+
+    @Test
+    public void getActivitiesStatisticsByPersonIdEmpty() {
+        String salesforcePurchaserId = "12345";
+        final Long PERSON_ID = 12L;
+        final double ZERO = 0.0;
+        final int MONTHS_OF_YEAR = 12;
+        final int YEAR = 2022;
+        final Set<CourseTypeEnum> LIVE_CLASSES = Set.of(CourseTypeEnum.LIVE_CLASS);
+
+        List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
+
+        new Expectations() {{
+            personCourseAuditRepository.findActivityStatisticsByPerson(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyLong);
+            returns(personCourseAudits);
+        }};
+
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, PERSON_ID);
+
+        assertNotNull(yearActivityStatistics);
+        assertEquals(MONTHS_OF_YEAR, yearActivityStatistics.getMonthsActivityStatistics().size());
+        yearActivityStatistics.getMonthsActivityStatistics()
+            .stream()
+            .forEach(activityStatistic -> assertThat(activityStatistic.getValue(), equalTo(ZERO)));
     }
 }

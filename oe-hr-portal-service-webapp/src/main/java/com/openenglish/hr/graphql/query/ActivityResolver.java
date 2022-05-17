@@ -34,11 +34,11 @@ public class ActivityResolver {
     }
 
     @DgsData(parentType = "Query", field = "getYearActivityStatistics")
-    public YearActivityStatisticsDto getYearActivityStatistics(String salesforcePurchaserId, int year, ActivityTypeEnum activity) {
+    public YearActivityStatisticsDto getYearActivityStatistics(String salesforcePurchaserId, int year, ActivityTypeEnum activity, Long studentId) {
 
         Set<CourseTypeEnum> courseTypeEnums =  ActivityTypeMapper.mapToCourseTypes(activity);
 
-        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, year, courseTypeEnums);
+        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, year, courseTypeEnums, studentId);
 
         return  mapper.map(yearActivityStatistics, YearActivityStatisticsDto.class);
     }

@@ -100,7 +100,7 @@ public class ActivityResolverTest {
                 .monthsActivityStatistics(monthsActivityStatistics)
                 .total(30).build();
 
-        Mockito.when(activityService.getActivityStatistics(anyString(), anyInt(), any())).thenReturn(yearActivityStatistics);
+        Mockito.when(activityService.getActivityStatistics(anyString(), anyInt(), any(), any())).thenReturn(yearActivityStatistics);
 
         String query = "{ " +
                 "  getYearActivityStatistics(salesforcePurchaserId:\"12345\", year: 2022, activity: LIVE_CLASS){ " +
@@ -244,6 +244,54 @@ public class ActivityResolverTest {
             assertEquals(personUsageLevelDtos.get(index).getPerson().getFirstName(), usageLevelDtos.get(index).getPerson().getFirstName());
             assertEquals(personUsageLevelDtos.get(index).getPerson().getLastName(), usageLevelDtos.get(index).getPerson().getLastName());
             assertEquals(personUsageLevelDtos.get(index).getUsageLevel(), usageLevelDtos.get(index).getUsageLevel());
+        }
+    }
+
+    @Test
+    public void getActivitiesStatisticsByPersonId() {
+
+        List<MonthActivityStatistics> monthsActivityStatistics =
+            List.of(MonthActivityStatistics.builder().month(1).value(0).build(),
+                MonthActivityStatistics.builder().month(2).value(10).build(),
+                MonthActivityStatistics.builder().month(3).value(20).build(),
+                MonthActivityStatistics.builder().month(4).value(0).build(),
+                MonthActivityStatistics.builder().month(5).value(0).build(),
+                MonthActivityStatistics.builder().month(6).value(0).build(),
+                MonthActivityStatistics.builder().month(7).value(0).build(),
+                MonthActivityStatistics.builder().month(8).value(0).build(),
+                MonthActivityStatistics.builder().month(9).value(0).build(),
+                MonthActivityStatistics.builder().month(10).value(0).build(),
+                MonthActivityStatistics.builder().month(11).value(0).build(),
+                MonthActivityStatistics.builder().month(12).value(0).build()
+            );
+        YearActivityStatistics yearActivityStatistics = YearActivityStatistics.builder()
+            .monthsActivityStatistics(monthsActivityStatistics)
+            .total(30).build();
+
+        Mockito.when(activityService.getActivityStatistics(anyString(), anyInt(), any(), any())).thenReturn(yearActivityStatistics);
+
+        String query = "{ " +
+            "  getYearActivityStatistics(salesforcePurchaserId:\"12345\", year: 2022, activity: LIVE_CLASS, studentId: 11){ " +
+            "    total " +
+            "    monthsActivityStatistics{ " +
+            "       month " +
+            "       value" +
+            "       }" +
+            "    }" +
+            "}";
+        String projection = "data.getYearActivityStatistics";
+
+        YearActivityStatisticsDto yearActivityStatisticsDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, YearActivityStatisticsDto.class);
+
+        assertNotNull(yearActivityStatisticsDto);
+
+        for (int index = 0; index < yearActivityStatisticsDto.getMonthsActivityStatistics().size(); index++) {
+
+            MonthActivityStatistics expected = monthsActivityStatistics.get(index);
+            MonthActivityStatisticsDto received = yearActivityStatisticsDto.getMonthsActivityStatistics().get(index);
+
+            assertEquals(expected.getMonth(), received.getMonth());
+            assertEquals(expected.getValue(), received.getValue(), 0);
         }
     }
 }
