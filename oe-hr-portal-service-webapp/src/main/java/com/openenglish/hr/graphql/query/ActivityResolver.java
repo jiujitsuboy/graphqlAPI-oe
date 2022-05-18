@@ -44,18 +44,20 @@ public class ActivityResolver {
     }
 
     @DgsData(parentType = "Query", field = "getTopStudentsByActivityStatistics")
-    public List<PersonActivityTotalDto> getTopStudentsByActivityStatistics(String salesforcePurchaserId, int year, int month, ActivityTypeEnum activity, int top) {
+    public List<PersonActivityTotalDto> getTopStudentsByActivityStatistics(String salesforcePurchaserId, int year, int month, List<String> activities, int top) {
 
         LocalDateTime localDateTime = LocalDateTime.of(year, month, 1, 0, 0, 0);
 
-        Set<CourseTypeEnum> courseTypeEnums =  ActivityTypeMapper.mapToCourseTypes(activity);
+        Set<CourseTypeEnum> courseTypeEnums =  activities.stream().map(ActivityTypeEnum::valueOf)
+                .flatMap(activityTypeEnum ->  ActivityTypeMapper.mapToCourseTypes(activityTypeEnum).stream())
+                .collect(Collectors.toSet());
 
-        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, localDateTime, courseTypeEnums, top);
+        LinkedHashMap<PersonDto, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, localDateTime, courseTypeEnums, top);
 
         return personsTop.entrySet().stream()
                 .map(entry -> PersonActivityTotalDto
                         .builder()
-                        .personId(entry.getKey())
+                        .person(entry.getKey())
                         .totalActivities(entry.getValue())
                         .build()
                 )
