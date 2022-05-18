@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
+import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.PersonUsageLevelDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.persistence.entity.Course;
@@ -140,12 +141,12 @@ public class ActivityService {
      * @param top                   number of students to return
      * @return Map with each student and his number of activities
      */
-    public LinkedHashMap<Long, Double> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, Set<CourseTypeEnum> courseTypeEnums, int top) {
+    public LinkedHashMap<PersonDto, Double> getTopStudentsByActivityStatistics(String salesforcePurchaserId, LocalDateTime startDate, Set<CourseTypeEnum> courseTypeEnums, int top) {
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
         Preconditions.checkArgument(!CollectionUtils.isEmpty(courseTypeEnums), "courseTypesEnum should not be null or empty");
 
-        Map<Long, Double> courseTypeCountingByPerson = null;
+        Map<PersonDto, Double> courseTypeCountingByPerson = null;
 
         LocalDateTime endDate = startDate.plusMonths(1).minusSeconds(1);
         Set<Long> courseTypeIds = getCourseTypesIds(courseTypeEnums);
@@ -153,7 +154,13 @@ public class ActivityService {
         if (isLevelAssessment(courseTypeEnums)) {
 
             List<LevelsPassedByPerson> levelsPassedByPersons = levelTestRepository.getLevelTestsByPurchaserIdUpdateDateBetween(salesforcePurchaserId, startDate, endDate);
-            courseTypeCountingByPerson = levelsPassedByPersons.stream().collect(Collectors.toMap(entry -> entry.getPersonId(), entry -> entry.getTotalNumber()));
+            courseTypeCountingByPerson = levelsPassedByPersons.stream()
+                .collect(Collectors.toMap(entry -> PersonDto.builder()
+                    .id(entry.getPersonId())
+                    .firstName(entry.getFirstname())
+                    .lastName(entry.getLastname())
+                    .contactId(entry.getContactId())
+                    .build(), entry -> entry.getTotalNumber()));
 
         } else {
 
@@ -161,9 +168,14 @@ public class ActivityService {
 
             Collector<PersonCourseAudit, ?, Double> collectorStatistics = this.getCollectingStrategy(courseTypeEnums);
 
-            courseTypeCountingByPerson = (Map<Long, Double>) getTotalActivityCountGroupedByCustomCriteria(personCoursesAudit,
+            courseTypeCountingByPerson = (Map<PersonDto, Double>) getTotalActivityCountGroupedByCustomCriteria(personCoursesAudit,
                     collectorStatistics,
-                    (PersonCourseAudit personCourseAudit) -> personCourseAudit.getPerson().getId());
+                    (PersonCourseAudit personCourseAudit) -> PersonDto.builder()
+                        .id(personCourseAudit.getPerson().getId())
+                        .firstName(personCourseAudit.getPerson().getFirstName())
+                        .lastName(personCourseAudit.getPerson().getLastName())
+                        .contactId(personCourseAudit.getPerson().getContactId())
+                        .build());
 
 
         }
@@ -221,7 +233,7 @@ public class ActivityService {
      * @param top                        number of students to return
      * @return ordered map with students and their number of activities
      */
-    private LinkedHashMap<Long, Double> getTopStudents(Map<Long, Double> courseTypeCountingByPerson, int top) {
+    private LinkedHashMap<PersonDto, Double> getTopStudents(Map<PersonDto, Double> courseTypeCountingByPerson, int top) {
 
         BinaryOperator<Double> mappingFunction = (key, value) -> value;
 
@@ -412,26 +424,26 @@ public class ActivityService {
     private int getNumberOfSecondsPerActivity(PersonCourseAudit personCourseAudit) {
 
         CourseTypeEnum courseTypeEnumCurrentPerson = this.getCourseTypeEnum(personCourseAudit.getCourse());
-        int nroSecondActivity = 0;
+        int numSecondPerActivity = 0;
 
         if (PRACTICE_COURSE_TYPES.contains(courseTypeEnumCurrentPerson.getValue())) {
-            nroSecondActivity = personCourseAudit.getTimeontask();
+            numSecondPerActivity = personCourseAudit.getTimeontask();
         } else {
 
             switch (courseTypeEnumCurrentPerson) {
                 case LIVE_CLASS:
-                    nroSecondActivity = NumberUtils.toSeconds(MINUTES_PER_LIVE_CLASS);
+                    numSecondPerActivity = NumberUtils.toSeconds(MINUTES_PER_LIVE_CLASS);
                     break;
                 case PRIVATE_CLASS:
-                    nroSecondActivity = NumberUtils.toSeconds(MINUTES_PER_PRIVATE_CLASS);
+                    numSecondPerActivity = NumberUtils.toSeconds(MINUTES_PER_PRIVATE_CLASS);
                     break;
                 case LESSON:
                 case UNIT_ASSESSMENT:
-                    nroSecondActivity = NumberUtils.toSeconds(MINUTES_PER_LESSON_UNIT_ASSESSMENT);
+                    numSecondPerActivity = NumberUtils.toSeconds(MINUTES_PER_LESSON_UNIT_ASSESSMENT);
                     break;
             }
         }
-        return nroSecondActivity;
+        return numSecondPerActivity;
     }
 
     /**

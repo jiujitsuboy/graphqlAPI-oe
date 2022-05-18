@@ -17,7 +17,8 @@ public interface PersonCourseAuditRepository extends JpaRepository<PersonCourseA
                    "INNER JOIN person_detail pd ON p.id = pd.person_id " +
                    "INNER JOIN course c ON c.id = pca.course_id " +
                    "WHERE c.coursetype_id in (:courseTypeIds) AND pd.salesforce_purchaser_id = :salesforcePurchaserId AND " +
-                   "((pca.dateCompleted BETWEEN :startDate AND :endDate) OR (pca.dateStarted BETWEEN :startDate AND :endDate))", nativeQuery = true)
+                   "((pca.dateCompleted BETWEEN :startDate AND :endDate AND c.coursetype_id NOT IN (3,8,10)) OR " +
+                   "(pca.dateStarted BETWEEN :startDate AND :endDate AND c.coursetype_id IN (3,8,10)))", nativeQuery = true)
     List<PersonCourseAudit> findActivityStatistics (@Param("salesforcePurchaserId") String salesforcePurchaserId,
                                                     @Param("startDate")LocalDateTime startDate,
                                                     @Param("endDate")LocalDateTime endDate,

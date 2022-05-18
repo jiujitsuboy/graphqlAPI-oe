@@ -1,6 +1,7 @@
 package com.openenglish.hr.service;
 
 import com.oe.lp2.enums.CourseTypeEnum;
+import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.PersonUsageLevelDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.persistence.entity.*;
@@ -20,7 +21,6 @@ import org.junit.rules.ExpectedException;
 
 import java.time.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -420,13 +420,13 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, PRACTICE, PERSONS_SIZE);
-        Iterator<Long> persons = personsTop.keySet().iterator();
+        LinkedHashMap<PersonDto, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, PRACTICE, PERSONS_SIZE);
+        Iterator<PersonDto> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
-        assertThat(persons.next(), is(TOP1));
-        assertThat(persons.next(), is(TOP2));
-        assertThat(persons.next(), is(TOP3));
+        assertThat(persons.next().getId(), is(TOP1));
+        assertThat(persons.next().getId(), is(TOP2));
+        assertThat(persons.next().getId(), is(TOP3));
     }
 
     @Test
@@ -526,17 +526,17 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LIVE_CLASSES, PERSONS_SIZE);
-        Iterator<Long> persons = personsTop.keySet().iterator();
+        LinkedHashMap<PersonDto, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LIVE_CLASSES, PERSONS_SIZE);
+        Iterator<PersonDto> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
-        assertThat(persons.next(), is(TOP1));
-        assertThat(persons.next(), is(TOP2));
-        assertThat(persons.next(), is(TOP3));
+        assertThat(persons.next().getId(), is(TOP1));
+        assertThat(persons.next().getId(), is(TOP2));
+        assertThat(persons.next().getId(), is(TOP3));
     }
 
     @Test
-    public void getTopThreeStudentsByLevelAssesmentsActivityStatistics() {
+    public void getTopThreeStudentsByLevelAssessmentsActivityStatistics() {
 
         final int PERSONS_SIZE = 3;
         final Set<CourseTypeEnum> LEVEL_ASSESMENT = Set.of(CourseTypeEnum.LEVEL_ASSESSMENT);
@@ -550,65 +550,11 @@ public class ActivityServiceTest {
 
         LocalDateTime startDate = LocalDateTime.of(YEAR, FEBRUARY, 1, 0, 0, 0);
 
-        LevelsPassedByPerson levelsPassedByPerson1 = new LevelsPassedByPerson() {
-            @Override
-            public long getPersonId() {
-                return 110001;
-            }
-
-            @Override
-            public double getTotalNumber() {
-                return 10;
-            }
-        };
-
-        LevelsPassedByPerson levelsPassedByPerson2 = new LevelsPassedByPerson() {
-            @Override
-            public long getPersonId() {
-                return 110002;
-            }
-
-            @Override
-            public double getTotalNumber() {
-                return 20;
-            }
-        };
-
-        LevelsPassedByPerson levelsPassedByPerson3 = new LevelsPassedByPerson() {
-            @Override
-            public long getPersonId() {
-                return 110003;
-            }
-
-            @Override
-            public double getTotalNumber() {
-                return 5;
-            }
-        };
-
-        LevelsPassedByPerson levelsPassedByPerson4 = new LevelsPassedByPerson() {
-            @Override
-            public long getPersonId() {
-                return 110004;
-            }
-
-            @Override
-            public double getTotalNumber() {
-                return 1;
-            }
-        };
-
-        LevelsPassedByPerson levelsPassedByPerson5 = new LevelsPassedByPerson() {
-            @Override
-            public long getPersonId() {
-                return 110005;
-            }
-
-            @Override
-            public double getTotalNumber() {
-                return 30;
-            }
-        };
+        LevelsPassedByPerson levelsPassedByPerson1 = InterfaceUtil.createLevelsPassedByPerson(110001, "","","",10);
+        LevelsPassedByPerson levelsPassedByPerson2 = InterfaceUtil.createLevelsPassedByPerson(110002, "","","",20);
+        LevelsPassedByPerson levelsPassedByPerson3 = InterfaceUtil.createLevelsPassedByPerson(110003, "","","",5);
+        LevelsPassedByPerson levelsPassedByPerson4 = InterfaceUtil.createLevelsPassedByPerson(110004, "","","",1);
+        LevelsPassedByPerson levelsPassedByPerson5 = InterfaceUtil.createLevelsPassedByPerson(110005, "","","",30);
 
         List<LevelsPassedByPerson> levelsPassedByPersons = List.of(levelsPassedByPerson1, levelsPassedByPerson2, levelsPassedByPerson3, levelsPassedByPerson4, levelsPassedByPerson5);
 
@@ -617,13 +563,13 @@ public class ActivityServiceTest {
             returns(levelsPassedByPersons);
         }};
 
-        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT, PERSONS_SIZE);
-        Iterator<Long> persons = personsTop.keySet().iterator();
+        LinkedHashMap<PersonDto, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT, PERSONS_SIZE);
+        Iterator<PersonDto> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
-        assertThat(persons.next(), is(TOP1));
-        assertThat(persons.next(), is(TOP2));
-        assertThat(persons.next(), is(TOP3));
+        assertThat(persons.next().getId(), is(TOP1));
+        assertThat(persons.next().getId(), is(TOP2));
+        assertThat(persons.next().getId(), is(TOP3));
     }
 
     @Test
@@ -787,111 +733,5 @@ public class ActivityServiceTest {
 
         List<PersonUsageLevelDto> personUsageLevelOverviewDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
         assertEquals(EMPTY_SIZE, personUsageLevelOverviewDtos.size());
-    }
-
-    @Test
-    public void getTopThreeStudentsByLiveClassesActivityStatistics2() {
-
-        final int PERSONS_SIZE = 3;
-        final Set<CourseTypeEnum> LIVE_CLASSES = Arrays.stream(CourseTypeEnum.values()).collect(Collectors.toSet());
-        final long TOP1 = 1L;
-        final long TOP2 = 4L;
-        final long TOP3 = 2L;
-        final int YEAR = 2022;
-        final int JANUARY = 1;
-        final int FEBRUARY = 2;
-        final int MARCH = 3;
-
-        String salesforcePurchaserId = "12345";
-
-        LocalDateTime startDate = LocalDateTime.of(YEAR, FEBRUARY, 1, 0, 0, 0);
-
-        PersonCourseAudit person1CourseAudit1 = PersonCourseAudit.builder()
-                .person(Person.builder().id(1L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
-                .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 15, 12, 0, 0))
-                .timeontask(50)
-                .build();
-        PersonCourseAudit person1CourseAudit2 = PersonCourseAudit.builder()
-                .person(Person.builder().id(1L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
-                .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 19, 14, 0, 0))
-                .timeontask(70)
-                .build();
-        PersonCourseAudit person1CourseAudit3 = PersonCourseAudit.builder()
-                .person(Person.builder().id(1L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
-                .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 20, 12, 0, 0))
-                .timeontask(90)
-                .build();
-
-        PersonCourseAudit person1CourseAudit4 = PersonCourseAudit.builder()
-                .person(Person.builder().id(1L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
-                .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 21, 10, 0, 0))
-                .timeontask(10)
-                .build();
-        PersonCourseAudit person2CourseAudit1 = PersonCourseAudit.builder()
-                .person(Person.builder().id(2L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
-                .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 22, 10, 0, 0))
-                .timeontask(10)
-                .build();
-        PersonCourseAudit person2CourseAudit2 = PersonCourseAudit.builder()
-                .person(Person.builder().id(2L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
-                .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 23, 10, 0, 0))
-                .timeontask(10)
-                .build();
-        PersonCourseAudit person4CourseAudit1 = PersonCourseAudit.builder()
-                .person(Person.builder().id(4L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
-                .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 15, 12, 0, 0))
-                .timeontask(10)
-                .build();
-
-        PersonCourseAudit person4CourseAudit2 = PersonCourseAudit.builder()
-                .person(Person.builder().id(4L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
-                .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 7, 8, 0, 0))
-                .timeontask(30)
-                .build();
-        PersonCourseAudit person4CourseAudit3 = PersonCourseAudit.builder()
-                .person(Person.builder().id(4L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
-                .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 5, 8, 0, 0))
-                .timeontask(30)
-                .build();
-        PersonCourseAudit person3CourseAudit1 = PersonCourseAudit.builder()
-                .person(Person.builder().id(3L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
-                .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 7, 12, 0, 0))
-                .timeontask(30)
-                .build();
-        PersonCourseAudit person5CourseAudit1 = PersonCourseAudit.builder()
-                .person(Person.builder().id(5L).build())
-                .course(Course.builder().courseType(CourseType.builder().id(CourseTypeEnum.LIVE_CLASS.getValue()).build()).build())
-                .dateCompleted(LocalDateTime.of(YEAR, MARCH, 1, 12, 0, 0))
-                .timeontask(30)
-                .build();
-
-        List<PersonCourseAudit> personCourseAudits = List.of(person1CourseAudit1, person1CourseAudit2, person1CourseAudit3, person1CourseAudit4,
-                person2CourseAudit1, person2CourseAudit2,
-                person4CourseAudit1, person4CourseAudit2, person4CourseAudit3,
-                person3CourseAudit1,
-                person5CourseAudit1);
-
-        new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
-            returns(personCourseAudits);
-        }};
-
-        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LIVE_CLASSES, PERSONS_SIZE);
-        Iterator<Long> persons = personsTop.keySet().iterator();
-
-        assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
-        assertThat(persons.next(), is(TOP1));
-        assertThat(persons.next(), is(TOP2));
-        assertThat(persons.next(), is(TOP3));
     }
 }
