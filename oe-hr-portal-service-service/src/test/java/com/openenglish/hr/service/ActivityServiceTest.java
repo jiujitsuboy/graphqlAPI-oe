@@ -1,6 +1,7 @@
 package com.openenglish.hr.service;
 
 import com.oe.lp2.enums.CourseTypeEnum;
+import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.PersonUsageLevelDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.persistence.entity.*;
@@ -424,13 +425,13 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, PRACTICE, PERSONS_SIZE);
-        Iterator<Long> persons = personsTop.keySet().iterator();
+        LinkedHashMap<PersonDto, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, PRACTICE, PERSONS_SIZE);
+        Iterator<PersonDto> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
-        assertThat(persons.next(), is(TOP1));
-        assertThat(persons.next(), is(TOP2));
-        assertThat(persons.next(), is(TOP3));
+        assertThat(persons.next().getId(), is(TOP1));
+        assertThat(persons.next().getId(), is(TOP2));
+        assertThat(persons.next().getId(), is(TOP3));
     }
 
     @Test
@@ -530,17 +531,17 @@ public class ActivityServiceTest {
             returns(personCourseAudits);
         }};
 
-        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LIVE_CLASSES, PERSONS_SIZE);
-        Iterator<Long> persons = personsTop.keySet().iterator();
+        LinkedHashMap<PersonDto, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LIVE_CLASSES, PERSONS_SIZE);
+        Iterator<PersonDto> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
-        assertThat(persons.next(), is(TOP1));
-        assertThat(persons.next(), is(TOP2));
-        assertThat(persons.next(), is(TOP3));
+        assertThat(persons.next().getId(), is(TOP1));
+        assertThat(persons.next().getId(), is(TOP2));
+        assertThat(persons.next().getId(), is(TOP3));
     }
 
     @Test
-    public void getTopThreeStudentsByLevelAssesmentsActivityStatistics() {
+    public void getTopThreeStudentsByLevelAssessmentsActivityStatistics() {
 
         final int PERSONS_SIZE = 3;
         final Set<CourseTypeEnum> LEVEL_ASSESMENT = Set.of(CourseTypeEnum.LEVEL_ASSESSMENT);
@@ -554,65 +555,11 @@ public class ActivityServiceTest {
 
         LocalDateTime startDate = LocalDateTime.of(YEAR, FEBRUARY, 1, 0, 0, 0);
 
-        LevelsPassedByPerson levelsPassedByPerson1 = new LevelsPassedByPerson() {
-            @Override
-            public long getPersonId() {
-                return 110001;
-            }
-
-            @Override
-            public double getTotalNumber() {
-                return 10;
-            }
-        };
-
-        LevelsPassedByPerson levelsPassedByPerson2 = new LevelsPassedByPerson() {
-            @Override
-            public long getPersonId() {
-                return 110002;
-            }
-
-            @Override
-            public double getTotalNumber() {
-                return 20;
-            }
-        };
-
-        LevelsPassedByPerson levelsPassedByPerson3 = new LevelsPassedByPerson() {
-            @Override
-            public long getPersonId() {
-                return 110003;
-            }
-
-            @Override
-            public double getTotalNumber() {
-                return 5;
-            }
-        };
-
-        LevelsPassedByPerson levelsPassedByPerson4 = new LevelsPassedByPerson() {
-            @Override
-            public long getPersonId() {
-                return 110004;
-            }
-
-            @Override
-            public double getTotalNumber() {
-                return 1;
-            }
-        };
-
-        LevelsPassedByPerson levelsPassedByPerson5 = new LevelsPassedByPerson() {
-            @Override
-            public long getPersonId() {
-                return 110005;
-            }
-
-            @Override
-            public double getTotalNumber() {
-                return 30;
-            }
-        };
+        LevelsPassedByPerson levelsPassedByPerson1 = InterfaceUtil.createLevelsPassedByPerson(110001, "","","",10);
+        LevelsPassedByPerson levelsPassedByPerson2 = InterfaceUtil.createLevelsPassedByPerson(110002, "","","",20);
+        LevelsPassedByPerson levelsPassedByPerson3 = InterfaceUtil.createLevelsPassedByPerson(110003, "","","",5);
+        LevelsPassedByPerson levelsPassedByPerson4 = InterfaceUtil.createLevelsPassedByPerson(110004, "","","",1);
+        LevelsPassedByPerson levelsPassedByPerson5 = InterfaceUtil.createLevelsPassedByPerson(110005, "","","",30);
 
         List<LevelsPassedByPerson> levelsPassedByPersons = List.of(levelsPassedByPerson1, levelsPassedByPerson2, levelsPassedByPerson3, levelsPassedByPerson4, levelsPassedByPerson5);
 
@@ -621,13 +568,13 @@ public class ActivityServiceTest {
             returns(levelsPassedByPersons);
         }};
 
-        LinkedHashMap<Long, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT, PERSONS_SIZE);
-        Iterator<Long> persons = personsTop.keySet().iterator();
+        LinkedHashMap<PersonDto, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT, PERSONS_SIZE);
+        Iterator<PersonDto> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
-        assertThat(persons.next(), is(TOP1));
-        assertThat(persons.next(), is(TOP2));
-        assertThat(persons.next(), is(TOP3));
+        assertThat(persons.next().getId(), is(TOP1));
+        assertThat(persons.next().getId(), is(TOP2));
+        assertThat(persons.next().getId(), is(TOP3));
     }
 
     @Test

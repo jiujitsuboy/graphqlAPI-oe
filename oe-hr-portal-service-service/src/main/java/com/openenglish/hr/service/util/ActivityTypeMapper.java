@@ -12,8 +12,10 @@ public class ActivityTypeMapper {
                     ActivityTypeEnum.PRACTICE, Set.of(CourseTypeEnum.PRACTICE, CourseTypeEnum.IDIOMS, CourseTypeEnum.NEWS),
                     ActivityTypeEnum.LESSON, Set.of(CourseTypeEnum.LESSON),
                     ActivityTypeEnum.LIVE_CLASS, Set.of(CourseTypeEnum.LIVE_CLASS, CourseTypeEnum.PRIVATE_CLASS),
+                    ActivityTypeEnum.PRIVATE_CLASS, Set.of(CourseTypeEnum.PRIVATE_CLASS),
                     ActivityTypeEnum.LEVEL, Set.of(CourseTypeEnum.LEVEL_ASSESSMENT),
-                    ActivityTypeEnum.UNIT, Set.of(CourseTypeEnum.UNIT_ASSESSMENT)
+                    ActivityTypeEnum.UNIT, Set.of(CourseTypeEnum.UNIT_ASSESSMENT),
+                    ActivityTypeEnum.ACTIVE_HOURS, Set.of(CourseTypeEnum.PRACTICE, CourseTypeEnum.IDIOMS, CourseTypeEnum.NEWS,CourseTypeEnum.LESSON, CourseTypeEnum.LIVE_CLASS, CourseTypeEnum.PRIVATE_CLASS)
             );
 
     public static Set<CourseTypeEnum> mapToCourseTypes(ActivityTypeEnum activity) {

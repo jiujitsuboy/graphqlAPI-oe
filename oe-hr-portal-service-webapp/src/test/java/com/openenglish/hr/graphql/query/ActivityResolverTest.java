@@ -9,6 +9,7 @@ import com.openenglish.hr.persistence.entity.aggregation.MonthActivityStatistics
 import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.service.ActivityService;
 import com.openenglish.hr.service.mapper.MappingConfig;
+import java.util.Map.Entry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -130,11 +131,11 @@ public class ActivityResolverTest {
     @Test
     public void getTopStudentsByActivityStatistics() {
 
-        LinkedHashMap<Long, Double> personsTop = new LinkedHashMap<>(5);
+        LinkedHashMap<PersonDto, Double> personsTop = new LinkedHashMap<>(5);
 
-        long person1Id = 10004L;
-        long person2Id = 10005L;
-        long person3Id = 10006L;
+        PersonDto person1Id = PersonDto.builder().id(10004L).build();
+        PersonDto person2Id =  PersonDto.builder().id(10005L).build();
+        PersonDto person3Id =  PersonDto.builder().id(10006L).build();
 
         personsTop.put(person1Id, 10.0);
         personsTop.put(person2Id, 20.0);
@@ -143,22 +144,27 @@ public class ActivityResolverTest {
         Mockito.when(activityService.getTopStudentsByActivityStatistics(anyString(), any(), any(), anyInt())).thenReturn(personsTop);
 
         String query = "{ " +
-                "  getTopStudentsByActivityStatistics(salesforcePurchaserId:\"12345\", year:2022, month:2, activity: LIVE_CLASS, top: 3){ " +
-                "    personId" +
+                "  getTopStudentsByActivityStatistics(salesforcePurchaserId:\"12345\", year:2022, month:2, activities: [LIVE_CLASS], top: 3){ " +
+                "    person{" +
+                "          id " +
+                "          firstName " +
+                "          lastName " +
+                "          contactId" +
+                "    }" +
                 "    totalActivities " +
                 "  } " +
                 "}";
         String projection = "data.getTopStudentsByActivityStatistics[*]";
 
-        List<PersonActivityTotalDto> personActivityTotalDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
+        List<PersonActivityTotalDto> personActivitiesTotalDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
         });
 
-        assertNotNull(personActivityTotalDto);
+        assertNotNull(personActivitiesTotalDto);
 
-        Iterator<Long> personsId = personsTop.keySet().iterator();
-        assertThat(personsId.next(), is(personActivityTotalDto.get(0).getPersonId()));
-        assertThat(personsId.next(), is(personActivityTotalDto.get(1).getPersonId()));
-        assertThat(personsId.next(), is(personActivityTotalDto.get(2).getPersonId()));
+        int index = 0;
+        for(Entry<PersonDto, Double> entry : personsTop.entrySet()){
+            assertThat(entry.getValue(), is(personActivitiesTotalDto.get(index++).getTotalActivities()));
+        }
 
     }
 

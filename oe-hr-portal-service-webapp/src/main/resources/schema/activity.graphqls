@@ -27,8 +27,10 @@
 
  enum ActivityType{
     LIVE_CLASS
+    PRIVATE_CLASS
     PRACTICE
     LESSON
     UNIT
     LEVEL
+    ACTIVE_HOURS
  }

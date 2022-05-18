@@ -1,4 +1,5 @@
   type Person {
+    id: Int
     firstName: String
     lastName: String
     email: String
@@ -26,7 +27,7 @@
  }
 
  type PersonActivitiesTotal{
-    personId: Int
+    person: Person
     totalActivities: Float
  }
 
