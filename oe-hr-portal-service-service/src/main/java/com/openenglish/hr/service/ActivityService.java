@@ -40,7 +40,8 @@ import java.util.stream.IntStream;
 public class ActivityService {
 
     public static final int ONE_ACTIVITY = 1;
-    public static final int MINUTES_PER_LESSON_UNIT_ASSESSMENT = 25;
+    public static final int MINUTES_PER_LESSON_UNIT_ASSESSMENT_BEFORE_JUN2022 = 25;
+    public static final int MINUTES_PER_LESSON_UNIT_ASSESSMENT_AFTER_JUN2022 = 25;
     public static final int MINUTES_PER_PRIVATE_CLASS = 30;
     public static final int MINUTES_PER_LIVE_CLASS = 60;
 
@@ -76,17 +77,20 @@ public class ActivityService {
 
         List<PersonCourseSummary> personCourseSummaries = personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserId(salesforcePurchaserId);
 
-        Map<CourseTypeEnum, Integer> courseTypeCounting = getSummingTimeByGroupingCourseTypesCourseSummary(personCourseSummaries);
+        Map<Boolean,  Map<CourseTypeEnum, Integer>> personCourseSummarySplit =  getSummingTimeByGroupingCourseTypesCourseSummary(personCourseSummaries);
 
-        double totalTimeInHours = getTotalTimeInHours(courseTypeCounting);
+        double totalTimeInHours = getTotalTimeInHours(personCourseSummarySplit);
+
+        Map<CourseTypeEnum, Integer> activitiesBeforeJun2022 =personCourseSummarySplit.get(true);
+        Map<CourseTypeEnum, Integer> activitiesAfterMay2022 =personCourseSummarySplit.get(false);
 
         return ActivitiesOverviewDto.builder()
-                .groupClasses(courseTypeCounting.getOrDefault(CourseTypeEnum.LIVE_CLASS, 0).longValue())
-                .privateClasses(courseTypeCounting.getOrDefault(CourseTypeEnum.PRIVATE_CLASS, 0).longValue())
-                .completedLessons(courseTypeCounting.getOrDefault(CourseTypeEnum.LESSON, 0).longValue())
-                .completedUnits(courseTypeCounting.getOrDefault(CourseTypeEnum.UNIT_ASSESSMENT, 0).longValue())
-                .practiceHours(NumberUtils.round(NumberUtils.convertSecondsToHours(courseTypeCounting.getOrDefault(CourseTypeEnum.PRACTICE, 0).doubleValue())))
-                .levelPassed(courseTypeCounting.getOrDefault(CourseTypeEnum.LEVEL_ASSESSMENT, 0).longValue())
+                .groupClasses(activitiesBeforeJun2022.getOrDefault(CourseTypeEnum.LIVE_CLASS, 0).longValue())
+                .privateClasses(activitiesBeforeJun2022.getOrDefault(CourseTypeEnum.PRIVATE_CLASS, 0).longValue())
+                .completedLessons(activitiesBeforeJun2022.getOrDefault(CourseTypeEnum.LESSON, 0).longValue() + activitiesAfterMay2022.getOrDefault(CourseTypeEnum.LESSON, 0).longValue())
+                .completedUnits(activitiesBeforeJun2022.getOrDefault(CourseTypeEnum.UNIT_ASSESSMENT, 0).longValue())
+                .practiceHours(NumberUtils.round(NumberUtils.convertSecondsToHours(activitiesBeforeJun2022.getOrDefault(CourseTypeEnum.PRACTICE, 0).doubleValue())))
+                .levelPassed(activitiesBeforeJun2022.getOrDefault(CourseTypeEnum.LEVEL_ASSESSMENT, 0).longValue())
                 .totalHoursUsage(NumberUtils.round(totalTimeInHours))
                 .build();
     }
@@ -116,7 +120,7 @@ public class ActivityService {
 
         List<PersonCourseAudit> personsCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
 
-        Collector<PersonCourseAudit, ?, Double> collectorStatistics = this.getCollectingStrategy(courseTypeEnums);;
+        Collector<PersonCourseAudit, ?, Double> collectorStatistics = this.getCollectingStrategy(courseTypeEnums);
 
         Map<Integer, Double> courseTypeCounting = (Map<Integer, Double>)
                 getTotalActivityCountGroupedByCustomCriteria(personsCourseAudit, collectorStatistics, this::getActivityMonth);
@@ -299,17 +303,18 @@ public class ActivityService {
     }
 
     /**
-     * Group and sum every activity and all their time
+     * Group and sum every activity and all their time and separete those activities that happen before Jun 2022
      *
      * @param personCourseSummaries List of student course activities
      * @return Map with every activity and the amount of minutes
      */
-    private Map<CourseTypeEnum, Integer> getSummingTimeByGroupingCourseTypesCourseSummary(List<PersonCourseSummary> personCourseSummaries) {
-        return personCourseSummaries
-                .stream()
-                .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeEnum(personCourseSummary.getCourse()).getValue()))
-                .collect(Collectors.groupingBy(personCourseSummary -> getCourseTypeEnum(personCourseSummary.getCourse()),
-                        Collectors.summingInt(this::getAmountOfTimePerActivity)));
+    private Map<Boolean, Map<CourseTypeEnum, Integer>> getSummingTimeByGroupingCourseTypesCourseSummary(List<PersonCourseSummary> personCourseSummaries) {
+
+        return personCourseSummaries.stream()
+            .filter(personCourseSummary -> COURSE_TYPES_OF_INTEREST.contains(this.getCourseTypeEnum(personCourseSummary.getCourse()).getValue()))
+            .collect(Collectors.partitioningBy(personCourseSummary -> this.isBeforeJun2022(personCourseSummary.getLastDateCompleted()),
+                Collectors.groupingBy(personCourseSummary -> getCourseTypeEnum(personCourseSummary.getCourse()),
+                    Collectors.summingInt(this::getAmountOfTimePerActivity))));
     }
 
     /**
@@ -355,6 +360,17 @@ public class ActivityService {
     }
 
     /**
+     * Validate if a date is before Jun 2022
+     * @param targetDate date to validate
+     * @return boolean
+     */
+    private boolean isBeforeJun2022(LocalDateTime targetDate){
+        LocalDateTime jun2022 =  LocalDateTime.of(2022,6,1,0,0,0);
+
+        return targetDate.isBefore(jun2022);
+    }
+
+    /**
      * return the amount of seconds for Practice activities and return 1 for every other activity
      *
      * @param personCourseSummary List of student course activities
@@ -367,16 +383,16 @@ public class ActivityService {
     /**
      * Calculate the total time in hours of each course type activity
      *
-     * @param courseTypeCounting Map with every activity and the amount of minutes and seconds for each one
+     * @param personCourseSummarySplit Map separate by activities before and after jun 2022, with the amount of minutes and seconds for each one
      * @return the total sum of all activities
      */
-    private double getTotalTimeInHours(Map<CourseTypeEnum, Integer> courseTypeCounting) {
-
-        return NumberUtils.convertSecondsToHours((double) courseTypeCounting
+    private double getTotalTimeInHours(Map<Boolean,  Map<CourseTypeEnum, Integer>> personCourseSummarySplit) {
+        return personCourseSummarySplit.entrySet().stream()
+            .mapToDouble(booleanEntry->NumberUtils.convertSecondsToHours(booleanEntry.getValue()
                 .entrySet()
                 .stream()
-                .mapToInt(this::convertActivitiesOccurrenceToSeconds)
-                .sum());
+                .mapToInt(entry ->  this.convertActivitiesOccurrenceToSeconds(entry, booleanEntry.getKey()))
+                .sum())).sum();
     }
 
     /**
@@ -385,8 +401,8 @@ public class ActivityService {
      * @param entry Map with every activity and the amount of minutes
      * @return amount of time in seconds
      */
-    private int convertActivitiesOccurrenceToSeconds(Map.Entry<CourseTypeEnum, Integer> entry) {
-        return convertActivitiesOccurrenceToSeconds(entry.getKey(), entry.getValue());
+    private int convertActivitiesOccurrenceToSeconds(Map.Entry<CourseTypeEnum, Integer> entry, boolean beforeJun2022) {
+        return convertActivitiesOccurrenceToSeconds(entry.getKey(), entry.getValue(), beforeJun2022);
     }
 
     /**
@@ -396,7 +412,7 @@ public class ActivityService {
      * @param numberOfTimes  number of time the same activity is present
      * @return amount of time in seconds
      */
-    private int convertActivitiesOccurrenceToSeconds(CourseTypeEnum courseTypeEnum, int numberOfTimes) {
+    private int convertActivitiesOccurrenceToSeconds(CourseTypeEnum courseTypeEnum, int numberOfTimes, boolean beforeJun2022) {
         int timeInSeconds = 0;
         switch (courseTypeEnum) {
             case LIVE_CLASS:
@@ -407,7 +423,8 @@ public class ActivityService {
                 break;
             case LESSON:
             case UNIT_ASSESSMENT:
-                timeInSeconds = numberOfTimes * NumberUtils.toSeconds(MINUTES_PER_LESSON_UNIT_ASSESSMENT);
+                timeInSeconds = numberOfTimes * NumberUtils.toSeconds(beforeJun2022?
+                    MINUTES_PER_LESSON_UNIT_ASSESSMENT_BEFORE_JUN2022 : MINUTES_PER_LESSON_UNIT_ASSESSMENT_AFTER_JUN2022);
                 break;
             case PRACTICE:
                 timeInSeconds = numberOfTimes;
@@ -423,27 +440,15 @@ public class ActivityService {
      */
     private int getNumberOfSecondsPerActivity(PersonCourseAudit personCourseAudit) {
 
+        final int NUMBER_OF_TIMES = 1;
         CourseTypeEnum courseTypeEnumCurrentPerson = this.getCourseTypeEnum(personCourseAudit.getCourse());
-        int numSecondPerActivity = 0;
 
-        if (PRACTICE_COURSE_TYPES.contains(courseTypeEnumCurrentPerson.getValue())) {
-            numSecondPerActivity = personCourseAudit.getTimeontask();
-        } else {
+        LocalDateTime targetDate = personCourseAudit.getDateCompleted();
 
-            switch (courseTypeEnumCurrentPerson) {
-                case LIVE_CLASS:
-                    numSecondPerActivity = NumberUtils.toSeconds(MINUTES_PER_LIVE_CLASS);
-                    break;
-                case PRIVATE_CLASS:
-                    numSecondPerActivity = NumberUtils.toSeconds(MINUTES_PER_PRIVATE_CLASS);
-                    break;
-                case LESSON:
-                case UNIT_ASSESSMENT:
-                    numSecondPerActivity = NumberUtils.toSeconds(MINUTES_PER_LESSON_UNIT_ASSESSMENT);
-                    break;
-            }
+        if (PRACTICE_COURSE_TYPES.contains(courseTypeEnumCurrentPerson.getValue()) && personCourseAudit.getDateCompleted() == null) {
+                targetDate = personCourseAudit.getDateStarted();
         }
-        return numSecondPerActivity;
+        return convertActivitiesOccurrenceToSeconds(courseTypeEnumCurrentPerson, NUMBER_OF_TIMES, this.isBeforeJun2022(targetDate));
     }
 
     /**

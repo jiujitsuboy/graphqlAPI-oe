@@ -48,35 +48,43 @@ public class ActivityServiceTest {
         PersonCourseSummary personCourseSummary11 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
                 .timeontask(50)
+                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary12 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
                 .timeontask(70)
+                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary13 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
                 .timeontask(90)
+                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
                 .build();
 
         PersonCourseSummary personCourseSummary21 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
                 .timeontask(10)
+                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary22 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
                 .timeontask(10)
+                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
                 .build();
 
         PersonCourseSummary personCourseSummary31 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
                 .timeontask(30)
+                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary32 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
                 .timeontask(30)
+                .lastDateCompleted(LocalDateTime.of(2022,06,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary33 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
+                .lastDateCompleted(LocalDateTime.of(2022,06,15, 0 ,0))
                 .timeontask(30)
                 .build();
 
@@ -93,11 +101,17 @@ public class ActivityServiceTest {
         long groupClassesNumObtained = List.of(personCourseSummary11, personCourseSummary12, personCourseSummary13).size();
         long privateClassesNumObtained = 0;
         long levelPassedNumObtained = 0;
-        long completedLessonsNumObtained = List.of(personCourseSummary31, personCourseSummary32, personCourseSummary33).size();
         long completedUnitsNumObtained = 0;
         double practiceHoursNumObtained = personCourseSummary21.getTimeontask() + personCourseSummary22.getTimeontask();
-        double totalMinutesUsageNumObtained = (groupClassesNumObtained * NumberUtils.toSeconds(ActivityService.MINUTES_PER_LIVE_CLASS)) + (privateClassesNumObtained * NumberUtils.toSeconds(ActivityService.MINUTES_PER_PRIVATE_CLASS)) +
-                ((completedLessonsNumObtained + completedUnitsNumObtained) * NumberUtils.toSeconds(ActivityService.MINUTES_PER_LESSON_UNIT_ASSESSMENT)) + (practiceHoursNumObtained);
+        long completedLessonsNumObtainedBeforeJun2022 = List.of(personCourseSummary31).size();
+        long completedLessonsNumObtainedAfterMay2022 = List.of(personCourseSummary32, personCourseSummary33).size();
+        long completedLessonsNumObtained = completedLessonsNumObtainedBeforeJun2022 + completedLessonsNumObtainedAfterMay2022;
+
+        double totalMinutesUsageNumObtained = (groupClassesNumObtained * NumberUtils.toSeconds(ActivityService.MINUTES_PER_LIVE_CLASS)) +
+            (privateClassesNumObtained * NumberUtils.toSeconds(ActivityService.MINUTES_PER_PRIVATE_CLASS)) +
+            ((completedLessonsNumObtainedBeforeJun2022 + completedUnitsNumObtained) * NumberUtils.toSeconds(ActivityService.MINUTES_PER_LESSON_UNIT_ASSESSMENT_BEFORE_JUN2022)) +
+            (completedLessonsNumObtainedAfterMay2022 * NumberUtils.toSeconds(ActivityService.MINUTES_PER_LESSON_UNIT_ASSESSMENT_AFTER_JUN2022)) +
+        (practiceHoursNumObtained);
 
         practiceHoursNumObtained = NumberUtils.round(NumberUtils.convertSecondsToHours(practiceHoursNumObtained));
         totalMinutesUsageNumObtained = NumberUtils.round(NumberUtils.convertSecondsToHours(totalMinutesUsageNumObtained));
