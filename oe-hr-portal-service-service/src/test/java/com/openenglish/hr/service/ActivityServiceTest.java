@@ -1,6 +1,7 @@
 package com.openenglish.hr.service;
 
 import com.oe.lp2.enums.CourseTypeEnum;
+import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.PersonUsageLevelDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
@@ -14,6 +15,7 @@ import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
 import com.openenglish.hr.service.util.InterfaceUtil;
 import com.openenglish.hr.service.util.NumberUtils;
+import java.time.temporal.ChronoUnit;
 import mockit.*;
 import org.junit.Rule;
 import org.junit.Test;
@@ -733,5 +735,133 @@ public class ActivityServiceTest {
 
         List<PersonUsageLevelDto> personUsageLevelOverviewDtos = activityService.getLeastActiveStudents(salesforcePurchaserId);
         assertEquals(EMPTY_SIZE, personUsageLevelOverviewDtos.size());
+    }
+
+    @Test
+    public void getUsageLevelOverviewPerPerson(){
+
+        LocalDate currentTime = LocalDate.of(2022,04,16);
+        Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        String salesforcePurchaserId = "12345";
+        Long personId = 110001L;
+        final long INACTIVE_DAYS = 1L;
+        UsageLevelEnum expectedUsageLevel = UsageLevelEnum.HIGH;
+
+        UsageLevel usageLevel = InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 04, 15, 0, 0, 0));
+
+        new Expectations() {{
+            clock.instant();
+            returns(fixedClock.instant());
+            clock.getZone();
+            returns(fixedClock.getZone());
+
+            personCourseAuditRepository.findMaxActivityDateByPerson(anyString, anyLong);
+            returns(usageLevel);
+        }};
+
+        Optional<PersonUsageLevelDto> optPersonUsageLevelDto = activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,personId);
+
+        assertTrue(optPersonUsageLevelDto.isPresent());
+
+        PersonUsageLevelDto personUsageLevelDto = optPersonUsageLevelDto.get();
+
+        assertThat(personUsageLevelDto.getPerson().getId(), is(personId));
+        assertThat(personUsageLevelDto.getUsageLevel(), is(expectedUsageLevel));
+        assertThat(personUsageLevelDto.getInactiveDays(), is(INACTIVE_DAYS));
+    }
+
+    @Test
+    public void getUsageLevelOverviewPerPersonEmpty(){
+
+        LocalDate currentTime = LocalDate.of(2022,04,16);
+        Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        String salesforcePurchaserId = "12345";
+        Long personId = 110008L;
+        final long INACTIVE_DAYS = 1L;
+        UsageLevelEnum expectedUsageLevel = UsageLevelEnum.HIGH;
+
+        UsageLevel usageLevel = null;
+
+        new Expectations() {{
+            clock.instant();
+            returns(fixedClock.instant());
+            clock.getZone();
+            returns(fixedClock.getZone());
+
+            personCourseAuditRepository.findMaxActivityDateByPerson(anyString, anyLong);
+            returns(usageLevel);
+        }};
+
+        Optional<PersonUsageLevelDto> optPersonUsageLevelDto = activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,personId);
+
+        assertFalse(optPersonUsageLevelDto.isPresent());
+    }
+
+    @Test
+    public void getUsageLevelOverviewPerPersonInvalidSalesforcePurchaserId() {
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
+
+        String salesforcePurchaserId = "";
+        Long personId = 110001L;
+        LocalDate currentTime = LocalDate.of(2022,04,16);
+        Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        new Expectations() {{
+            clock.instant();
+            returns(fixedClock.instant());
+            clock.getZone();
+            returns(fixedClock.getZone());
+
+        }};
+
+        activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,personId);
+    }
+
+    @Test
+    public void getUsageLevelOverviewPerPersonNullPersonId() {
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("personId should not be null or less than ZERO");
+
+        String salesforcePurchaserId = "12347";
+        Long personId = null;
+        LocalDate currentTime = LocalDate.of(2022,04,16);
+        Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        new Expectations() {{
+            clock.instant();
+            returns(fixedClock.instant());
+            clock.getZone();
+            returns(fixedClock.getZone());
+
+        }};
+
+        activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,personId);
+    }
+
+    @Test
+    public void getUsageLevelOverviewPerPersonWithPersonIdZero() {
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("personId should not be null or less than ZERO");
+
+        String salesforcePurchaserId = "12347";
+        Long personId = 0L;
+        LocalDate currentTime = LocalDate.of(2022,04,16);
+        Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        new Expectations() {{
+            clock.instant();
+            returns(fixedClock.instant());
+            clock.getZone();
+            returns(fixedClock.getZone());
+
+        }};
+
+        activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,personId);
     }
 }

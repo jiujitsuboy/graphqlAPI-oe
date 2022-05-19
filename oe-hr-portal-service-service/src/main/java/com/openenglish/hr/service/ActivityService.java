@@ -116,7 +116,7 @@ public class ActivityService {
 
         List<PersonCourseAudit> personsCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
 
-        Collector<PersonCourseAudit, ?, Double> collectorStatistics = this.getCollectingStrategy(courseTypeEnums);;
+        Collector<PersonCourseAudit, ?, Double> collectorStatistics = this.getCollectingStrategy(courseTypeEnums);
 
         Map<Integer, Double> courseTypeCounting = (Map<Integer, Double>)
                 getTotalActivityCountGroupedByCustomCriteria(personsCourseAudit, collectorStatistics, this::getActivityMonth);
@@ -211,6 +211,11 @@ public class ActivityService {
                 .build();
     }
 
+    /**
+     * Retrieve the less active students
+     * @param salesforcePurchaserId Id of the owner of the license
+     * @return PersonUsageLevelDto
+     */
     public List<PersonUsageLevelDto> getLeastActiveStudents(String salesforcePurchaserId) {
 
         LocalDateTime currentTime = LocalDateTime.now(clock);
@@ -220,10 +225,34 @@ public class ActivityService {
 
         List<PersonUsageLevelDto> personUsageLevelDtos = usageLevels.stream()
                 .map(usageLevel ->  PersonUsageLevelDtoMapper.map(usageLevel, currentTime, this::mapStudentsToUsageLevel))
+                .flatMap(Optional::stream)
                 .filter(personUsageLevelDto -> LOW_USAGE_TYPES.contains(personUsageLevelDto.getUsageLevel()))
                 .collect(Collectors.toList());
 
         return personUsageLevelDtos;
+    }
+
+    /**
+     * Retrieve the number of inactive days and categorize the students to the corresponding to UsageLevel
+     *  HIGH:  last activity completed in the last 10 days
+     *  MEDIUM HIGH: last activity completed betwenn last 11 and 30 days
+     *  MEDIUM LOW last activity completed betwenn last 31 and 60 days
+     *  LOW: last activity completed after the last 61 days
+     *
+     * @param salesforcePurchaserId Id of the owner of the license
+     * @param personId student id
+     * @return PersonUsageLevelDto
+     */
+    public Optional<PersonUsageLevelDto> getUsageLevelOverviewPerPerson(String salesforcePurchaserId, Long personId) {
+
+        Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
+        Preconditions.checkArgument(personId != null && personId > 0, "personId should not be null or less than ZERO");
+
+        LocalDateTime currentTime = LocalDateTime.now(clock);
+
+        UsageLevel usageLevel = personCourseAuditRepository.findMaxActivityDateByPerson(salesforcePurchaserId, personId);
+
+        return PersonUsageLevelDtoMapper.map(usageLevel, currentTime, this::mapStudentsToUsageLevel);
     }
 
     /**

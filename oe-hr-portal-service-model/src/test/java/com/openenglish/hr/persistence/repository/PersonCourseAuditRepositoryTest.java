@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @DatabaseSetup(value = "classpath:personCourseAuditData.xml", type = DatabaseOperation.INSERT)
 @DatabaseTearDown(value = "classpath:personCourseAuditData.xml", type = DatabaseOperation.DELETE)
@@ -84,5 +85,27 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         List<UsageLevel> usageLevels =  personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, usageLevels.size());
+    }
+
+    @Test
+    public void findMaxActivityDateByPerson(){
+        String salesforcePurchaserId = "12347";
+        final long PERSON_ID = 1111004;
+        String LAST_ACTIVITY_DATE =  "2022-05-01T17:50:52.235";
+
+        UsageLevel usageLevel =  personCourseAuditRepository.findMaxActivityDateByPerson(salesforcePurchaserId, PERSON_ID);
+
+        assertEquals(PERSON_ID, usageLevel.getPersonId());
+        assertEquals(LAST_ACTIVITY_DATE, usageLevel.getLastActivity().toString());
+    }
+
+    @Test
+    public void findMaxActivityDateByPersonEmptyResult(){
+        String salesforcePurchaserId = "12347";
+        final long PERSON_ID = 1111008;
+
+        UsageLevel usageLevel =  personCourseAuditRepository.findMaxActivityDateByPerson(salesforcePurchaserId, PERSON_ID);
+
+        assertNull(usageLevel);
     }
 }

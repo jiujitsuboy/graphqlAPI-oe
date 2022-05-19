@@ -24,7 +24,6 @@ public interface PersonCourseAuditRepository extends JpaRepository<PersonCourseA
                                                     @Param("endDate")LocalDateTime endDate,
                                                     @Param("courseTypeIds") Set<Long> courseTypeIds);
 
-
     @Query(value="SELECT p.id AS personId," +
             "p.contactid as contactId," +
             "p.firstname AS firstname," +
@@ -38,4 +37,20 @@ public interface PersonCourseAuditRepository extends JpaRepository<PersonCourseA
             "(c.coursetype_id IN (3,8,10) OR (c.coursetype_id NOT IN (3,8,10) AND pca.datecompleted IS NOT NULL)) " +
             "GROUP BY p.id,p.firstname, p.lastname;", nativeQuery = true)
     List<UsageLevel> findMaxActivityDateGroupedByPerson(@Param("salesforcePurchaserId") String salesforcePurchaserId);
+
+    @Query(value="SELECT p.id AS personId," +
+        "p.contactid as contactId," +
+        "p.firstname AS firstname," +
+        "p.lastname AS lastname," +
+        "max(CASE WHEN c.coursetype_id IN (3,8,10) THEN pca.datestarted ELSE pca.datecompleted END) AS lastActivity " +
+        "FROM person p " +
+        "INNER JOIN person_detail pd ON p.id = pd.person_id " +
+        "INNER JOIN personcourseaudit pca ON p.id = pca.person_id " +
+        "INNER JOIN course c ON c.id = pca.course_id " +
+        "WHERE pd.salesforce_purchaser_id = :salesforcePurchaserId AND " +
+        "(c.coursetype_id IN (3,8,10) OR (c.coursetype_id NOT IN (3,8,10) AND pca.datecompleted IS NOT NULL)) AND " +
+        "p.id=:personId " +
+        "GROUP BY p.id,p.firstname, p.lastname;", nativeQuery = true)
+    UsageLevel findMaxActivityDateByPerson(@Param("salesforcePurchaserId") String salesforcePurchaserId,
+        @Param("personId") long personId);
 }

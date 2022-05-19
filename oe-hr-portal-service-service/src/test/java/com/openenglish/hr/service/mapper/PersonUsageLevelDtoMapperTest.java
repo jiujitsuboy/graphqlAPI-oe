@@ -10,6 +10,7 @@ import com.openenglish.hr.service.util.InterfaceUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import org.junit.Test;
 
 public class PersonUsageLevelDtoMapperTest {
@@ -27,7 +28,11 @@ public class PersonUsageLevelDtoMapperTest {
 
 
     UsageLevel usageLevel = InterfaceUtil.createUsageLevel(personId, firstname, lastname, contactId, lastActivity);
-    PersonUsageLevelDto personUsageLevelDto =  PersonUsageLevelDtoMapper.map(usageLevel, currentTime, (personUsageLevel)-> UsageLevelEnum.HIGH);
+    Optional<PersonUsageLevelDto> optPersonUsageLevelDto =  PersonUsageLevelDtoMapper.map(usageLevel, currentTime, (personUsageLevel)-> UsageLevelEnum.HIGH);
+
+    assertTrue(optPersonUsageLevelDto.isPresent());
+
+    PersonUsageLevelDto personUsageLevelDto = optPersonUsageLevelDto.get();
 
     assertThat(personUsageLevelDto.getPerson().getFirstName(), is(firstname));
     assertThat(personUsageLevelDto.getPerson().getLastName(), is(lastname));
@@ -50,7 +55,11 @@ public class PersonUsageLevelDtoMapperTest {
 
 
     UsageLevel usageLevel = InterfaceUtil.createUsageLevel(personId, firstname, lastname, contactId, lastActivity);
-    PersonUsageLevelDto personUsageLevelDto =  PersonUsageLevelDtoMapper.map(usageLevel, currentTime, (personUsageLevel)-> UsageLevelEnum.HIGH);
+    Optional<PersonUsageLevelDto> optPersonUsageLevelDto = PersonUsageLevelDtoMapper.map(usageLevel, currentTime, (personUsageLevel)-> UsageLevelEnum.HIGH);
+
+    assertTrue(optPersonUsageLevelDto.isPresent());
+
+    PersonUsageLevelDto personUsageLevelDto = optPersonUsageLevelDto.get();
 
     assertThat(personUsageLevelDto.getPerson().getFirstName(), is(firstname));
     assertThat(personUsageLevelDto.getPerson().getLastName(), is(lastname));
@@ -73,9 +82,11 @@ public class PersonUsageLevelDtoMapperTest {
     LocalDateTime lastActivity = LocalDateTime.of(2022,04,02,0,0,0);
 
     UsageLevel usageLevel = InterfaceUtil.createUsageLevel(personId, firstname, lastname, contactId, lastActivity);
-    PersonUsageLevelDto personUsageLevelDto =  PersonUsageLevelDtoMapper.map(usageLevel, currentTime, (personUsageLevel)-> UsageLevelEnum.HIGH);
+    Optional<PersonUsageLevelDto> optPersonUsageLevelDto = PersonUsageLevelDtoMapper.map(usageLevel, currentTime, (personUsageLevel)-> UsageLevelEnum.HIGH);
 
+    assertTrue(optPersonUsageLevelDto.isPresent());
 
+    PersonUsageLevelDto personUsageLevelDto = optPersonUsageLevelDto.get();
     PersonUsageLevelDtoMapper.populator(personUsageLevelDto, this::populateLicenceInfo);
 
     assertThat(personUsageLevelDto.getStart(), is(licenceStartDate));
