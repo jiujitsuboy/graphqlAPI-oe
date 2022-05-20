@@ -41,7 +41,7 @@ public class ActivityService {
 
     public static final int ONE_ACTIVITY = 1;
     public static final int MINUTES_PER_LESSON_UNIT_ASSESSMENT_BEFORE_JUN2022 = 25;
-    public static final int MINUTES_PER_LESSON_UNIT_ASSESSMENT_AFTER_JUN2022 = 25;
+    public static final int MINUTES_PER_LESSON_UNIT_ASSESSMENT_AFTER_JUN2022 = 12;
     public static final int MINUTES_PER_PRIVATE_CLASS = 30;
     public static final int MINUTES_PER_LIVE_CLASS = 60;
 
