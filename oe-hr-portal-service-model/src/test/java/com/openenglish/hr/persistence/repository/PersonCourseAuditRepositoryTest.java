@@ -85,4 +85,36 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
 
         assertEquals(NUMBER_RECORDS_EXPECTED, usageLevels.size());
     }
+
+    @Test
+    public void findActivityStatisticsByPersonForCertainYear(){
+
+        String salesforcePurchaserId = "12347";
+        final int NUMBER_RECORDS_EXPECTED = 3;
+        Set<Long> courseTypeIds = Set.of(1L);
+        LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
+        LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
+        long personId = 1111004;
+
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatisticsByPerson(salesforcePurchaserId, startDate, endDate, courseTypeIds, personId);
+
+        assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
+
+        personCourseAudits.stream().forEach(personCourseAudit -> assertEquals(startDate.getYear(), personCourseAudit.getDateCompleted().getYear()));
+    }
+
+    @Test
+    public void findActivityStatisticsByPersonEmptyResult(){
+
+        String salesforcePurchaserId = "12347";
+        final int NUMBER_RECORDS_EXPECTED = 0;
+        Set<Long> courseTypeIds = Set.of(1L);
+        LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
+        LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
+        long personId = 2111009;
+
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatisticsByPerson(salesforcePurchaserId, startDate, endDate, courseTypeIds, personId);
+
+        assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
+    }
 }

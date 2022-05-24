@@ -9,7 +9,6 @@ import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.common.dto.PersonActivityTotalDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.common.dto.YearActivityStatisticsDto;
-import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.service.ActivityService;
 import com.openenglish.hr.service.mapper.Mapper;
 import com.openenglish.hr.service.util.ActivityTypeMapper;
@@ -34,13 +33,11 @@ public class ActivityResolver {
     }
 
     @DgsData(parentType = "Query", field = "getYearActivityStatistics")
-    public YearActivityStatisticsDto getYearActivityStatistics(String salesforcePurchaserId, int year, ActivityTypeEnum activity) {
+    public YearActivityStatisticsDto getYearActivityStatistics(String salesforcePurchaserId, int year, ActivityTypeEnum activity, Long studentId) {
 
         Set<CourseTypeEnum> courseTypeEnums =  ActivityTypeMapper.mapToCourseTypes(activity);
 
-        YearActivityStatistics yearActivityStatistics = activityService.getActivityStatistics(salesforcePurchaserId, year, courseTypeEnums);
-
-        return  mapper.map(yearActivityStatistics, YearActivityStatisticsDto.class);
+        return activityService.getActivityStatistics(salesforcePurchaserId, year, courseTypeEnums, studentId);
     }
 
     @DgsData(parentType = "Query", field = "getTopStudentsByActivityStatistics")
