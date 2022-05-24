@@ -5,21 +5,21 @@ import com.google.common.base.Preconditions;
 import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
+import com.openenglish.hr.common.dto.MonthActivityStatisticsDto;
 import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.PersonUsageLevelDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
+import com.openenglish.hr.common.dto.YearActivityStatisticsDto;
 import com.openenglish.hr.persistence.entity.Course;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
 import com.openenglish.hr.persistence.entity.PersonCourseAudit;
 import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
-import com.openenglish.hr.persistence.entity.aggregation.YearActivityStatistics;
 import com.openenglish.hr.persistence.repository.LevelTestRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
 import com.openenglish.hr.service.mapper.PersonUsageLevelDtoMapper;
 import com.openenglish.hr.service.util.NumberUtils;
-import com.openenglish.hr.persistence.entity.aggregation.MonthActivityStatistics;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -99,7 +99,7 @@ public class ActivityService {
      * @param courseTypeEnums       target activities
      * @return the total sum of all activities by  month
      */
-    public YearActivityStatistics getActivityStatistics(String salesforcePurchaserId, int year, Set<CourseTypeEnum> courseTypeEnums, Long personId) {
+    public YearActivityStatisticsDto getActivityStatistics(String salesforcePurchaserId, int year, Set<CourseTypeEnum> courseTypeEnums, Long personId) {
 
         final int MONTH = 1;
         final int DAY_OF_MONTH = 1;
@@ -127,14 +127,14 @@ public class ActivityService {
         Map<Integer, Double> courseTypeCounting = (Map<Integer, Double>)
                 getTotalActivityCountGroupedByCustomCriteria(personsCourseAudit, collectorStatistics, this::getActivityMonth);
 
-        List<MonthActivityStatistics> activityStatistics = mapActivityStatisticsToMonthsOfYear(courseTypeCounting);
+        List<MonthActivityStatisticsDto> activityStatisticsDto = mapActivityStatisticsToMonthsOfYear(courseTypeCounting);
 
-        double yearActivityValue = activityStatistics.stream()
+        double yearActivityValue = activityStatisticsDto.stream()
                 .mapToDouble(monthStatistic -> monthStatistic.getValue())
                 .sum();
 
-        return YearActivityStatistics.builder()
-                .monthsActivityStatistics(activityStatistics)
+        return YearActivityStatisticsDto.builder()
+                .monthsActivityStatistics(activityStatisticsDto)
                 .total(yearActivityValue).build();
     }
 
@@ -255,14 +255,14 @@ public class ActivityService {
      * @param courseTypeCounting Map with every activity and the amount of minutes per month
      * @return List with a MonthActivityStatistics per each month of the year.
      */
-    private List<MonthActivityStatistics> mapActivityStatisticsToMonthsOfYear(Map<Integer, Double> courseTypeCounting) {
+    private List<MonthActivityStatisticsDto> mapActivityStatisticsToMonthsOfYear(Map<Integer, Double> courseTypeCounting) {
         final int JANUARY = 1;
         final int DECEMBER = 12;
 
         return IntStream.rangeClosed(JANUARY, DECEMBER)
                 .boxed()
                 .map(month ->
-                        MonthActivityStatistics.builder()
+                        MonthActivityStatisticsDto.builder()
                                 .month(month)
                                 .value(NumberUtils.round(courseTypeCounting.getOrDefault(month, 0.0)))
                                 .build()
