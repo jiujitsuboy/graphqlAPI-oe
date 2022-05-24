@@ -15,7 +15,6 @@ import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
 import com.openenglish.hr.service.util.InterfaceUtil;
 import com.openenglish.hr.service.util.NumberUtils;
-import java.time.temporal.ChronoUnit;
 import mockit.*;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,53 +49,53 @@ public class ActivityServiceTest {
         PersonCourseSummary personCourseSummary11 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
                 .timeontask(50)
-                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary12 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
                 .timeontask(70)
-                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary13 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
                 .timeontask(90)
-                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
                 .build();
 
         PersonCourseSummary personCourseSummary21 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
                 .timeontask(10)
-                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary22 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
                 .timeontask(10)
-                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary23 = PersonCourseSummary.builder()
             .course(Course.builder().courseType(CourseType.builder().id(8L).build()).build())
             .timeontask(10)
-            .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+            .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
             .build();
         PersonCourseSummary personCourseSummary24 = PersonCourseSummary.builder()
             .course(Course.builder().courseType(CourseType.builder().id(10L).build()).build())
             .timeontask(10)
-            .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+            .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
             .build();
 
         PersonCourseSummary personCourseSummary31 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
                 .timeontask(30)
-                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary32 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
                 .timeontask(30)
-                .lastDateCompleted(LocalDateTime.of(2022,06,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,6,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary33 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
-                .lastDateCompleted(LocalDateTime.of(2022,06,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,6,15, 0 ,0))
                 .timeontask(30)
                 .build();
 
@@ -572,7 +571,7 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsByLevelAssessmentsActivityStatistics() {
 
         final int PERSONS_SIZE = 3;
-        final Set<CourseTypeEnum> LEVEL_ASSESMENT = Set.of(CourseTypeEnum.LEVEL_ASSESSMENT);
+        final Set<CourseTypeEnum> LEVEL_ASSESSMENT = Set.of(CourseTypeEnum.LEVEL_ASSESSMENT);
         final long TOP1 = 110005L;
         final long TOP2 = 110002L;
         final long TOP3 = 110001L;
@@ -596,7 +595,7 @@ public class ActivityServiceTest {
             returns(levelsPassedByPersons);
         }};
 
-        LinkedHashMap<PersonDto, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT, PERSONS_SIZE);
+        LinkedHashMap<PersonDto, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESSMENT, PERSONS_SIZE);
         Iterator<PersonDto> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
@@ -609,7 +608,7 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsInvalidSalesforcePurchaserId() {
 
         final int PERSONS_SIZE = 3;
-        final Set<CourseTypeEnum> LEVEL_ASSESMENT = Set.of(CourseTypeEnum.LEVEL_ASSESSMENT);
+        final Set<CourseTypeEnum> LEVEL_ASSESSMENT = Set.of(CourseTypeEnum.LEVEL_ASSESSMENT);
         final int YEAR = 2022;
         final int FEBRUARY = 2;
 
@@ -628,7 +627,7 @@ public class ActivityServiceTest {
             returns(levelsPassedByPersons);
         }};
 
-        activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT, PERSONS_SIZE);
+        activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESSMENT, PERSONS_SIZE);
     }
 
     @Test
@@ -665,18 +664,18 @@ public class ActivityServiceTest {
         final long MEDIUM_LOW_AMOUNT = 1;
         final long LOW_AMOUNT = 3;
 
-        LocalDate currentTime = LocalDate.of(2022,04,16);
+        LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         String salesforcePurchaserId = "12345";
 
         List<UsageLevel> usageLevels = List.of(
-            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale","sf_synegen321", LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan", "sf_synegen456",LocalDateTime.of(2022, 02, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2021, 12, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 01, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart", "sf_synegen987",LocalDateTime.of(2022, 03, 12, 0, 0, 0))
+            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 4, 15, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale","sf_synegen321", LocalDateTime.of(2022, 3, 23, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan", "sf_synegen456",LocalDateTime.of(2022, 2, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2021, 12, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 1, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart", "sf_synegen987",LocalDateTime.of(2022, 3, 12, 0, 0, 0))
         );
 
         new Expectations() {{
@@ -703,18 +702,18 @@ public class ActivityServiceTest {
 
         final int PERSONS_SIZE = 4;
 
-        LocalDate currentTime = LocalDate.of(2022,04,16);
+        LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         String salesforcePurchaserId = "12345";
 
         List<UsageLevel> usageLevels = List.of(
-            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale","sf_synegen321", LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan", "sf_synegen456",LocalDateTime.of(2022, 02, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2021, 12, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 01, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart","sf_synegen987", LocalDateTime.of(2022, 03, 12, 0, 0, 0))
+            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 4, 15, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale","sf_synegen321", LocalDateTime.of(2022, 3, 23, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan", "sf_synegen456",LocalDateTime.of(2022, 2, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2021, 12, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 1, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart","sf_synegen987", LocalDateTime.of(2022, 3, 12, 0, 0, 0))
         );
 
         new Expectations() {{
@@ -740,18 +739,18 @@ public class ActivityServiceTest {
 
         final int EMPTY_SIZE = 0;
 
-        LocalDate currentTime = LocalDate.of(2022,04,16);
+        LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         String salesforcePurchaserId = "12345";
 
         List<UsageLevel> usageLevels = List.of(
-            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale", "sf_synegen321",LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan","sf_synegen456", LocalDateTime.of(2022, 03, 20, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2023, 04, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 04, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart", "sf_synegen987",LocalDateTime.of(2022, 03, 29, 0, 0, 0))
+            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 4, 15, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale", "sf_synegen321",LocalDateTime.of(2022, 3, 23, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan","sf_synegen456", LocalDateTime.of(2022, 3, 20, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2023, 4, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 4, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart", "sf_synegen987",LocalDateTime.of(2022, 3, 29, 0, 0, 0))
         );
 
         new Expectations() {{
@@ -771,7 +770,7 @@ public class ActivityServiceTest {
     @Test
     public void getUsageLevelOverviewPerPerson(){
 
-        LocalDate currentTime = LocalDate.of(2022,04,16);
+        LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         String salesforcePurchaserId = "12345";
@@ -779,7 +778,7 @@ public class ActivityServiceTest {
         final long INACTIVE_DAYS = 1L;
         UsageLevelEnum expectedUsageLevel = UsageLevelEnum.HIGH;
 
-        UsageLevel usageLevel = InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 04, 15, 0, 0, 0));
+        UsageLevel usageLevel = InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 4, 15, 0, 0, 0));
 
         new Expectations() {{
             clock.instant();
@@ -805,13 +804,11 @@ public class ActivityServiceTest {
     @Test
     public void getUsageLevelOverviewPerPersonEmpty(){
 
-        LocalDate currentTime = LocalDate.of(2022,04,16);
+        LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         String salesforcePurchaserId = "12345";
         Long personId = 110008L;
-        final long INACTIVE_DAYS = 1L;
-        UsageLevelEnum expectedUsageLevel = UsageLevelEnum.HIGH;
 
         UsageLevel usageLevel = null;
 
@@ -838,7 +835,7 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "";
         Long personId = 110001L;
-        LocalDate currentTime = LocalDate.of(2022,04,16);
+        LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         new Expectations() {{
@@ -860,7 +857,7 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "12347";
         Long personId = null;
-        LocalDate currentTime = LocalDate.of(2022,04,16);
+        LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         new Expectations() {{
@@ -882,7 +879,7 @@ public class ActivityServiceTest {
 
         String salesforcePurchaserId = "12347";
         Long personId = 0L;
-        LocalDate currentTime = LocalDate.of(2022,04,16);
+        LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         new Expectations() {{
