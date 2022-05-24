@@ -91,12 +91,12 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     public void findMaxActivityDateByPerson(){
         String salesforcePurchaserId = "12347";
         final long PERSON_ID = 1111004;
-        String LAST_ACTIVITY_DATE =  "2022-05-01T17:50:52.235";
+        LocalDateTime LAST_ACTIVITY_DATE =  LocalDateTime.of(2022,5,1,17,50,52,235000000);
 
         UsageLevel usageLevel =  personCourseAuditRepository.findMaxActivityDateByPerson(salesforcePurchaserId, PERSON_ID);
 
         assertEquals(PERSON_ID, usageLevel.getPersonId());
-        assertEquals(LAST_ACTIVITY_DATE, usageLevel.getLastActivity().toString());
+        assertEquals(LAST_ACTIVITY_DATE, usageLevel.getLastActivity());
     }
 
     @Test
