@@ -71,6 +71,16 @@ public class ActivityServiceTest {
                 .timeontask(10)
                 .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
                 .build();
+        PersonCourseSummary personCourseSummary23 = PersonCourseSummary.builder()
+            .course(Course.builder().courseType(CourseType.builder().id(8L).build()).build())
+            .timeontask(10)
+            .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+            .build();
+        PersonCourseSummary personCourseSummary24 = PersonCourseSummary.builder()
+            .course(Course.builder().courseType(CourseType.builder().id(10L).build()).build())
+            .timeontask(10)
+            .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+            .build();
 
         PersonCourseSummary personCourseSummary31 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
@@ -89,7 +99,8 @@ public class ActivityServiceTest {
                 .build();
 
         List<PersonCourseSummary> personCourseSummaries = List.of(personCourseSummary11, personCourseSummary12, personCourseSummary13,
-                personCourseSummary21, personCourseSummary22, personCourseSummary31, personCourseSummary32, personCourseSummary33);
+                personCourseSummary21, personCourseSummary22, personCourseSummary23, personCourseSummary24, personCourseSummary31,
+                personCourseSummary32, personCourseSummary33);
 
         new Expectations() {{
             personCourseSummaryRepository.findPersonCourseSummaryByPersonDetailsSalesforcePurchaserId(anyString);
@@ -102,7 +113,8 @@ public class ActivityServiceTest {
         long privateClassesNumObtained = 0;
         long levelPassedNumObtained = 0;
         long completedUnitsNumObtained = 0;
-        double practiceHoursNumObtained = personCourseSummary21.getTimeontask() + personCourseSummary22.getTimeontask();
+        double practiceHoursNumObtained = personCourseSummary21.getTimeontask() + personCourseSummary22.getTimeontask() +
+            personCourseSummary23.getTimeontask() + personCourseSummary24.getTimeontask();
         long completedLessonsNumObtainedBeforeJun2022 = List.of(personCourseSummary31).size();
         long completedLessonsNumObtainedAfterMay2022 = List.of(personCourseSummary32, personCourseSummary33).size();
         long completedLessonsNumObtained = completedLessonsNumObtainedBeforeJun2022 + completedLessonsNumObtainedAfterMay2022;
