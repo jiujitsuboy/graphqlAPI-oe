@@ -130,7 +130,7 @@ public class PersonResolverTest {
         Mockito.when(personService.getAllPersonsByLevel(anyString())).thenReturn(personsPerLevelExpected);
 
         String query = "{ " +
-                "  getAllPersonsByLevel{ " +
+                "  getAllPersonsByLevel (salesforcePurchaserId: \"12345\"){ " +
                 "    levelName " +
                 "    totalNumber " +
                 "  }" +

@@ -1,10 +1,10 @@
 type Query{
-  getPersons(salesforcePurchaserId: String): [Person]!
-  getAllPersonsByLevel(salesforcePurchaserId: String): [PersonsPerLevel]!
-  getAllActivitiesOverview(salesforcePurchaserId: String): ActivitiesOverview
-  getYearActivityStatistics(salesforcePurchaserId: String, year: Int, activity: ActivityType): YearActivityStatistics!
-  getTopStudentsByActivityStatistics(salesforcePurchaserId: String, year: Int, month: Int, activities: [ActivityType], top: Int): [PersonActivitiesTotal]!
-  getUsageLevelOverview(salesforcePurchaserId: String) : UsageLevelOverview!
-  getLeastActiveStudents(salesforcePurchaserId: String) : [PersonsUsageLevelOverview]!
+  getPersons(salesforcePurchaserId: String!): [Person]!
+  getAllPersonsByLevel(salesforcePurchaserId: String!): [PersonsPerLevel]!
+  getAllActivitiesOverview(salesforcePurchaserId: String!): ActivitiesOverview
+  getYearActivityStatistics(salesforcePurchaserId: String!, year: Int!, activity: ActivityType!, studentId: Int): YearActivityStatistics!
+  getTopStudentsByActivityStatistics(salesforcePurchaserId: String!, year: Int!, month: Int!, activities: [ActivityType]!, top: Int!): [PersonActivitiesTotal]!
+  getUsageLevelOverview(salesforcePurchaserId: String!) : UsageLevelOverview!
+  getLeastActiveStudents(salesforcePurchaserId: String!) : [PersonsUsageLevelOverview]!
   getUsageLevelOverviewPerPerson(salesforcePurchaserId: String!, studentId: Int!) : PersonsUsageLevelOverview
 }
