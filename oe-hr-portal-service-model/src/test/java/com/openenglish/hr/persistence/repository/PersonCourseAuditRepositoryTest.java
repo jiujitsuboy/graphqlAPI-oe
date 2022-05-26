@@ -5,6 +5,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import com.openenglish.hr.persistence.entity.PersonCourseAudit;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
+import java.util.Collections;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,10 +28,10 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         final int NUMBER_RECORDS_EXPECTED = 4;
         final long LIVE_CLASS_COURSE_TYPE = 1l;
         Set<Long> courseTypeIds = Set.of(LIVE_CLASS_COURSE_TYPE);
-        LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
+        LocalDateTime startDate = LocalDateTime.of(2022, 1, 1, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, "");
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Collections.EMPTY_SET);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
 
@@ -44,10 +45,10 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         final int NUMBER_RECORDS_EXPECTED = 8;
         final long PRACTICE_COURSE_TYPE = 3l;
         Set<Long> courseTypeIds = Set.of(PRACTICE_COURSE_TYPE);
-        LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
+        LocalDateTime startDate = LocalDateTime.of(2022, 1, 1, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, "");
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Collections.EMPTY_SET);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
 
@@ -60,10 +61,10 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         String salesforcePurchaserId = "12347";
         final int NUMBER_RECORDS_EXPECTED = 0;
         Set<Long> courseTypeIds = Set.of(1L);
-        LocalDateTime startDate = LocalDateTime.of(2021, 01, 01, 0, 0);
+        LocalDateTime startDate = LocalDateTime.of(2021, 1, 1, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, "");
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Collections.EMPTY_SET);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
     }
@@ -92,11 +93,11 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         String salesforcePurchaserId = "12347";
         final int NUMBER_RECORDS_EXPECTED = 3;
         Set<Long> courseTypeIds = Set.of(1L);
-        LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
+        LocalDateTime startDate = LocalDateTime.of(2022, 1, 1, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
         String contactId = "sf_synegen801";
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, contactId);
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Set.of(contactId));
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
 
@@ -109,11 +110,11 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         String salesforcePurchaserId = "12347";
         final int NUMBER_RECORDS_EXPECTED = 0;
         Set<Long> courseTypeIds = Set.of(1L);
-        LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
+        LocalDateTime startDate = LocalDateTime.of(2022, 1, 1, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
         String contactId = "sf_synegen802";
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, contactId);
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Set.of(contactId));
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
     }

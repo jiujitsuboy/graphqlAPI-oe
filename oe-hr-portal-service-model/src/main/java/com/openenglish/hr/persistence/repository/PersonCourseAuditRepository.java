@@ -19,28 +19,13 @@ public interface PersonCourseAuditRepository extends JpaRepository<PersonCourseA
                    "WHERE c.coursetype_id in (:courseTypeIds) AND pd.salesforce_purchaser_id = :salesforcePurchaserId AND " +
                    "((pca.dateCompleted BETWEEN :startDate AND :endDate AND c.coursetype_id NOT IN (3,8,10)) OR " +
                    "(pca.dateStarted BETWEEN :startDate AND :endDate AND c.coursetype_id IN (3,8,10))) AND " +
-                   "(LENGTH(TRIM(:contactId)) = 0 OR p.contactid in (:contactId))", nativeQuery = true)
+//                   "(LENGTH(TRIM(:contactId)) = 0 OR p.contactid in (:contactId))", nativeQuery = true)
+                    "(COALESCE (:contactId, NULL) IS NULL OR p.contactid in (:contactId))", nativeQuery = true)
     List<PersonCourseAudit> findActivityStatistics (@Param("salesforcePurchaserId") String salesforcePurchaserId,
                                                     @Param("startDate")LocalDateTime startDate,
                                                     @Param("endDate")LocalDateTime endDate,
                                                     @Param("courseTypeIds") Set<Long> courseTypeIds,
-                                                    @Param("contactId") String contactId);
-
-
-    @Query(value = "SELECT * " +
-        "FROM personcourseaudit pca " +
-        "INNER JOIN person p ON pca.person_id = p.id " +
-        "INNER JOIN person_detail pd ON p.id = pd.person_id " +
-        "INNER JOIN course c ON c.id = pca.course_id " +
-        "WHERE c.coursetype_id in (:courseTypeIds) AND pd.salesforce_purchaser_id = :salesforcePurchaserId AND " +
-        "((pca.dateCompleted BETWEEN :startDate AND :endDate) OR (pca.dateStarted BETWEEN :startDate AND :endDate)) AND " +
-        "p.id=:personId", nativeQuery = true)
-    List<PersonCourseAudit> findActivityStatisticsByPerson (@Param("salesforcePurchaserId") String salesforcePurchaserId,
-        @Param("startDate")LocalDateTime startDate,
-        @Param("endDate")LocalDateTime endDate,
-        @Param("courseTypeIds") Set<Long> courseTypeIds,
-        @Param("personId") long personId);
-
+                                                    @Param("contactId") Set<String> contactId);
 
     @Query(value="SELECT p.id AS personId," +
             "p.contactid as contactId," +

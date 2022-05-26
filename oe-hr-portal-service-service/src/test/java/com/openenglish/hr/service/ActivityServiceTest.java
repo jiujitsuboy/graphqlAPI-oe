@@ -203,7 +203,7 @@ public class ActivityServiceTest {
 
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyString);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
@@ -282,7 +282,7 @@ public class ActivityServiceTest {
         double marchTotalHours = NumberUtils.round((personCourseAuditMAR1.getTimeontask()) / 3600.0);
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyString);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
@@ -307,7 +307,7 @@ public class ActivityServiceTest {
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyString);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
@@ -334,7 +334,7 @@ public class ActivityServiceTest {
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyString);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
@@ -355,7 +355,7 @@ public class ActivityServiceTest {
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyString);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
@@ -421,7 +421,7 @@ public class ActivityServiceTest {
                 person5CourseAudit);
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyString);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
@@ -527,7 +527,7 @@ public class ActivityServiceTest {
                 person5CourseAudit1);
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyString);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
@@ -815,7 +815,7 @@ public class ActivityServiceTest {
 
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyString);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
@@ -902,7 +902,7 @@ public class ActivityServiceTest {
         double marchTotalHours = NumberUtils.round((personCourseAuditMAR1.getTimeontask()) / 3600.0);
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyString);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
@@ -927,7 +927,7 @@ public class ActivityServiceTest {
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyString);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
