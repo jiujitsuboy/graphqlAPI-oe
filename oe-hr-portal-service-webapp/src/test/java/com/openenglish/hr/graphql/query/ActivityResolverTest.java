@@ -274,7 +274,7 @@ public class ActivityResolverTest {
         Mockito.when(activityService.getActivityStatistics(anyString(), anyInt(), any(), any())).thenReturn(expectedYearActivityStatisticsDto);
 
         String query = "{ " +
-            "  getYearActivityStatistics(salesforcePurchaserId:\"12345\", year: 2022, activity: LIVE_CLASS, contactId: \"11\"){ " +
+            "  getYearActivityStatistics(salesforcePurchaserId:\"12345\", year: 2022, activity: LIVE_CLASS, contactId: \"sf_synegen123\"){ " +
             "    total " +
             "    monthsActivityStatistics{ " +
             "       month " +

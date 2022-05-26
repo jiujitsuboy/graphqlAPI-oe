@@ -743,7 +743,7 @@ public class ActivityServiceTest {
     @Test
     public void getLiveClassesStatisticsByPersonId() {
         String salesforcePurchaserId = "12345";
-        final String CONTACT_ID = "11";
+        final String CONTACT_ID = "sf_synegen123";
         final Set<CourseTypeEnum> LIVE_CLASSES = Set.of(CourseTypeEnum.LIVE_CLASS);
         final int YEAR = 2022;
         final int JANUARY = 1;
@@ -831,7 +831,7 @@ public class ActivityServiceTest {
     @Test
     public void getPracticeStatisticsByPersonId() {
         String salesforcePurchaserId = "12345";
-        final String CONTACT_ID = "11";
+        final String CONTACT_ID = " sf_synegen123";
         final Set<CourseTypeEnum> PRACTICE = Set.of(CourseTypeEnum.PRACTICE);
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
@@ -918,7 +918,7 @@ public class ActivityServiceTest {
     @Test
     public void getActivitiesStatisticsByPersonIdEmpty() {
         String salesforcePurchaserId = "12345";
-        final String CONTACT_ID = "12";
+        final String CONTACT_ID = "sf_synegen123";
         final double ZERO = 0.0;
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
