@@ -684,7 +684,7 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, anyString);
             returns(usageLevels);
         }};
 
@@ -722,7 +722,7 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, anyString);
             returns(usageLevels);
         }};
 
@@ -759,7 +759,7 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, anyString);
             returns(usageLevels);
         }};
 
@@ -774,7 +774,7 @@ public class ActivityServiceTest {
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         String salesforcePurchaserId = "12345";
-        Long personId = 110001L;
+        String contactId = "sf_synegen123";
         final long INACTIVE_DAYS = 1L;
         UsageLevelEnum expectedUsageLevel = UsageLevelEnum.HIGH;
 
@@ -786,17 +786,17 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateByPerson(anyString, anyLong);
-            returns(usageLevel);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, anyString);
+            returns(List.of(usageLevel));
         }};
 
-        Optional<PersonUsageLevelDto> optPersonUsageLevelDto = activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,personId);
+        Optional<PersonUsageLevelDto> optPersonUsageLevelDto = activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,contactId);
 
         assertTrue(optPersonUsageLevelDto.isPresent());
 
         PersonUsageLevelDto personUsageLevelDto = optPersonUsageLevelDto.get();
 
-        assertThat(personUsageLevelDto.getPerson().getId(), is(personId));
+        assertThat(personUsageLevelDto.getPerson().getContactId(), is(contactId));
         assertThat(personUsageLevelDto.getUsageLevel(), is(expectedUsageLevel));
         assertThat(personUsageLevelDto.getInactiveDays(), is(INACTIVE_DAYS));
     }
@@ -808,9 +808,9 @@ public class ActivityServiceTest {
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         String salesforcePurchaserId = "12345";
-        Long personId = 110008L;
+        String contactId = "sf_synegen123";
 
-        UsageLevel usageLevel = null;
+        List<UsageLevel> usageLevel = Collections.EMPTY_LIST;
 
         new Expectations() {{
             clock.instant();
@@ -818,11 +818,11 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateByPerson(anyString, anyLong);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, anyString);
             returns(usageLevel);
         }};
 
-        Optional<PersonUsageLevelDto> optPersonUsageLevelDto = activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,personId);
+        Optional<PersonUsageLevelDto> optPersonUsageLevelDto = activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,contactId);
 
         assertFalse(optPersonUsageLevelDto.isPresent());
     }
@@ -834,7 +834,7 @@ public class ActivityServiceTest {
         expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
 
         String salesforcePurchaserId = "";
-        Long personId = 110001L;
+        String contactId = "110001";
         LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
@@ -846,17 +846,17 @@ public class ActivityServiceTest {
 
         }};
 
-        activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,personId);
+        activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,contactId);
     }
 
     @Test
-    public void getUsageLevelOverviewPerPersonNullPersonId() {
+    public void getUsageLevelOverviewPerPersonNullContactId() {
 
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("personId should not be null or less than ZERO");
+        expectedException.expectMessage("personId should not be null or empty");
 
         String salesforcePurchaserId = "12347";
-        Long personId = null;
+        String contactId = null;
         LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
@@ -868,17 +868,17 @@ public class ActivityServiceTest {
 
         }};
 
-        activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,personId);
+        activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,contactId);
     }
 
     @Test
-    public void getUsageLevelOverviewPerPersonWithPersonIdZero() {
+    public void getUsageLevelOverviewPerPersonWithContactIdEmpty() {
 
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("personId should not be null or less than ZERO");
+        expectedException.expectMessage("personId should not be null or empty");
 
         String salesforcePurchaserId = "12347";
-        Long personId = 0L;
+        String contactId = "";
         LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
@@ -890,7 +890,7 @@ public class ActivityServiceTest {
 
         }};
 
-        activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,personId);
+        activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,contactId);
     }
 
     @Test

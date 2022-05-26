@@ -264,10 +264,10 @@ public class ActivityResolverTest {
             .inactiveDays(45)
             .build());
 
-        Mockito.when(activityService.getUsageLevelOverviewPerPerson(anyString(), anyLong())).thenReturn(optPersonUsageLevelDto);
+        Mockito.when(activityService.getUsageLevelOverviewPerPerson(anyString(), anyString())).thenReturn(optPersonUsageLevelDto);
 
         String query = "{ " +
-            "  getUsageLevelOverviewPerPerson(salesforcePurchaserId:\"12345\", studentId:11){ " +
+            "  getUsageLevelOverviewPerPerson(salesforcePurchaserId:\"12345\", contactId:\"sf_synegen123\"){ " +
             "    person { "
             + "      id "
             + "      firstName "

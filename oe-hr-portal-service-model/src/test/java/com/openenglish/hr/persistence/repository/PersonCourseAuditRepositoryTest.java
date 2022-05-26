@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @DatabaseSetup(value = "classpath:personCourseAuditData.xml", type = DatabaseOperation.INSERT)
 @DatabaseTearDown(value = "classpath:personCourseAuditData.xml", type = DatabaseOperation.DELETE)
@@ -73,7 +73,7 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     public void findMaxActivityDateGroupedByPerson(){
         String salesforcePurchaserId = "12347";
         final int NUMBER_RECORDS_EXPECTED = 3;
-        List<UsageLevel> usageLevels =  personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
+        List<UsageLevel> usageLevels =  personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, "");
 
         assertEquals(NUMBER_RECORDS_EXPECTED, usageLevels.size());
     }
@@ -82,7 +82,7 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     public void findMaxActivityDateGroupedByPersonNonExistingPurchaseId(){
         String salesforcePurchaserId = "12348";
         final int NUMBER_RECORDS_EXPECTED = 0;
-        List<UsageLevel> usageLevels =  personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
+        List<UsageLevel> usageLevels =  personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, "");
 
         assertEquals(NUMBER_RECORDS_EXPECTED, usageLevels.size());
     }
@@ -90,23 +90,26 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     @Test
     public void findMaxActivityDateByPerson(){
         String salesforcePurchaserId = "12347";
-        final long PERSON_ID = 1111004;
+        final String CONTACT_ID = "sf_synegen801";
+        final int ONE_RECORD = 1;
         LocalDateTime LAST_ACTIVITY_DATE =  LocalDateTime.of(2022,5,1,17,50,52,235000000);
 
-        UsageLevel usageLevel =  personCourseAuditRepository.findMaxActivityDateByPerson(salesforcePurchaserId, PERSON_ID);
+        List<UsageLevel> usageLevel =  personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, CONTACT_ID);
 
-        assertEquals(PERSON_ID, usageLevel.getPersonId());
+        assertTrue(usageLevel.size() == ONE_RECORD);
+        assertEquals(CONTACT_ID, usageLevel.get(0).getContactId());
 //        assertEquals(LAST_ACTIVITY_DATE, usageLevel.getLastActivity());
     }
 
     @Test
     public void findMaxActivityDateByPersonEmptyResult(){
         String salesforcePurchaserId = "12347";
-        final long PERSON_ID = 1111008;
+        final String CONTACT_ID = "sf_synegen802";
+        final int ZERO_RECORD = 0;
 
-        UsageLevel usageLevel =  personCourseAuditRepository.findMaxActivityDateByPerson(salesforcePurchaserId, PERSON_ID);
+        List<UsageLevel> usageLevel =  personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, CONTACT_ID);
 
-        assertNull(usageLevel);
+        assertTrue(usageLevel.size() == ZERO_RECORD);
     }
 
     @Test

@@ -73,8 +73,8 @@ public class ActivityResolver {
     }
 
     @DgsData(parentType = "Query", field = "getUsageLevelOverviewPerPerson")
-    public Optional<PersonUsageLevelDto> getUsageLevelOverviewPerPerson(String salesforcePurchaserId, long studentId) {
-        return activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId, studentId);
+    public Optional<PersonUsageLevelDto> getUsageLevelOverviewPerPerson(String salesforcePurchaserId, String contactId) {
+        return activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId, contactId);
     }
 
 }
