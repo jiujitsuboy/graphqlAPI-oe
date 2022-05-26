@@ -254,14 +254,14 @@ public class ActivityService {
     public Optional<PersonUsageLevelDto> getUsageLevelOverviewPerPerson(String salesforcePurchaserId, String contactId) {
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        Preconditions.checkArgument(StringUtils.isNotBlank(contactId), "personId should not be null or empty");
+        Preconditions.checkArgument(StringUtils.isNotBlank(contactId), "contactId should not be null or empty");
 
         Optional<PersonUsageLevelDto> personUsageLevelDto = Optional.empty();
         LocalDateTime currentTime = LocalDateTime.now(clock);
 
         List<UsageLevel> usageLevel = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, contactId);
 
-        if (usageLevel.size() > 0) {
+        if (!usageLevel.isEmpty()) {
             personUsageLevelDto = PersonUsageLevelDtoMapper.map(usageLevel.get(0), currentTime, this::mapStudentsToUsageLevel);
         }
 
@@ -467,15 +467,15 @@ public class ActivityService {
      */
     private int getNumberOfSecondsPerActivity(PersonCourseAudit personCourseAudit) {
 
-        int NUMBER_OF_TIMES = 1;
-        CourseTypeEnum courseTypeEnumCurrentPerson = this.getCourseTypeEnum(personCourseAudit.getCourse());
+        int timeInSecondsOrNumberOfTimes = 1;
+        CourseTypeEnum courseType = this.getCourseTypeEnum(personCourseAudit.getCourse());
 
-        LocalDateTime targetDate = personCourseAudit.getDateCompleted();
+        LocalDateTime dateCompleted = personCourseAudit.getDateCompleted();
 
-        if (PRACTICE_COURSE_TYPES.contains(courseTypeEnumCurrentPerson.getValue())) {
-            NUMBER_OF_TIMES = personCourseAudit.getTimeontask();
+        if (PRACTICE_COURSE_TYPES.contains(courseType.getValue())) {
+            timeInSecondsOrNumberOfTimes = personCourseAudit.getTimeontask();
         }
-        return convertActivitiesOccurrenceToSeconds(courseTypeEnumCurrentPerson, NUMBER_OF_TIMES, targetDate);
+        return convertActivitiesOccurrenceToSeconds(courseType, timeInSecondsOrNumberOfTimes, dateCompleted);
     }
 
     /**

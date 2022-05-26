@@ -853,7 +853,7 @@ public class ActivityServiceTest {
     public void getUsageLevelOverviewPerPersonNullContactId() {
 
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("personId should not be null or empty");
+        expectedException.expectMessage("contactId should not be null or empty");
 
         String salesforcePurchaserId = "12347";
         String contactId = null;
@@ -875,7 +875,7 @@ public class ActivityServiceTest {
     public void getUsageLevelOverviewPerPersonWithContactIdEmpty() {
 
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("personId should not be null or empty");
+        expectedException.expectMessage("contactId should not be null or empty");
 
         String salesforcePurchaserId = "12347";
         String contactId = "";
