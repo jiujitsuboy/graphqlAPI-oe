@@ -99,7 +99,7 @@ public class ActivityService {
      * @param courseTypeEnums       target activities
      * @return the total sum of all activities by  month
      */
-    public YearActivityStatisticsDto getActivityStatistics(String salesforcePurchaserId, int year, Set<CourseTypeEnum> courseTypeEnums, Long personId) {
+    public YearActivityStatisticsDto getActivityStatistics(String salesforcePurchaserId, int year, Set<CourseTypeEnum> courseTypeEnums, String contactId) {
 
         final int MONTH = 1;
         final int DAY_OF_MONTH = 1;
@@ -115,12 +115,8 @@ public class ActivityService {
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
         List<PersonCourseAudit> personsCourseAudit = null;
-        if(personId == null){
-            personsCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
-        }
-        else{
-            personsCourseAudit = personCourseAuditRepository.findActivityStatisticsByPerson(salesforcePurchaserId, startDate, endDate, courseTypeIds, personId);
-        }
+
+        personsCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, contactId);
 
         Collector<PersonCourseAudit, ?, Double> collectorStatistics = this.getCollectingStrategy(courseTypeEnums);;
 
@@ -170,7 +166,7 @@ public class ActivityService {
 
         } else {
 
-            List<PersonCourseAudit> personCoursesAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
+            List<PersonCourseAudit> personCoursesAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, "");
 
             Collector<PersonCourseAudit, ?, Double> collectorStatistics = this.getCollectingStrategy(courseTypeEnums);
 

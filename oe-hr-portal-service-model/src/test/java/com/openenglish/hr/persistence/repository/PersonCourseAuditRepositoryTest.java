@@ -30,7 +30,7 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, "");
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
 
@@ -47,7 +47,7 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, "");
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
 
@@ -63,7 +63,7 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         LocalDateTime startDate = LocalDateTime.of(2021, 01, 01, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, "");
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
     }
@@ -94,9 +94,9 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         Set<Long> courseTypeIds = Set.of(1L);
         LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
-        long personId = 1111004;
+        String contactId = "sf_synegen801";
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatisticsByPerson(salesforcePurchaserId, startDate, endDate, courseTypeIds, personId);
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, contactId);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
 
@@ -111,9 +111,9 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         Set<Long> courseTypeIds = Set.of(1L);
         LocalDateTime startDate = LocalDateTime.of(2022, 01, 01, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
-        long personId = 2111009;
+        String contactId = "sf_synegen802";
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatisticsByPerson(salesforcePurchaserId, startDate, endDate, courseTypeIds, personId);
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, contactId);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
     }
