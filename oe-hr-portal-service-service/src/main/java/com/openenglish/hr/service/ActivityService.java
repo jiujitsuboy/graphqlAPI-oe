@@ -205,7 +205,7 @@ public class ActivityService {
      */
     public UsageLevelOverviewDto getUsageLevelOverview(String salesforcePurchaserId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, "");
+        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, Collections.EMPTY_SET);
 
         Map<UsageLevelEnum, Long> usageLevelCountingByPersons = usageLevels.stream()
             .collect(Collectors.groupingBy(this::mapStudentsToUsageLevel,
@@ -229,7 +229,7 @@ public class ActivityService {
         LocalDateTime currentTime = LocalDateTime.now(clock);
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, "");
+        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, Collections.EMPTY_SET);
 
         List<PersonUsageLevelDto> personUsageLevelDtos = usageLevels.stream()
                 .map(usageLevel ->  PersonUsageLevelDtoMapper.map(usageLevel, currentTime, this::mapStudentsToUsageLevel))
@@ -259,7 +259,7 @@ public class ActivityService {
         Optional<PersonUsageLevelDto> personUsageLevelDto = Optional.empty();
         LocalDateTime currentTime = LocalDateTime.now(clock);
 
-        List<UsageLevel> usageLevel = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, contactId);
+        List<UsageLevel> usageLevel = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, Set.of(contactId));
 
         if (!usageLevel.isEmpty()) {
             personUsageLevelDto = PersonUsageLevelDtoMapper.map(usageLevel.get(0), currentTime, this::mapStudentsToUsageLevel);

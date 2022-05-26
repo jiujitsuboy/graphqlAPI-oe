@@ -684,7 +684,7 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, anyString);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, (Set<String>) any);
             returns(usageLevels);
         }};
 
@@ -722,7 +722,7 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, anyString);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, (Set<String>) any);
             returns(usageLevels);
         }};
 
@@ -759,7 +759,7 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, anyString);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, (Set<String>) any);
             returns(usageLevels);
         }};
 
@@ -786,7 +786,7 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, anyString);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, (Set<String>) any);
             returns(List.of(usageLevel));
         }};
 
@@ -818,7 +818,7 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, anyString);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, (Set<String>) any);
             returns(usageLevel);
         }};
 
