@@ -12,6 +12,7 @@ import com.openenglish.hr.common.dto.YearActivityStatisticsDto;
 import com.openenglish.hr.service.ActivityService;
 import com.openenglish.hr.service.mapper.Mapper;
 import com.openenglish.hr.service.util.ActivityTypeMapper;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -69,4 +70,10 @@ public class ActivityResolver {
     public List<PersonUsageLevelDto> getLeastActiveStudents(String salesforcePurchaserId) {
         return activityService.getLeastActiveStudents(salesforcePurchaserId);
     }
+
+    @DgsData(parentType = "Query", field = "getUsageLevelOverviewPerPerson")
+    public Optional<PersonUsageLevelDto> getUsageLevelOverviewPerPerson(String salesforcePurchaserId, String contactId) {
+        return activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId, contactId);
+    }
+
 }

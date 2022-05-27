@@ -36,7 +36,9 @@ public interface PersonCourseAuditRepository extends JpaRepository<PersonCourseA
             "INNER JOIN personcourseaudit pca ON p.id = pca.person_id " +
             "INNER JOIN course c ON c.id = pca.course_id " +
             "WHERE pd.salesforce_purchaser_id = :salesforcePurchaserId AND " +
-            "(c.coursetype_id IN (3,8,10) OR (c.coursetype_id NOT IN (3,8,10) AND pca.datecompleted IS NOT NULL)) " +
+            "(c.coursetype_id IN (3,8,10) OR (c.coursetype_id NOT IN (3,8,10) AND pca.datecompleted IS NOT NULL)) AND " +
+            "(COALESCE (:contactId, NULL) IS NULL OR p.contactid in (:contactId)) " +
             "GROUP BY p.id,p.firstname, p.lastname;", nativeQuery = true)
-    List<UsageLevel> findMaxActivityDateGroupedByPerson(@Param("salesforcePurchaserId") String salesforcePurchaserId);
+    List<UsageLevel> findMaxActivityDateGroupedByPerson(@Param("salesforcePurchaserId") String salesforcePurchaserId,
+        @Param("contactId") Set<String> contactId);
 }

@@ -6,4 +6,5 @@ type Query{
   getTopStudentsByActivityStatistics(salesforcePurchaserId: String!, year: Int!, month: Int!, activities: [ActivityType]!, top: Int!): [PersonActivitiesTotal]!
   getUsageLevelOverview(salesforcePurchaserId: String!) : UsageLevelOverview!
   getLeastActiveStudents(salesforcePurchaserId: String!) : [PersonsUsageLevelOverview]!
+  getUsageLevelOverviewPerPerson(salesforcePurchaserId: String!, contactId: String!) : PersonsUsageLevelOverview
 }
