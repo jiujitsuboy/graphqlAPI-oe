@@ -36,7 +36,6 @@ public class ActivityResolver {
     public YearActivityStatisticsDto getYearActivityStatistics(String salesforcePurchaserId, int year, ActivityTypeEnum activity, String contactId) {
 
         Set<CourseTypeEnum> courseTypeEnums =  ActivityTypeMapper.mapToCourseTypes(activity);
-
         return activityService.getActivityStatistics(salesforcePurchaserId, year, courseTypeEnums, contactId);
     }
 
