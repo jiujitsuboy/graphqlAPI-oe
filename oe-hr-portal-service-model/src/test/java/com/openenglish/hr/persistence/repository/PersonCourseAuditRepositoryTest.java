@@ -31,7 +31,7 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         LocalDateTime startDate = LocalDateTime.of(2022, 1, 1, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Collections.EMPTY_SET);
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Collections.emptySet());
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
 
@@ -48,7 +48,7 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         LocalDateTime startDate = LocalDateTime.of(2022, 1, 1, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Collections.EMPTY_SET);
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Collections.emptySet());
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
 
@@ -64,7 +64,7 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         LocalDateTime startDate = LocalDateTime.of(2021, 1, 1, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
-        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Collections.EMPTY_SET);
+        List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Collections.emptySet());
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
     }
