@@ -37,7 +37,7 @@ public class ActivityResolver {
 
         Set<CourseTypeEnum> courseTypeEnums =  ActivityTypeMapper.mapToCourseTypes(activity);
 
-        return activityService.getActivityStatistics(salesforcePurchaserId, year, courseTypeEnums, contactId == null ? "" : contactId);
+        return activityService.getActivityStatistics(salesforcePurchaserId, year, courseTypeEnums, contactId);
     }
 
     @DgsData(parentType = "Query", field = "getTopStudentsByActivityStatistics")
