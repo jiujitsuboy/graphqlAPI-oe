@@ -1,0 +1,5 @@
+type LicensesStatistics {
+    availableLicenses: Int
+    assignedLicenses: Int
+    activeLicenses: Int
+}

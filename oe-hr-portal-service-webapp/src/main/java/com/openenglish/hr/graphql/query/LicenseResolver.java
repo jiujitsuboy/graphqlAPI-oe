@@ -1,0 +1,19 @@
+package com.openenglish.hr.graphql.query;
+
+import com.netflix.graphql.dgs.DgsComponent;
+import com.netflix.graphql.dgs.DgsData;
+import com.openenglish.hr.common.dto.LicensesStatisticsDto;
+import com.openenglish.hr.service.LicenseService;
+import lombok.RequiredArgsConstructor;
+
+@DgsComponent
+@RequiredArgsConstructor
+public class LicenseResolver {
+
+    private final LicenseService licenseService;
+
+    @DgsData(parentType = "Query", field = "getLicensesStatistics")
+    public LicensesStatisticsDto getLicensesStatistics(String salesforcePurchaserId, String organization) {
+        return licenseService.getLicensesStatistics(salesforcePurchaserId, organization);
+    }
+}

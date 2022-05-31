@@ -7,4 +7,5 @@ type Query{
   getUsageLevelOverview(salesforcePurchaserId: String!) : UsageLevelOverview!
   getLeastActiveStudents(salesforcePurchaserId: String!) : [PersonsUsageLevelOverview]!
   getUsageLevelOverviewPerPerson(salesforcePurchaserId: String!, contactId: String!) : PersonsUsageLevelOverview
+  getLicensesStatistics(salesforcePurchaserId: String!, organization: String!) : LicensesStatistics!
 }
