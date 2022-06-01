@@ -1,6 +1,7 @@
 package com.openenglish.hr.service;
 
 import com.oe.lp2.enums.CourseTypeEnum;
+import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.PersonUsageLevelDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
@@ -48,53 +49,53 @@ public class ActivityServiceTest {
         PersonCourseSummary personCourseSummary11 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
                 .timeontask(50)
-                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary12 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
                 .timeontask(70)
-                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary13 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
                 .timeontask(90)
-                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
                 .build();
 
         PersonCourseSummary personCourseSummary21 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
                 .timeontask(10)
-                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary22 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
                 .timeontask(10)
-                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary23 = PersonCourseSummary.builder()
             .course(Course.builder().courseType(CourseType.builder().id(8L).build()).build())
             .timeontask(10)
-            .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+            .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
             .build();
         PersonCourseSummary personCourseSummary24 = PersonCourseSummary.builder()
             .course(Course.builder().courseType(CourseType.builder().id(10L).build()).build())
             .timeontask(10)
-            .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+            .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
             .build();
 
         PersonCourseSummary personCourseSummary31 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
                 .timeontask(30)
-                .lastDateCompleted(LocalDateTime.of(2022,02,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary32 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
                 .timeontask(30)
-                .lastDateCompleted(LocalDateTime.of(2022,06,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,6,15, 0 ,0))
                 .build();
         PersonCourseSummary personCourseSummary33 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
-                .lastDateCompleted(LocalDateTime.of(2022,06,15, 0 ,0))
+                .lastDateCompleted(LocalDateTime.of(2022,6,15, 0 ,0))
                 .timeontask(30)
                 .build();
 
@@ -165,7 +166,7 @@ public class ActivityServiceTest {
     @Test
     public void getLiveClassesStatistics() {
         String salesforcePurchaserId = "12345";
-        final Long PERSON_ID = null;
+        final String CONTACT_ID = "";
         final Set<CourseTypeEnum> LIVE_CLASSES = Set.of(CourseTypeEnum.LIVE_CLASS);
         final int YEAR = 2022;
         final int JANUARY = 1;
@@ -229,11 +230,11 @@ public class ActivityServiceTest {
 
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
-        YearActivityStatisticsDto yearActivityStatisticsDto = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, PERSON_ID);
+        YearActivityStatisticsDto yearActivityStatisticsDto = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, CONTACT_ID);
 
         assertEquals(MONTHS_OF_YEAR, yearActivityStatisticsDto.getMonthsActivityStatistics().size());
         assertEquals(januaryTotalCount, yearActivityStatisticsDto.getMonthsActivityStatistics().get(JANUARY_INDEX).getValue(), 0);
@@ -245,7 +246,7 @@ public class ActivityServiceTest {
     @Test
     public void getPracticeStatistics() {
         String salesforcePurchaserId = "12345";
-        final Long PERSON_ID = null;
+        final String CONTACT_ID = "";
         final Set<CourseTypeEnum> PRACTICE = Set.of(CourseTypeEnum.PRACTICE);
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
@@ -308,11 +309,11 @@ public class ActivityServiceTest {
         double marchTotalHours = NumberUtils.round((personCourseAuditMAR1.getTimeontask()) / 3600.0);
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
-        YearActivityStatisticsDto yearActivityStatisticsDto = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, PRACTICE, PERSON_ID);
+        YearActivityStatisticsDto yearActivityStatisticsDto = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, PRACTICE, CONTACT_ID);
         assertNotNull(yearActivityStatisticsDto);
         assertEquals(MONTHS_OF_YEAR, yearActivityStatisticsDto.getMonthsActivityStatistics().size());
 
@@ -324,7 +325,7 @@ public class ActivityServiceTest {
     @Test
     public void getActivitiesStatisticsEmpty() {
         String salesforcePurchaserId = "12345";
-        final Long PERSON_ID = null;
+        final String CONTACT_ID = "";
         final double ZERO = 0.0;
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
@@ -333,11 +334,11 @@ public class ActivityServiceTest {
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
-        YearActivityStatisticsDto yearActivityStatisticsDto = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, PERSON_ID);
+        YearActivityStatisticsDto yearActivityStatisticsDto = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, CONTACT_ID);
 
         assertNotNull(yearActivityStatisticsDto);
         assertEquals(MONTHS_OF_YEAR, yearActivityStatisticsDto.getMonthsActivityStatistics().size());
@@ -353,25 +354,25 @@ public class ActivityServiceTest {
         expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
 
         String salesforcePurchaserId = "";
-        final Long PERSON_ID = null;
+        final String CONTACT_ID = "";
         final int YEAR = 2022;
         final Set<CourseTypeEnum> LIVE_CLASSES = Set.of(CourseTypeEnum.LIVE_CLASS);
 
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
-        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, PERSON_ID);
+        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, CONTACT_ID);
     }
 
     @Test
     public void getStatisticsInvalidActivity() {
 
         String salesforcePurchaserId = "12345";
-        final Long PERSON_ID = null;
+        final String CONTACT_ID = "";
         final int YEAR = 2022;
         final Set<CourseTypeEnum> INVALID_ACTIVITY_ID = null;
 
@@ -381,11 +382,11 @@ public class ActivityServiceTest {
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
-        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, INVALID_ACTIVITY_ID, PERSON_ID);
+        activityService.getActivityStatistics(salesforcePurchaserId, YEAR, INVALID_ACTIVITY_ID, CONTACT_ID);
     }
 
     @Test
@@ -447,7 +448,7 @@ public class ActivityServiceTest {
                 person5CourseAudit);
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
@@ -553,7 +554,7 @@ public class ActivityServiceTest {
                 person5CourseAudit1);
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
@@ -570,7 +571,7 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsByLevelAssessmentsActivityStatistics() {
 
         final int PERSONS_SIZE = 3;
-        final Set<CourseTypeEnum> LEVEL_ASSESMENT = Set.of(CourseTypeEnum.LEVEL_ASSESSMENT);
+        final Set<CourseTypeEnum> LEVEL_ASSESSMENT = Set.of(CourseTypeEnum.LEVEL_ASSESSMENT);
         final long TOP1 = 110005L;
         final long TOP2 = 110002L;
         final long TOP3 = 110001L;
@@ -594,7 +595,7 @@ public class ActivityServiceTest {
             returns(levelsPassedByPersons);
         }};
 
-        LinkedHashMap<PersonDto, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT, PERSONS_SIZE);
+        LinkedHashMap<PersonDto, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESSMENT, PERSONS_SIZE);
         Iterator<PersonDto> persons = personsTop.keySet().iterator();
 
         assertThat(personsTop.size(), equalTo(PERSONS_SIZE));
@@ -607,7 +608,7 @@ public class ActivityServiceTest {
     public void getTopThreeStudentsInvalidSalesforcePurchaserId() {
 
         final int PERSONS_SIZE = 3;
-        final Set<CourseTypeEnum> LEVEL_ASSESMENT = Set.of(CourseTypeEnum.LEVEL_ASSESSMENT);
+        final Set<CourseTypeEnum> LEVEL_ASSESSMENT = Set.of(CourseTypeEnum.LEVEL_ASSESSMENT);
         final int YEAR = 2022;
         final int FEBRUARY = 2;
 
@@ -626,7 +627,7 @@ public class ActivityServiceTest {
             returns(levelsPassedByPersons);
         }};
 
-        activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESMENT, PERSONS_SIZE);
+        activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, startDate, LEVEL_ASSESSMENT, PERSONS_SIZE);
     }
 
     @Test
@@ -663,18 +664,18 @@ public class ActivityServiceTest {
         final long MEDIUM_LOW_AMOUNT = 1;
         final long LOW_AMOUNT = 3;
 
-        LocalDate currentTime = LocalDate.of(2022,04,16);
+        LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         String salesforcePurchaserId = "12345";
 
         List<UsageLevel> usageLevels = List.of(
-            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale","sf_synegen321", LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan", "sf_synegen456",LocalDateTime.of(2022, 02, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2021, 12, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 01, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart", "sf_synegen987",LocalDateTime.of(2022, 03, 12, 0, 0, 0))
+            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 4, 15, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale","sf_synegen321", LocalDateTime.of(2022, 3, 23, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan", "sf_synegen456",LocalDateTime.of(2022, 2, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2021, 12, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 1, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart", "sf_synegen987",LocalDateTime.of(2022, 3, 12, 0, 0, 0))
         );
 
         new Expectations() {{
@@ -683,7 +684,7 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, (Set<String>) any);
             returns(usageLevels);
         }};
 
@@ -701,18 +702,18 @@ public class ActivityServiceTest {
 
         final int PERSONS_SIZE = 4;
 
-        LocalDate currentTime = LocalDate.of(2022,04,16);
+        LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         String salesforcePurchaserId = "12345";
 
         List<UsageLevel> usageLevels = List.of(
-            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale","sf_synegen321", LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan", "sf_synegen456",LocalDateTime.of(2022, 02, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2021, 12, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 01, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart","sf_synegen987", LocalDateTime.of(2022, 03, 12, 0, 0, 0))
+            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 4, 15, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale","sf_synegen321", LocalDateTime.of(2022, 3, 23, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan", "sf_synegen456",LocalDateTime.of(2022, 2, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2021, 12, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 1, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart","sf_synegen987", LocalDateTime.of(2022, 3, 12, 0, 0, 0))
         );
 
         new Expectations() {{
@@ -721,7 +722,7 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, (Set<String>) any);
             returns(usageLevels);
         }};
 
@@ -738,18 +739,18 @@ public class ActivityServiceTest {
 
         final int EMPTY_SIZE = 0;
 
-        LocalDate currentTime = LocalDate.of(2022,04,16);
+        LocalDate currentTime = LocalDate.of(2022,4,16);
         Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
         String salesforcePurchaserId = "12345";
 
         List<UsageLevel> usageLevels = List.of(
-            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 04, 15, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale", "sf_synegen321",LocalDateTime.of(2022, 03, 23, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan","sf_synegen456", LocalDateTime.of(2022, 03, 20, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2023, 04, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 04, 02, 0, 0, 0)),
-            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart", "sf_synegen987",LocalDateTime.of(2022, 03, 29, 0, 0, 0))
+            InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 4, 15, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110002, "Michale", "Bale", "sf_synegen321",LocalDateTime.of(2022, 3, 23, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110003, "Jake", "Sullivan","sf_synegen456", LocalDateTime.of(2022, 3, 20, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110004, "Claire", "Redfield","sf_synegen654", LocalDateTime.of(2023, 4, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110005, "Ana", "Stuart", "sf_synegen789",LocalDateTime.of(2022, 4, 2, 0, 0, 0)),
+            InterfaceUtil.createUsageLevel(110006, "Sam", "Walmart", "sf_synegen987",LocalDateTime.of(2022, 3, 29, 0, 0, 0))
         );
 
         new Expectations() {{
@@ -758,7 +759,7 @@ public class ActivityServiceTest {
             clock.getZone();
             returns(fixedClock.getZone());
 
-            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString);
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, (Set<String>) any);
             returns(usageLevels);
         }};
 
@@ -767,9 +768,135 @@ public class ActivityServiceTest {
     }
 
     @Test
+    public void getUsageLevelOverviewPerPerson(){
+
+        LocalDate currentTime = LocalDate.of(2022,4,16);
+        Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        String salesforcePurchaserId = "12345";
+        String contactId = "sf_synegen123";
+        final long INACTIVE_DAYS = 1L;
+        UsageLevelEnum expectedUsageLevel = UsageLevelEnum.HIGH;
+
+        UsageLevel usageLevel = InterfaceUtil.createUsageLevel(110001, "Patrik", "Smith","sf_synegen123", LocalDateTime.of(2022, 4, 15, 0, 0, 0));
+
+        new Expectations() {{
+            clock.instant();
+            returns(fixedClock.instant());
+            clock.getZone();
+            returns(fixedClock.getZone());
+
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, (Set<String>) any);
+            returns(List.of(usageLevel));
+        }};
+
+        Optional<PersonUsageLevelDto> optPersonUsageLevelDto = activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,contactId);
+
+        assertTrue(optPersonUsageLevelDto.isPresent());
+
+        PersonUsageLevelDto personUsageLevelDto = optPersonUsageLevelDto.get();
+
+        assertThat(personUsageLevelDto.getPerson().getContactId(), is(contactId));
+        assertThat(personUsageLevelDto.getUsageLevel(), is(expectedUsageLevel));
+        assertThat(personUsageLevelDto.getInactiveDays(), is(INACTIVE_DAYS));
+    }
+
+    @Test
+    public void getUsageLevelOverviewPerPersonEmpty(){
+
+        LocalDate currentTime = LocalDate.of(2022,4,16);
+        Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        String salesforcePurchaserId = "12345";
+        String contactId = "sf_synegen123";
+
+        List<UsageLevel> usageLevel = Collections.EMPTY_LIST;
+
+        new Expectations() {{
+            clock.instant();
+            returns(fixedClock.instant());
+            clock.getZone();
+            returns(fixedClock.getZone());
+
+            personCourseAuditRepository.findMaxActivityDateGroupedByPerson(anyString, (Set<String>) any);
+            returns(usageLevel);
+        }};
+
+        Optional<PersonUsageLevelDto> optPersonUsageLevelDto = activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,contactId);
+
+        assertFalse(optPersonUsageLevelDto.isPresent());
+    }
+
+    @Test
+    public void getUsageLevelOverviewPerPersonInvalidSalesforcePurchaserId() {
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
+
+        String salesforcePurchaserId = "";
+        String contactId = "110001";
+        LocalDate currentTime = LocalDate.of(2022,4,16);
+        Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        new Expectations() {{
+            clock.instant();
+            returns(fixedClock.instant());
+            clock.getZone();
+            returns(fixedClock.getZone());
+
+        }};
+
+        activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,contactId);
+    }
+
+    @Test
+    public void getUsageLevelOverviewPerPersonNullContactId() {
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("contactId should not be null or empty");
+
+        String salesforcePurchaserId = "12347";
+        String contactId = null;
+        LocalDate currentTime = LocalDate.of(2022,4,16);
+        Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        new Expectations() {{
+            clock.instant();
+            returns(fixedClock.instant());
+            clock.getZone();
+            returns(fixedClock.getZone());
+
+        }};
+
+        activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,contactId);
+    }
+
+    @Test
+    public void getUsageLevelOverviewPerPersonWithContactIdEmpty() {
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("contactId should not be null or empty");
+
+        String salesforcePurchaserId = "12347";
+        String contactId = "";
+        LocalDate currentTime = LocalDate.of(2022,4,16);
+        Clock fixedClock = Clock.fixed(currentTime.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
+        new Expectations() {{
+            clock.instant();
+            returns(fixedClock.instant());
+            clock.getZone();
+            returns(fixedClock.getZone());
+
+        }};
+
+        activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId,contactId);
+    }
+
+    @Test
     public void getLiveClassesStatisticsByPersonId() {
         String salesforcePurchaserId = "12345";
-        final long PERSON_ID = 11L;
+        final String CONTACT_ID = "sf_synegen123";
         final Set<CourseTypeEnum> LIVE_CLASSES = Set.of(CourseTypeEnum.LIVE_CLASS);
         final int YEAR = 2022;
         final int JANUARY = 1;
@@ -781,51 +908,51 @@ public class ActivityServiceTest {
         final int MONTHS_OF_YEAR = 12;
 
         PersonCourseAudit personCourseAudit1 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 15, 12, 0, 0))
             .timeontask(50)
             .build();
         PersonCourseAudit personCourseAudit2 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 19, 14, 0, 0))
             .timeontask(70)
             .build();
         PersonCourseAudit personCourseAudit3 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 20, 12, 0, 0))
             .timeontask(90)
             .build();
 
         PersonCourseAudit personCourseAudit4 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 21, 10, 0, 0))
             .timeontask(10)
             .build();
         PersonCourseAudit personCourseAudit5 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 15, 12, 0, 0))
             .timeontask(10)
             .build();
 
         PersonCourseAudit personCourseAudit6 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 7, 8, 0, 0))
             .timeontask(30)
             .build();
         PersonCourseAudit personCourseAudit7 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 7, 12, 0, 0))
             .timeontask(30)
             .build();
         PersonCourseAudit personCourseAudit8 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(1L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, MARCH, 1, 12, 0, 0))
             .timeontask(30)
@@ -841,11 +968,11 @@ public class ActivityServiceTest {
 
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatisticsByPerson(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyLong);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
-        YearActivityStatisticsDto yearActivityStatisticsDto = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, PERSON_ID);
+        YearActivityStatisticsDto yearActivityStatisticsDto = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, CONTACT_ID);
 
         assertEquals(MONTHS_OF_YEAR, yearActivityStatisticsDto.getMonthsActivityStatistics().size());
         assertEquals(januaryTotalCount, yearActivityStatisticsDto.getMonthsActivityStatistics().get(JANUARY_INDEX).getValue(), 0);
@@ -857,7 +984,7 @@ public class ActivityServiceTest {
     @Test
     public void getPracticeStatisticsByPersonId() {
         String salesforcePurchaserId = "12345";
-        final Long PERSON_ID = 11L;
+        final String CONTACT_ID = " sf_synegen123";
         final Set<CourseTypeEnum> PRACTICE = Set.of(CourseTypeEnum.PRACTICE);
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
@@ -870,51 +997,51 @@ public class ActivityServiceTest {
 
 
         PersonCourseAudit personCourseAuditJAN1 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 15, 12, 0, 0))
             .timeontask(50)
             .build();
         PersonCourseAudit personCourseAuditJAN2 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 19, 14, 0, 0))
             .timeontask(70)
             .build();
         PersonCourseAudit personCourseAuditJAN3 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 20, 12, 0, 0))
             .timeontask(90)
             .build();
 
         PersonCourseAudit personCourseAuditJAN4 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, JANUARY, 21, 10, 0, 0))
             .timeontask(10)
             .build();
         PersonCourseAudit personCourseAuditFEB1 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 15, 12, 0, 0))
             .timeontask(10)
             .build();
 
         PersonCourseAudit personCourseAuditFEB2 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 7, 8, 0, 0))
             .timeontask(30)
             .build();
         PersonCourseAudit personCourseAuditFEB3 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, FEBRUARY, 7, 12, 0, 0))
             .timeontask(30)
             .build();
         PersonCourseAudit personCourseAuditMAR1 = PersonCourseAudit.builder()
-            .person(Person.builder().id(PERSON_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
+            .person(Person.builder().contactId(CONTACT_ID).firstName("John").lastName("Sanchez").email("johnsanchez@gmail.com").build())
             .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
             .dateCompleted(LocalDateTime.of(YEAR, MARCH, 1, 12, 0, 0))
             .timeontask(30)
@@ -928,11 +1055,11 @@ public class ActivityServiceTest {
         double marchTotalHours = NumberUtils.round((personCourseAuditMAR1.getTimeontask()) / 3600.0);
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatisticsByPerson(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyLong);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
-        YearActivityStatisticsDto yearActivityStatisticsDto = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, PRACTICE, PERSON_ID);
+        YearActivityStatisticsDto yearActivityStatisticsDto = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, PRACTICE, CONTACT_ID);
         assertNotNull(yearActivityStatisticsDto);
         assertEquals(MONTHS_OF_YEAR, yearActivityStatisticsDto.getMonthsActivityStatistics().size());
 
@@ -944,7 +1071,7 @@ public class ActivityServiceTest {
     @Test
     public void getActivitiesStatisticsByPersonIdEmpty() {
         String salesforcePurchaserId = "12345";
-        final Long PERSON_ID = 12L;
+        final String CONTACT_ID = "sf_synegen123";
         final double ZERO = 0.0;
         final int MONTHS_OF_YEAR = 12;
         final int YEAR = 2022;
@@ -953,11 +1080,11 @@ public class ActivityServiceTest {
         List<PersonCourseAudit> personCourseAudits = new ArrayList<>();
 
         new Expectations() {{
-            personCourseAuditRepository.findActivityStatisticsByPerson(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, anyLong);
+            personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
             returns(personCourseAudits);
         }};
 
-        YearActivityStatisticsDto yearActivityStatisticsDto = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, PERSON_ID);
+        YearActivityStatisticsDto yearActivityStatisticsDto = activityService.getActivityStatistics(salesforcePurchaserId, YEAR, LIVE_CLASSES, CONTACT_ID);
 
         assertNotNull(yearActivityStatisticsDto);
         assertEquals(MONTHS_OF_YEAR, yearActivityStatisticsDto.getMonthsActivityStatistics().size());

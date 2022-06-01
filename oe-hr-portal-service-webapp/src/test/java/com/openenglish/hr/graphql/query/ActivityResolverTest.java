@@ -8,6 +8,7 @@ import com.openenglish.hr.common.dto.*;
 import com.openenglish.hr.service.ActivityService;
 import com.openenglish.hr.service.mapper.MappingConfig;
 import java.util.Map.Entry;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -251,6 +252,44 @@ public class ActivityResolverTest {
     }
 
     @Test
+    public void getUsageLevelOverviewPerPerson() {
+
+        Optional<PersonUsageLevelDto> optPersonUsageLevelDto = Optional.of(PersonUsageLevelDto.builder()
+            .person(PersonDto.builder()
+                .id(110001)
+                .firstName("Patrik")
+                .lastName("Smith")
+                .build())
+            .usageLevel(UsageLevelEnum.MEDIUM_LOW)
+            .inactiveDays(45)
+            .build());
+
+        Mockito.when(activityService.getUsageLevelOverviewPerPerson(anyString(), anyString())).thenReturn(optPersonUsageLevelDto);
+
+        String query = "{ " +
+            "  getUsageLevelOverviewPerPerson(salesforcePurchaserId:\"12345\", contactId:\"sf_synegen123\"){ " +
+            "    person { "
+            + "      id "
+            + "      firstName "
+            + "      lastName "
+            + "      contactId "
+            + "    }"
+            + "    usageLevel "
+            + "    inactiveDays" +
+            "    }" +
+            "}";
+        String projection = "data.getUsageLevelOverviewPerPerson";
+
+        PersonUsageLevelDto personUsageLevelDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, PersonUsageLevelDto.class);
+
+        assertEquals(optPersonUsageLevelDto.get().getPerson().getId(), personUsageLevelDto.getPerson().getId());
+        assertEquals(optPersonUsageLevelDto.get().getPerson().getFirstName(), personUsageLevelDto.getPerson().getFirstName());
+        assertEquals(optPersonUsageLevelDto.get().getPerson().getLastName(), personUsageLevelDto.getPerson().getLastName());
+        assertEquals(optPersonUsageLevelDto.get().getUsageLevel(), personUsageLevelDto.getUsageLevel());
+        assertEquals(optPersonUsageLevelDto.get().getInactiveDays(), personUsageLevelDto.getInactiveDays());
+    }
+
+    @Test
     public void getActivitiesStatisticsByPersonId() {
 
         List<MonthActivityStatisticsDto> monthsActivityStatisticsDto =
@@ -274,7 +313,7 @@ public class ActivityResolverTest {
         Mockito.when(activityService.getActivityStatistics(anyString(), anyInt(), any(), any())).thenReturn(expectedYearActivityStatisticsDto);
 
         String query = "{ " +
-            "  getYearActivityStatistics(salesforcePurchaserId:\"12345\", year: 2022, activity: LIVE_CLASS, studentId: 11){ " +
+            "  getYearActivityStatistics(salesforcePurchaserId:\"12345\", year: 2022, activity: LIVE_CLASS, contactId: \"sf_synegen123\"){ " +
             "    total " +
             "    monthsActivityStatistics{ " +
             "       month " +
