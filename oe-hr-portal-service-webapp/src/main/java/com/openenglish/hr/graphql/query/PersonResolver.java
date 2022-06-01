@@ -2,12 +2,14 @@ package com.openenglish.hr.graphql.query;
 
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsData;
+import com.openenglish.hr.common.dto.HRManagerDto;
 import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.service.PersonService;
 import com.openenglish.hr.service.mapper.Mapper;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -36,4 +38,10 @@ public class PersonResolver {
                 .map(personByLevel -> mapper.map(personByLevel, PersonsPerLevelDto.class))
                 .collect(Collectors.toList());
     }
+
+    @DgsData(parentType = "Query", field = "getHRManager")
+    public Optional<HRManagerDto> getHRManager(String salesforcePurchaserId, String organization) {
+        return personService.getHRManager(salesforcePurchaserId, organization);
+    }
+
 }

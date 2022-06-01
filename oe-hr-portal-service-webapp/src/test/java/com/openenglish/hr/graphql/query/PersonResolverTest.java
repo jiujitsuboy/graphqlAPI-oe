@@ -4,6 +4,7 @@ import com.jayway.jsonpath.TypeRef;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
+import com.openenglish.hr.common.dto.HRManagerDto;
 import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
@@ -23,6 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -151,5 +153,35 @@ public class PersonResolverTest {
             assertEquals(expected.getLevelName(), received.getLevelName());
             assertEquals(expected.getTotalNumber(), received.getTotalNumber());
         }
+    }
+
+    @Test
+    public void getHRManager() {
+
+        Optional<HRManagerDto> optExpectedHRManager =  Optional.of(HRManagerDto.builder()
+            .id("0037c0000155DX4AAM")
+            .name("Andrea OM")
+            .email("andrea.bragoli+testt@openenglish.com").build());
+
+        Mockito.when(personService.getHRManager(anyString(), anyString())).thenReturn(optExpectedHRManager);
+
+        String query = "{ " +
+            "  getHRManager(salesforcePurchaserId:\"12345\", organization: \"Open Mundo\"){ " +
+            "    id " +
+            "    name " +
+            "    email " +
+            "    }" +
+            "}";
+        String projection = "data.getHRManager";
+
+        HRManagerDto hrManagerDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, HRManagerDto.class);
+
+        assertNotNull(hrManagerDto);
+
+        assertThat(hrManagerDto.getId(), is(optExpectedHRManager.get().getId()));
+        assertThat(hrManagerDto.getName(), is(optExpectedHRManager.get().getName()));
+        assertThat(hrManagerDto.getEmail(), is(optExpectedHRManager.get().getEmail()));
+
+
     }
 }

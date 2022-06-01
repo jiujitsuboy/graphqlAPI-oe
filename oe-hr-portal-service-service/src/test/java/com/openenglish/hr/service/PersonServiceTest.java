@@ -1,10 +1,12 @@
 package com.openenglish.hr.service;
 
+import com.openenglish.hr.common.dto.HRManagerDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.PersonDetail;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.persistence.repository.PersonRepository;
+import java.util.Optional;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -15,6 +17,7 @@ import org.junit.rules.ExpectedException;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 public class PersonServiceTest {
@@ -139,5 +142,43 @@ public class PersonServiceTest {
         expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
         String salesforcePurchaserId = "";
         List<PersonsPerLevel> personsPerLevels =  personService.getAllPersonsByLevel(salesforcePurchaserId);
+    }
+
+    @Test
+    public void getHRManager(){
+        String salesforcePurchaserId = "12345";
+        String organization = "Open Mundo";
+        HRManagerDto expectedHRManager =  HRManagerDto.builder()
+            .id("0037c0000155DX4AAM")
+            .name("Andrea OM")
+            .email("andrea.bragoli+testt@openenglish.com").build();
+
+
+        Optional<HRManagerDto> optHrManagerDto = personService.getHRManager(salesforcePurchaserId,organization);
+        assertTrue(optHrManagerDto.isPresent());
+
+        HRManagerDto hrManagerDto = optHrManagerDto.get();
+
+        assertThat(hrManagerDto.getId(), is(expectedHRManager.getId()));
+        assertThat(hrManagerDto.getName(), is(expectedHRManager.getName()));
+        assertThat(hrManagerDto.getEmail(), is(expectedHRManager.getEmail()));
+    }
+
+    @Test
+    public void getHRManagerEmptyPurchaserId(){
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
+        String salesforcePurchaserId = "";
+        String organization = "Open Mundo";
+        personService.getHRManager(salesforcePurchaserId,organization);
+    }
+
+    @Test
+    public void getHRManagerEmptyOrganization(){
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("organization should not be null or empty");
+        String salesforcePurchaserId = "12345";
+        String organization = "";
+        personService.getHRManager(salesforcePurchaserId,organization);
     }
 }
