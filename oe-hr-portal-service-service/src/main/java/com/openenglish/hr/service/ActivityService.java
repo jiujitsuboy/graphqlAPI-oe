@@ -2,6 +2,7 @@ package com.openenglish.hr.service;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
@@ -100,7 +101,7 @@ public class ActivityService {
      * @param courseTypeEnums       target activities
      * @return the total sum of all activities by  month
      */
-    public YearActivityStatisticsDto getActivityStatistics(String salesforcePurchaserId, int year, Set<CourseTypeEnum> courseTypeEnums, Long personId) {
+    public YearActivityStatisticsDto getActivityStatistics(String salesforcePurchaserId, int year, Set<CourseTypeEnum> courseTypeEnums, String contactId) {
 
         final int MONTH = 1;
         final int DAY_OF_MONTH = 1;
@@ -116,12 +117,8 @@ public class ActivityService {
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
 
         List<PersonCourseAudit> personsCourseAudit = null;
-        if(personId == null){
-            personsCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
-        }
-        else{
-            personsCourseAudit = personCourseAuditRepository.findActivityStatisticsByPerson(salesforcePurchaserId, startDate, endDate, courseTypeIds, personId);
-        }
+
+        personsCourseAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Set.of(contactId));
 
         Collector<PersonCourseAudit, ?, Double> collectorStatistics = this.getCollectingStrategy(courseTypeEnums);
 
@@ -171,7 +168,7 @@ public class ActivityService {
 
         } else {
 
-            List<PersonCourseAudit> personCoursesAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds);
+            List<PersonCourseAudit> personCoursesAudit = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Collections.emptySet());
 
             Collector<PersonCourseAudit, ?, Double> collectorStatistics = this.getCollectingStrategy(courseTypeEnums);
 
@@ -204,7 +201,7 @@ public class ActivityService {
      */
     public UsageLevelOverviewDto getUsageLevelOverview(String salesforcePurchaserId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
+        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, Collections.emptySet());
 
         Map<UsageLevelEnum, Long> usageLevelCountingByPersons = usageLevels.stream()
             .collect(Collectors.groupingBy(this::mapStudentsToUsageLevel,
@@ -218,19 +215,53 @@ public class ActivityService {
                 .build();
     }
 
+    /**
+     * Retrieve the less active students
+     * @param salesforcePurchaserId Id of the owner of the license
+     * @return PersonUsageLevelDto
+     */
     public List<PersonUsageLevelDto> getLeastActiveStudents(String salesforcePurchaserId) {
 
         LocalDateTime currentTime = LocalDateTime.now(clock);
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId);
+        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, Collections.emptySet());
 
         List<PersonUsageLevelDto> personUsageLevelDtos = usageLevels.stream()
                 .map(usageLevel ->  PersonUsageLevelDtoMapper.map(usageLevel, currentTime, this::mapStudentsToUsageLevel))
+                .flatMap(Optional::stream)
                 .filter(personUsageLevelDto -> LOW_USAGE_TYPES.contains(personUsageLevelDto.getUsageLevel()))
                 .collect(Collectors.toList());
 
         return personUsageLevelDtos;
+    }
+
+    /**
+     * Retrieve the number of inactive days and categorize the students to the corresponding to UsageLevel
+     *  HIGH:  last activity completed in the last 10 days
+     *  MEDIUM HIGH: last activity completed betwenn last 11 and 30 days
+     *  MEDIUM LOW last activity completed betwenn last 31 and 60 days
+     *  LOW: last activity completed after the last 61 days
+     *
+     * @param salesforcePurchaserId Id of the owner of the license
+     * @param contactId student contact id
+     * @return PersonUsageLevelDto
+     */
+    public Optional<PersonUsageLevelDto> getUsageLevelOverviewPerPerson(String salesforcePurchaserId, String contactId) {
+
+        Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
+        Preconditions.checkArgument(StringUtils.isNotBlank(contactId), "contactId should not be null or empty");
+
+        Optional<PersonUsageLevelDto> personUsageLevelDto = Optional.empty();
+        LocalDateTime currentTime = LocalDateTime.now(clock);
+
+        List<UsageLevel> usageLevel = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, Set.of(contactId));
+
+        if (!usageLevel.isEmpty()) {
+            personUsageLevelDto = PersonUsageLevelDtoMapper.map(usageLevel.get(0), currentTime, this::mapStudentsToUsageLevel);
+        }
+
+        return personUsageLevelDto;
     }
 
     /**
@@ -279,21 +310,18 @@ public class ActivityService {
 
         Collector<PersonCourseAudit, ?, Double> collectorStatistics = null;
 
-        CourseTypeEnum courseTypeEnum = (CourseTypeEnum) getFirstElementFromSet(courseTypeEnums);
+        Set<Long> courseTypesValues = courseTypeEnums.stream().map(courseTypeEnum -> courseTypeEnum.getValue()).collect(Collectors.toSet());
 
         /*
            To calculate the Active hour. we need to convert every record retrieved from the DB into seconds
            (no practices activities,  for each record use the factor (60,30,25) and then convert them to seconds),
             and after summing all this seconds then we converted to hours.
+
+             If is practices, we just sum the seconds from each practice and then we converted to hours.
          */
-        if(courseTypeEnums.size() == COURSE_TYPES_OF_INTEREST.size()){
+        if(!Sets.intersection(courseTypesValues, PRACTICE_COURSE_TYPES).isEmpty()  ){
+
             collectorStatistics = Collectors.collectingAndThen(Collectors.summingDouble(this::getNumberOfSecondsPerActivity), NumberUtils::convertSecondsToHours);
-        }
-        /*
-            If is practices, we just sum the seconds from each practice and  then we converted to hours.
-         */
-        else if (PRACTICE_COURSE_TYPES.contains(courseTypeEnum.getValue())){
-            collectorStatistics = Collectors.collectingAndThen(Collectors.summingDouble(PersonCourseAudit::getTimeontask), NumberUtils::convertSecondsToHours);
         }
         /*
             For other types we are only counting the number of activities, no the time in seconds
@@ -435,15 +463,15 @@ public class ActivityService {
      */
     private int getNumberOfSecondsPerActivity(PersonCourseAudit personCourseAudit) {
 
-        final int NUMBER_OF_TIMES = 1;
-        CourseTypeEnum courseTypeEnumCurrentPerson = this.getCourseTypeEnum(personCourseAudit.getCourse());
+        int timeInSecondsOrNumberOfTimes = 1;
+        CourseTypeEnum courseType = this.getCourseTypeEnum(personCourseAudit.getCourse());
 
-        LocalDateTime targetDate = personCourseAudit.getDateCompleted();
+        LocalDateTime dateCompleted = personCourseAudit.getDateCompleted();
 
-        if (PRACTICE_COURSE_TYPES.contains(courseTypeEnumCurrentPerson.getValue()) && personCourseAudit.getDateCompleted() == null) {
-                targetDate = personCourseAudit.getDateStarted();
+        if (PRACTICE_COURSE_TYPES.contains(courseType.getValue())) {
+            timeInSecondsOrNumberOfTimes = personCourseAudit.getTimeontask();
         }
-        return convertActivitiesOccurrenceToSeconds(courseTypeEnumCurrentPerson, NUMBER_OF_TIMES, targetDate);
+        return convertActivitiesOccurrenceToSeconds(courseType, timeInSecondsOrNumberOfTimes, dateCompleted);
     }
 
     /**
