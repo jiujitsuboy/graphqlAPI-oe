@@ -1,10 +1,11 @@
 package com.openenglish.hr.service;
 
 import com.google.common.base.Preconditions;
-import com.openenglish.hr.common.dto.LicensesStatisticsDto;
+import com.openenglish.hr.common.dto.LicensesOverviewDto;
 import com.openenglish.sfdc.client.SalesforceClient;
 import com.openenglish.sfdc.client.dto.SfLicenseDto;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -37,13 +38,13 @@ public class LicenseService {
      * @param organization the name of the organization for the licenses
      * @return available, assigned and active licenses
      */
-    public LicensesStatisticsDto getLicensesStatistics(String salesforcePurchaserId, String organization){
+    public LicensesOverviewDto getLicensesOverview(String salesforcePurchaserId, String organization){
         return countLicenses(retrieveLicenses(salesforcePurchaserId, organization));
     }
 
-    private LicensesStatisticsDto countLicenses(SfLicenseDto[] licenses) {
-        if(licenses == null || licenses.length ==0){
-            return new LicensesStatisticsDto();
+    private LicensesOverviewDto countLicenses(SfLicenseDto[] licenses) {
+        if(ArrayUtils.isEmpty(licenses)){
+            return new LicensesOverviewDto();
         }
 
         int assigned = 0;
@@ -58,7 +59,7 @@ public class LicenseService {
             }
         }
 
-        return LicensesStatisticsDto.builder()
+        return LicensesOverviewDto.builder()
                 .availableLicenses(licenses.length)
                 .assignedLicenses(assigned)
                 .activeLicenses(active)

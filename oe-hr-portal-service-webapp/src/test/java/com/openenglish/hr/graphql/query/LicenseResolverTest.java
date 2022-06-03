@@ -3,7 +3,7 @@ package com.openenglish.hr.graphql.query;
 
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
-import com.openenglish.hr.common.dto.LicensesStatisticsDto;
+import com.openenglish.hr.common.dto.LicensesOverviewDto;
 import com.openenglish.hr.service.LicenseService;
 import com.openenglish.hr.service.mapper.MappingConfig;
 import org.junit.Assert;
@@ -30,28 +30,28 @@ public class LicenseResolverTest {
     private LicenseService licenseService;
 
     @Test
-    public void testGetLicensesStatistics() {
+    public void testGetLicensesOverview() {
 
-        LicensesStatisticsDto statisticsDto = LicensesStatisticsDto.builder()
+        LicensesOverviewDto statisticsDto = LicensesOverviewDto.builder()
                 .availableLicenses(10)
                 .assignedLicenses(5)
                 .activeLicenses(2)
                 .build();
 
-        Mockito.when(licenseService.getLicensesStatistics(anyString(), anyString())).thenReturn(
+        Mockito.when(licenseService.getLicensesOverview(anyString(), anyString())).thenReturn(
                 statisticsDto);
 
         String query = "{ " +
-                "  getLicensesStatistics(salesforcePurchaserId:\"0017c00000ubf0O\" , organization:\"Open Mundo\"){ " +
+                "  getLicensesOverview(salesforcePurchaserId:\"0017c00000ubf0O\" , organization:\"Open Mundo\"){ " +
                 "    availableLicenses" +
                 "    assignedLicenses" +
                 "    activeLicenses" +
                 "  }" +
                 "}";
 
-        String projection = "data.getLicensesStatistics";
+        String projection = "data.getLicensesOverview";
 
-        LicensesStatisticsDto actualDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, LicensesStatisticsDto.class);
+        LicensesOverviewDto actualDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, LicensesOverviewDto.class);
         Assert.assertEquals(statisticsDto, actualDto);
     }
 }

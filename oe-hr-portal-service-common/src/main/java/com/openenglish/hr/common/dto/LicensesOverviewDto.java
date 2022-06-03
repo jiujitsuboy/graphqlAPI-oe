@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LicensesStatisticsDto {
+public class LicensesOverviewDto {
     private int availableLicenses;
     private int assignedLicenses;
     private int activeLicenses;

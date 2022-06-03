@@ -1,4 +1,4 @@
-type LicensesStatistics {
+type LicensesOverview {
     availableLicenses: Int
     assignedLicenses: Int
     activeLicenses: Int

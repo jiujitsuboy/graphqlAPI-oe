@@ -1,6 +1,6 @@
 package com.openenglish.hr.service;
 
-import com.openenglish.hr.common.dto.LicensesStatisticsDto;
+import com.openenglish.hr.common.dto.LicensesOverviewDto;
 import com.openenglish.sfdc.client.SalesforceClient;
 import com.openenglish.sfdc.client.dto.SfLicenseDto;
 import mockit.Expectations;
@@ -24,7 +24,7 @@ public class LicenseServiceTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void getLicensesStatistics() {
+    public void getLicensesOverview() {
 
         SfLicenseDto[] licenseDtos = new SfLicenseDto[]{
                 new SfLicenseDto() // assigned and active
@@ -56,9 +56,9 @@ public class LicenseServiceTest {
             returns(licenseDtos);
         }};
 
-        LicensesStatisticsDto actualDto = licenseService.getLicensesStatistics(SALESFORCE_PURCHASER_ID, ORGANIZATION);
+        LicensesOverviewDto actualDto = licenseService.getLicensesOverview(SALESFORCE_PURCHASER_ID, ORGANIZATION);
 
-        LicensesStatisticsDto expectedDto = LicensesStatisticsDto.builder()
+        LicensesOverviewDto expectedDto = LicensesOverviewDto.builder()
                 .availableLicenses(5)
                 .assignedLicenses(4)
                 .activeLicenses(2)
@@ -68,16 +68,16 @@ public class LicenseServiceTest {
     }
 
     @Test
-    public void getLicensesStatisticsEmpty() {
+    public void getLicensesOverviewEmpty() {
 
-        LicensesStatisticsDto zeroedDto = new LicensesStatisticsDto();
+        LicensesOverviewDto zeroedDto = new LicensesOverviewDto();
 
         new Expectations() {{
             salesforceClient.getPurchaserLicenses(anyString, anyString);
             returns(new SfLicenseDto[0]);
         }};
 
-        LicensesStatisticsDto actualDto = licenseService.getLicensesStatistics(SALESFORCE_PURCHASER_ID, ORGANIZATION);
+        LicensesOverviewDto actualDto = licenseService.getLicensesOverview(SALESFORCE_PURCHASER_ID, ORGANIZATION);
         Assert.assertEquals(zeroedDto, actualDto);
 
 
@@ -86,7 +86,7 @@ public class LicenseServiceTest {
             returns(null);
         }};
 
-        actualDto = licenseService.getLicensesStatistics(SALESFORCE_PURCHASER_ID, ORGANIZATION);
+        actualDto = licenseService.getLicensesOverview(SALESFORCE_PURCHASER_ID, ORGANIZATION);
         Assert.assertEquals(zeroedDto, actualDto);
 
     }
