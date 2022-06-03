@@ -21,10 +21,10 @@ public class LicenseService {
      * Retrieves the licenses from Salesforce for the given salesforcePurchaserId and organization
      *
      * @param salesforcePurchaserId id of the owner of the licenses
-     * @param organization the name of the organization for the licenses
+     * @param organization          the name of the organization for the licenses
      * @return available, assigned and active licenses
      */
-    SfLicenseDto[] retrieveLicenses(String salesforcePurchaserId, String organization){
+    SfLicenseDto[] retrieveLicenses(String salesforcePurchaserId, String organization) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
         Preconditions.checkArgument(StringUtils.isNotBlank(organization), "organization cannot be null or empty");
 
@@ -35,15 +35,15 @@ public class LicenseService {
      * Retrieves the licenses from Salesforce and computes the available, assigned and active licenses
      *
      * @param salesforcePurchaserId id of the owner of the licenses
-     * @param organization the name of the organization for the licenses
+     * @param organization          the name of the organization for the licenses
      * @return available, assigned and active licenses
      */
-    public LicensesOverviewDto getLicensesOverview(String salesforcePurchaserId, String organization){
+    public LicensesOverviewDto getLicensesOverview(String salesforcePurchaserId, String organization) {
         return countLicenses(retrieveLicenses(salesforcePurchaserId, organization));
     }
 
     private LicensesOverviewDto countLicenses(SfLicenseDto[] licenses) {
-        if(ArrayUtils.isEmpty(licenses)){
+        if (ArrayUtils.isEmpty(licenses)) {
             return new LicensesOverviewDto();
         }
 
@@ -51,9 +51,9 @@ public class LicenseService {
         int active = 0;
 
         for (SfLicenseDto license : licenses) {
-            if(license.getStudent() != null){
+            if (license.getStudent() != null) {
                 assigned++;
-                if(LICENSE_STATUS_ACTIVE.equals(license.getStatus())){
+                if (LICENSE_STATUS_ACTIVE.equals(license.getStatus())) {
                     active++;
                 }
             }
