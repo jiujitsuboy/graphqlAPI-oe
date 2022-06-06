@@ -37,13 +37,9 @@ public class LicenseServiceTest {
                                 .setName("Student 1")
                         )
                         .setStatus("Active"),
-                new SfLicenseDto(), // unassigned
-                new SfLicenseDto()  // inactive or new
-                        .setStudent(new SfLicenseDto.StudentDto()
-                                .setName("Student 3")
-                        )
-                        .setStatus("New"),
-                new SfLicenseDto()  // inactive or new
+                new SfLicenseDto(), // unassigned, status unknown -> should be counted as available only
+                new SfLicenseDto().setStatus("New"),  // new and not assigned -> should be counted as available only
+                new SfLicenseDto()  // inactive -> should be counted as available and assigned
                         .setStudent(new SfLicenseDto.StudentDto()
                                 .setName("Student 4")
                         )
@@ -59,9 +55,9 @@ public class LicenseServiceTest {
         LicensesOverviewDto actualDto = licenseService.getLicensesOverview(SALESFORCE_PURCHASER_ID, ORGANIZATION);
 
         LicensesOverviewDto expectedDto = LicensesOverviewDto.builder()
-                .availableLicenses(5)
-                .assignedLicenses(4)
-                .activeLicenses(2)
+                .availableLicenses(5) // 2 active, 1 inactive, 1 new, 1 unknown
+                .assignedLicenses(3) // 2 active + 1 inactive
+                .activeLicenses(2) // 2 active
                 .build();
 
         Assert.assertEquals(expectedDto, actualDto);

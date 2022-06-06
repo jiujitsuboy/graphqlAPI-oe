@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class LicenseService {
 
     private static final String LICENSE_STATUS_ACTIVE = "Active";
+    private static final String LICENSE_STATUS_INACTIVE = "Inactive";
 
     private final SalesforceClient salesforceClient;
 
@@ -47,21 +48,20 @@ public class LicenseService {
             return new LicensesOverviewDto();
         }
 
-        int assigned = 0;
+        int inactive = 0;
         int active = 0;
 
         for (SfLicenseDto license : licenses) {
-            if (license.getStudent() != null) {
-                assigned++;
-                if (LICENSE_STATUS_ACTIVE.equals(license.getStatus())) {
-                    active++;
-                }
+            if (LICENSE_STATUS_INACTIVE.equals(license.getStatus())) {
+                inactive++;
+            } else if (LICENSE_STATUS_ACTIVE.equals(license.getStatus())) {
+                active++;
             }
         }
 
         return LicensesOverviewDto.builder()
                 .availableLicenses(licenses.length)
-                .assignedLicenses(assigned)
+                .assignedLicenses(active + inactive)
                 .activeLicenses(active)
                 .build();
     }
