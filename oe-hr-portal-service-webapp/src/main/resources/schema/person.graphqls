@@ -53,7 +53,7 @@
       startDate: String
       organization: String
       name: String,
-      id: String,
+      licenseId: String,
       endDate: String,
       privateClasses: Int
   }

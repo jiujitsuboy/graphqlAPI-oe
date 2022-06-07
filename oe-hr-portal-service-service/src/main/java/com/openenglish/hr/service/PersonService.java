@@ -6,6 +6,8 @@ import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.persistence.repository.PersonRepository;
+import com.openenglish.sfdc.client.SalesforceClient;
+import com.openenglish.sfdc.client.dto.SfLicenseDto;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -20,6 +22,7 @@ import java.util.List;
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private final SalesforceClient salesforceClient;
 
     public List<Person> getPersons(String salesforcePurchaserId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
@@ -31,13 +34,39 @@ public class PersonService {
         return personRepository.getAllPersonsPerLevel(salesforcePurchaserId);
     }
 
-  public List<LicenseDto> getLicenseInfo(String salesforcePurchaserId, String organization) {
+  public List<LicenseDto>getLicenseInfo(String salesforcePurchaserId, String organization) {
       Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
       Preconditions.checkArgument(StringUtils.isNotBlank(organization), "organization should not be null or empty");
 
-      LicenseDto[] sfLicenseDtos =  getLicences(salesforcePurchaserId, organization);
+     SfLicenseDto[] sfLicenseDtos = salesforceClient.getPurchaserLicenses(salesforcePurchaserId, organization);
 
-      return Arrays.stream(sfLicenseDtos).collect(Collectors.toList());
+      return Arrays.stream(sfLicenseDtos)
+          .map(sfLicenseDto ->{
+
+            String names[] = sfLicenseDto.getName().split(" ");
+            String firstName = names != null && names.length > 0 ? names[0] : "";
+            String lastName = names != null && names.length > 1  ? names[1] : "";
+
+            org.joda.time.LocalDate startDate = sfLicenseDto.getStartDate();
+            org.joda.time.LocalDate endDate = sfLicenseDto.getEndDate();
+
+            LicenseDto licenseDto = LicenseDto.builder()
+              .person(PersonDto.builder()
+                  .firstName(firstName)
+                  .lastName(lastName)
+                  .email(sfLicenseDto.getStudent().getEmail())
+                  .build())
+              .licenseId(sfLicenseDto.getLicenseId())
+              .name(sfLicenseDto.getName())
+              .organization(sfLicenseDto.getOrganization())
+              .status(sfLicenseDto.getStatus())
+              .privateClasses(sfLicenseDto.getPrivateClasses())
+              .startDate(LocalDate.of(startDate.getYear(), startDate.getMonthOfYear(), startDate.getDayOfMonth()))
+              .endDate(LocalDate.of(endDate.getYear(), endDate.getMonthOfYear(), endDate.getDayOfMonth()))
+              .build();
+            return licenseDto;
+          })
+          .collect(Collectors.toList());
 
   }
 
@@ -50,11 +79,11 @@ public class PersonService {
                 .lastName("Redfield")
                 .email("brianred@gmail.com")
                 .build())
-            .id("a0a7c000004NaGGAA0")
+            .licenseId("a0a7c000004NaGGAA0")
             .name("PLID-1489253")
             .organization("Open Mundo")
             .status("Active")
-            .privateClasses(10)
+            .privateClasses("10")
             .startDate(LocalDate.of(2020,01,01))
             .endDate(LocalDate.of(2024,01,01))
             .build(),
@@ -65,11 +94,11 @@ public class PersonService {
                     .lastName("Cooperfiled")
                     .email("ryancop@gmail.com")
                     .build())
-                .id("b0a8c3068904NaGGAA0")
+                .licenseId("b0a8c3068904NaGGAA0")
                 .name("PLID-1233253")
                 .organization("Open Mundo")
                 .status("Active")
-                .privateClasses(20)
+                .privateClasses("20")
                 .startDate(LocalDate.of(2021,01,01))
                 .endDate(LocalDate.of(2022,01,01))
                 .build()};

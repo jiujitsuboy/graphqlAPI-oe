@@ -168,11 +168,11 @@ public class PersonResolverTest {
                     .lastName("Redfield")
                     .email("brianred@gmail.com")
                     .build())
-                .id("a0a7c000004NaGGAA0")
+                .licenseId("a0a7c000004NaGGAA0")
                 .name("PLID-1489253")
                 .organization("Open Mundo")
                 .status("Active")
-                .privateClasses(10)
+                .privateClasses("10")
                 .build(),
             LicenseDto.builder()
                 .person(PersonDto.builder()
@@ -181,11 +181,11 @@ public class PersonResolverTest {
                     .lastName("Cooperfiled")
                     .email("ryancop@gmail.com")
                     .build())
-                .id("b0a8c3068904NaGGAA0")
+                .licenseId("b0a8c3068904NaGGAA0")
                 .name("PLID-1233253")
                 .organization("Open Mundo")
                 .status("Active")
-                .privateClasses(20)
+                .privateClasses("20")
                 .build());
 
         Mockito.when(personService.getLicenseInfo(anyString(),anyString())).thenReturn(licenseDtoExpected);
@@ -200,7 +200,7 @@ public class PersonResolverTest {
             + "         }"
             + "         status"
             + "         organization"
-            + "         id"
+            + "         licenseId"
             + "         name"
             + "         privateClasses"
             + "         startDate"
@@ -215,7 +215,7 @@ public class PersonResolverTest {
         assertTrue(licenseDtos.size() == TWO_RECORDS);
 
         for (int licenceIndex = 0; licenceIndex < licenseDtos.size(); licenceIndex++) {
-            assertThat(licenseDtos.get(licenceIndex).getId(), is(licenseDtoExpected.get(licenceIndex).getId()));
+            assertThat(licenseDtos.get(licenceIndex).getLicenseId(), is(licenseDtoExpected.get(licenceIndex).getLicenseId()));
             assertThat(licenseDtos.get(licenceIndex).getName(), is(licenseDtoExpected.get(licenceIndex).getName()));
             assertThat(licenseDtos.get(licenceIndex).getPrivateClasses(), is(licenseDtoExpected.get(licenceIndex).getPrivateClasses()));
             assertThat(licenseDtos.get(licenceIndex).getOrganization(), is(licenseDtoExpected.get(licenceIndex).getOrganization()));

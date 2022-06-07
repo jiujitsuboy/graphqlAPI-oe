@@ -12,8 +12,8 @@ public class LicenseDto {
     private LocalDate startDate;
     private String organization;
     private String name;
-    private String id;
+    private String licenseId;
     private LocalDate endDate;
-    private int privateClasses;
+    private String privateClasses;
 }
 

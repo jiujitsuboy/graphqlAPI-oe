@@ -1,13 +1,14 @@
 package com.openenglish.hr.service;
 
 import com.openenglish.hr.common.dto.LicenseDto;
-import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.PersonDetail;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.persistence.repository.PersonRepository;
-import java.time.LocalDate;
+import com.openenglish.sfdc.client.SalesforceClient;
+import com.openenglish.sfdc.client.dto.SfLicenseDto;
+import com.openenglish.sfdc.client.dto.SfLicenseDto.StudentDto;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -25,6 +26,8 @@ public class PersonServiceTest {
 
     @Injectable
     private PersonRepository personRepository;
+    @Injectable
+    private SalesforceClient salesforceClient;
     @Tested
     private PersonService personService;
     @Rule
@@ -35,51 +38,51 @@ public class PersonServiceTest {
         String salesforcePurchaserId = "12345";
 
         List<Person> personsExpected = List.of(Person.builder()
-                        .id(1L)
-                        .firstName("joseph")
-                        .lastName("murray")
-                        .email("fake1@openenglish.com")
-                        .contactId("2")
-                        .details(PersonDetail.builder()
-                                .id(12L)
-                                .salesforcePurchaserId("12345")
-                                .build())
-                        .workingLevel(Level.builder()
-                                .id(1L)
-                                .active(true)
-                                .description("description1")
-                                .highScoreBoundary(new BigDecimal(100))
-                                .lowScoreBoundary(new BigDecimal(0))
-                                .levelNum("1")
-                                .name("level 1")
-                                .numImmersionRequired(123)
-                                .numLiveRequired(456)
-                                .sequence(111)
-                                .build())
-                        .build(),
-                Person.builder()
-                        .id(2L)
-                        .firstName("mary")
-                        .lastName("jonshon")
-                        .email("fake2@openenglish.com")
-                        .contactId("3")
-                        .details(PersonDetail.builder()
-                                .id(22L)
-                                .salesforcePurchaserId("12345")
-                                .build())
-                        .workingLevel(Level.builder()
-                                .id(2L)
-                                .active(true)
-                                .description("description2")
-                                .highScoreBoundary(new BigDecimal(100))
-                                .lowScoreBoundary(new BigDecimal(0))
-                                .levelNum("2")
-                                .name("level 2")
-                                .numImmersionRequired(321)
-                                .numLiveRequired(654)
-                                .sequence(222)
-                                .build())
-                        .build());
+                .id(1L)
+                .firstName("joseph")
+                .lastName("murray")
+                .email("fake1@openenglish.com")
+                .contactId("2")
+                .details(PersonDetail.builder()
+                    .id(12L)
+                    .salesforcePurchaserId("12345")
+                    .build())
+                .workingLevel(Level.builder()
+                    .id(1L)
+                    .active(true)
+                    .description("description1")
+                    .highScoreBoundary(new BigDecimal(100))
+                    .lowScoreBoundary(new BigDecimal(0))
+                    .levelNum("1")
+                    .name("level 1")
+                    .numImmersionRequired(123)
+                    .numLiveRequired(456)
+                    .sequence(111)
+                    .build())
+                .build(),
+            Person.builder()
+                .id(2L)
+                .firstName("mary")
+                .lastName("jonshon")
+                .email("fake2@openenglish.com")
+                .contactId("3")
+                .details(PersonDetail.builder()
+                    .id(22L)
+                    .salesforcePurchaserId("12345")
+                    .build())
+                .workingLevel(Level.builder()
+                    .id(2L)
+                    .active(true)
+                    .description("description2")
+                    .highScoreBoundary(new BigDecimal(100))
+                    .lowScoreBoundary(new BigDecimal(0))
+                    .levelNum("2")
+                    .name("level 2")
+                    .numImmersionRequired(321)
+                    .numLiveRequired(654)
+                    .sequence(222)
+                    .build())
+                .build());
 
         new Expectations() {{
             personRepository.findPersonByDetailsSalesforcePurchaserId(anyString);
@@ -151,54 +154,58 @@ public class PersonServiceTest {
         String salesforcePurchaserId = "12345";
         String organization = "Open Mundo";
 
-        LicenseDto[] licences = {LicenseDto.builder()
-            .person(PersonDto.builder()
-                .id(1234567890)
-                .firstName("Brian")
-                .lastName("Redfield")
-                .email("brianred@gmail.com")
-                .build())
-            .id("a0a7c000004NaGGAA0")
-            .name("PLID-1489253")
-            .organization("Open Mundo")
-            .status("Active")
-            .privateClasses(10)
-            .startDate(LocalDate.of(2020,01,01))
-            .endDate(LocalDate.of(2024,01,01))
-            .build(),
-            LicenseDto.builder()
-                .person(PersonDto.builder()
-                    .id(987654321)
-                    .firstName("Ryan")
-                    .lastName("Cooperfiled")
-                    .email("ryancop@gmail.com")
-                    .build())
-                .id("b0a8c3068904NaGGAA0")
-                .name("PLID-1233253")
-                .organization("Open Mundo")
-                .status("Active")
-                .privateClasses(20)
-                .startDate(LocalDate.of(2021,01,01))
-                .endDate(LocalDate.of(2022,01,01))
-                .build()};
+        SfLicenseDto sfLicenseDto1 = new SfLicenseDto();
 
-//        new Expectations() {{
-//            personService.getLicences(anyString, anyString);
-//            returns(licences);
-//        }};
+        SfLicenseDto.StudentDto studentDto1 = new StudentDto();
+        studentDto1.setContactId("1234567890");
+        studentDto1.setName("Brian Redfield");
+        studentDto1.setEmail("brianred@gmail.com");
+
+        sfLicenseDto1.setStartDate(new org.joda.time.LocalDate (2020,01,01));
+        sfLicenseDto1.setEndDate(new org.joda.time.LocalDate(2024,01,01));
+        sfLicenseDto1.setStudent(studentDto1);
+        sfLicenseDto1.setOrganization("Open Mundo");
+        sfLicenseDto1.setName("PLID-1489253");
+        sfLicenseDto1.setStatus("Active");
+        sfLicenseDto1.setLicenseId("a0a7c000004NaGGAA0");
+        sfLicenseDto1.setPrivateClasses("10");
+
+
+        SfLicenseDto sfLicenseDto2 = new SfLicenseDto();
+
+        SfLicenseDto.StudentDto studentDto2 = new StudentDto();
+        studentDto2.setContactId("1234567890");
+        studentDto2.setName("Ryan Cooperfiled");
+        studentDto2.setEmail("ryancop@gmail.com");
+
+        sfLicenseDto2.setStartDate(new org.joda.time.LocalDate (2021,01,01));
+        sfLicenseDto2.setEndDate(new org.joda.time.LocalDate(2022,01,01));
+        sfLicenseDto2.setStudent(studentDto2);
+        sfLicenseDto2.setOrganization("Open Mundo");
+        sfLicenseDto2.setName("PLID-1233253");
+        sfLicenseDto2.setStatus("Active");
+        sfLicenseDto2.setLicenseId("b0a8c3068904NaGGAA0");
+        sfLicenseDto2.setPrivateClasses("20");
+
+        SfLicenseDto [] licences = new SfLicenseDto[] {sfLicenseDto1, sfLicenseDto2};
+
+        new Expectations() {{
+            salesforceClient.getPurchaserLicenses(anyString, anyString);
+            returns(licences);
+        }};
 
         List<LicenseDto> licenseDtos =  personService.getLicenseInfo(salesforcePurchaserId,organization);
 
         assertTrue(licenseDtos.size() == TWO_RECORDS);
 
         for (int licenceIndex = 0; licenceIndex < licenseDtos.size(); licenceIndex++) {
-            assertThat(licenseDtos.get(licenceIndex).getId(), is(licences[licenceIndex].getId()));
+            assertThat(licenseDtos.get(licenceIndex).getLicenseId(), is(licences[licenceIndex].getLicenseId()));
             assertThat(licenseDtos.get(licenceIndex).getName(), is(licences[licenceIndex].getName()));
             assertThat(licenseDtos.get(licenceIndex).getPrivateClasses(), is(licences[licenceIndex].getPrivateClasses()));
             assertThat(licenseDtos.get(licenceIndex).getOrganization(), is(licences[licenceIndex].getOrganization()));
             assertThat(licenseDtos.get(licenceIndex).getStatus(), is(licences[licenceIndex].getStatus()));
-            assertThat(licenseDtos.get(licenceIndex).getStartDate(), is(licences[licenceIndex].getStartDate()));
-            assertThat(licenseDtos.get(licenceIndex).getEndDate(), is(licences[licenceIndex].getEndDate()));
+            assertThat(licenseDtos.get(licenceIndex).getStartDate().toString(), is(licences[licenceIndex].getStartDate().toString()));
+            assertThat(licenseDtos.get(licenceIndex).getEndDate().toString(), is(licences[licenceIndex].getEndDate().toString()));
         }
     }
 
