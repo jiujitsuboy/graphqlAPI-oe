@@ -21,6 +21,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class JwtTokenService {
+  public static final String CLAIM_CUSTOM_PURCHASER_ID = "custom:purchaserId";
   private final Logger logger = LoggerFactory.getLogger(getClass());
   private final String EMAIL = "email";
   private final String PURCHASER_ID = "custom:purchaserId";
@@ -54,10 +55,22 @@ public class JwtTokenService {
    *
    * @param accessToken JWT access token
    * @return User's purchaser Id
+   * @deprecated use @{@code getSalesforcePurchaserIdFromToken} instead
    */
+  @Deprecated
   public Optional<String> getUserPurchaserId(String accessToken) {
 
     return getUserRequest(accessToken, PURCHASER_ID);
+  }
+
+  /**
+   * Retrieve the user's purchaser Id using his JWT id token
+   *
+   * @param idToken JWT id token
+   * @return User's purchaser Id
+   */
+  public static String getSalesforcePurchaserIdFromToken(String idToken){
+    return JWT.decode(idToken).getClaim(CLAIM_CUSTOM_PURCHASER_ID).asString();
   }
 
   private Optional<String> getUserRequest(String accessToken, String userAttributeName) {
