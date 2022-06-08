@@ -170,6 +170,7 @@ public class PersonResolverTest {
             "    id " +
             "    name " +
             "    email " +
+            "    preferredLanguage " +
             "    }" +
             "}";
         String projection = "data.getHRManager";
@@ -181,6 +182,7 @@ public class PersonResolverTest {
         assertThat(hrManagerDto.getId(), is(optExpectedHRManager.get().getId()));
         assertThat(hrManagerDto.getName(), is(optExpectedHRManager.get().getName()));
         assertThat(hrManagerDto.getEmail(), is(optExpectedHRManager.get().getEmail()));
+        assertThat(hrManagerDto.getPreferredLanguage(), is(optExpectedHRManager.get().getPreferredLanguage()));
 
 
     }

@@ -151,7 +151,9 @@ public class PersonServiceTest {
         HRManagerDto expectedHRManager =  HRManagerDto.builder()
             .id("0037c0000155DX4AAM")
             .name("Andrea OM")
-            .email("andrea.bragoli+testt@openenglish.com").build();
+            .email("andrea.bragoli+testt@openenglish.com")
+            .preferredLanguage("en-US")
+            .build();
 
 
         Optional<HRManagerDto> optHrManagerDto = personService.getHRManager(salesforcePurchaserId,organization);
@@ -162,6 +164,7 @@ public class PersonServiceTest {
         assertThat(hrManagerDto.getId(), is(expectedHRManager.getId()));
         assertThat(hrManagerDto.getName(), is(expectedHRManager.getName()));
         assertThat(hrManagerDto.getEmail(), is(expectedHRManager.getEmail()));
+        assertThat(hrManagerDto.getPreferredLanguage(), is(expectedHRManager.getPreferredLanguage()));
     }
 
     @Test
