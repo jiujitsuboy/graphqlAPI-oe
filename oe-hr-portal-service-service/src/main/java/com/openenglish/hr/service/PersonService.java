@@ -41,33 +41,43 @@ public class PersonService {
      SfLicenseDto[] sfLicenseDtos = salesforceClient.getPurchaserLicenses(salesforcePurchaserId, organization);
 
       return Arrays.stream(sfLicenseDtos)
-          .map(sfLicenseDto ->{
-
-            String names[] = sfLicenseDto.getName().split(" ");
-            String firstName = names != null && names.length > 0 ? names[0] : "";
-            String lastName = names != null && names.length > 1  ? names[1] : "";
-
-            org.joda.time.LocalDate startDate = sfLicenseDto.getStartDate();
-            org.joda.time.LocalDate endDate = sfLicenseDto.getEndDate();
-
-            LicenseDto licenseDto = LicenseDto.builder()
-              .person(PersonDto.builder()
-                  .firstName(firstName)
-                  .lastName(lastName)
-                  .email(sfLicenseDto.getStudent().getEmail())
-                  .build())
-              .licenseId(sfLicenseDto.getLicenseId())
-              .name(sfLicenseDto.getName())
-              .organization(sfLicenseDto.getOrganization())
-              .status(sfLicenseDto.getStatus())
-              .privateClasses(sfLicenseDto.getPrivateClasses())
-              .startDate(LocalDate.of(startDate.getYear(), startDate.getMonthOfYear(), startDate.getDayOfMonth()))
-              .endDate(LocalDate.of(endDate.getYear(), endDate.getMonthOfYear(), endDate.getDayOfMonth()))
-              .build();
-            return licenseDto;
-          })
+          .map(this::mapLicenseDto)
           .collect(Collectors.toList());
+  }
 
+  /**
+   * Map from SfLicenseDto to LicenseDto object
+   * @param sfLicenseDto license information
+   * @return LicenseDto
+   */
+  private LicenseDto mapLicenseDto(SfLicenseDto sfLicenseDto){
+    final String ONE_THOUSAND_FIVE_HUNDRED = "1500";
+    final String UNLIMITED = "Unlimited";
+
+    String names[] = sfLicenseDto.getStudent().getName().split(" ");
+
+    String firstName = names != null && names.length > 0 ? names[0] : "";
+    String lastName = names != null && names.length > 1  ? names[1] : "";
+
+    String privateClasses = sfLicenseDto.getPrivateClasses().equals(ONE_THOUSAND_FIVE_HUNDRED) ? UNLIMITED : sfLicenseDto.getPrivateClasses();
+
+    org.joda.time.LocalDate startDate = sfLicenseDto.getStartDate();
+    org.joda.time.LocalDate endDate = sfLicenseDto.getEndDate();
+
+    return LicenseDto.builder()
+        .person(PersonDto.builder()
+            .firstName(firstName)
+            .lastName(lastName)
+            .email(sfLicenseDto.getStudent().getEmail())
+            .build())
+        .licenseId(sfLicenseDto.getLicenseId())
+        .name(sfLicenseDto.getName())
+        .organization(sfLicenseDto.getOrganization())
+        .status(sfLicenseDto.getStatus())
+        .privateClasses(privateClasses)
+        .startDate(LocalDate.of(startDate.getYear(), startDate.getMonthOfYear(), startDate.getDayOfMonth()))
+        .endDate(LocalDate.of(endDate.getYear(), endDate.getMonthOfYear(), endDate.getDayOfMonth()))
+        .build();
   }
 
   private LicenseDto[] getLicences(String salesforcePurchaserId, String organization) {

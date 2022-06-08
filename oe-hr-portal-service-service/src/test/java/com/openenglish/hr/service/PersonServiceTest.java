@@ -206,6 +206,9 @@ public class PersonServiceTest {
             assertThat(licenseDtos.get(licenceIndex).getStatus(), is(licences[licenceIndex].getStatus()));
             assertThat(licenseDtos.get(licenceIndex).getStartDate().toString(), is(licences[licenceIndex].getStartDate().toString()));
             assertThat(licenseDtos.get(licenceIndex).getEndDate().toString(), is(licences[licenceIndex].getEndDate().toString()));
+            assertThat(licenseDtos.get(licenceIndex).getPerson().getFirstName(), is(licences[licenceIndex].getStudent().getName().split(" ")[0]));
+            assertThat(licenseDtos.get(licenceIndex).getPerson().getLastName(), is(licences[licenceIndex].getStudent().getName().split(" ")[1]));
+            assertThat(licenseDtos.get(licenceIndex).getPerson().getEmail(), is(licences[licenceIndex].getStudent().getEmail()));
         }
     }
 
