@@ -38,6 +38,7 @@ public class PersonService {
       Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
       Preconditions.checkArgument(StringUtils.isNotBlank(organization), "organization should not be null or empty");
 
+
      SfLicenseDto[] sfLicenseDtos = salesforceClient.getPurchaserLicenses(salesforcePurchaserId, organization);
 
       return Arrays.stream(sfLicenseDtos)
@@ -55,66 +56,36 @@ public class PersonService {
     final String UNLIMITED = "Unlimited";
 
     String names[] = sfLicenseDto.getStudent().getName().split(" ");
-
     String firstName = names != null && names.length > 0 ? names[0] : "";
     String lastName = names != null && names.length > 1  ? names[1] : "";
-
-    String privateClasses = sfLicenseDto.getPrivateClasses().equals(ONE_THOUSAND_FIVE_HUNDRED) ? UNLIMITED : sfLicenseDto.getPrivateClasses();
-
-    org.joda.time.LocalDate startDate = sfLicenseDto.getStartDate();
-    org.joda.time.LocalDate endDate = sfLicenseDto.getEndDate();
+    String privateClasses = sfLicenseDto.getPrivateClasses();
+    String privateClassesHomologate = privateClasses != null && privateClasses.equals(ONE_THOUSAND_FIVE_HUNDRED) ? UNLIMITED : privateClasses;
+    String studentEmail =  sfLicenseDto.getStudent() != null ? sfLicenseDto.getStudent().getEmail() : "";
 
     return LicenseDto.builder()
         .person(PersonDto.builder()
             .firstName(firstName)
             .lastName(lastName)
-            .email(sfLicenseDto.getStudent().getEmail())
+            .email(studentEmail)
             .build())
         .licenseId(sfLicenseDto.getLicenseId())
         .name(sfLicenseDto.getName())
         .organization(sfLicenseDto.getOrganization())
         .status(sfLicenseDto.getStatus())
-        .privateClasses(privateClasses)
-        .startDate(LocalDate.of(startDate.getYear(), startDate.getMonthOfYear(), startDate.getDayOfMonth()))
-        .endDate(LocalDate.of(endDate.getYear(), endDate.getMonthOfYear(), endDate.getDayOfMonth()))
+        .privateClasses(privateClassesHomologate)
+        .startDate(convertFromJodaTimeToJavaTime(sfLicenseDto.getStartDate()))
+        .endDate(convertFromJodaTimeToJavaTime(sfLicenseDto.getEndDate()))
         .build();
   }
 
-  private LicenseDto[] getLicences(String salesforcePurchaserId, String organization) {
+  /**
+   * Convert from joda time to java time
+   * @param jodaLocalDate joda localDate
+   * @return java time localDate
+   */
+  private LocalDate convertFromJodaTimeToJavaTime(org.joda.time.LocalDate jodaLocalDate) {
 
-        LicenseDto[] licences = {LicenseDto.builder()
-            .person(PersonDto.builder()
-                .id(1234567890)
-                .firstName("Brian")
-                .lastName("Redfield")
-                .email("brianred@gmail.com")
-                .build())
-            .licenseId("a0a7c000004NaGGAA0")
-            .name("PLID-1489253")
-            .organization("Open Mundo")
-            .status("Active")
-            .privateClasses("10")
-            .startDate(LocalDate.of(2020,01,01))
-            .endDate(LocalDate.of(2024,01,01))
-            .build(),
-            LicenseDto.builder()
-                .person(PersonDto.builder()
-                    .id(987654321)
-                    .firstName("Ryan")
-                    .lastName("Cooperfiled")
-                    .email("ryancop@gmail.com")
-                    .build())
-                .licenseId("b0a8c3068904NaGGAA0")
-                .name("PLID-1233253")
-                .organization("Open Mundo")
-                .status("Active")
-                .privateClasses("20")
-                .startDate(LocalDate.of(2021,01,01))
-                .endDate(LocalDate.of(2022,01,01))
-                .build()};
-
-        return licences;
-    }
-
-
+    return jodaLocalDate != null ?
+        LocalDate.of(jodaLocalDate.getYear(), jodaLocalDate.getMonthOfYear(), jodaLocalDate.getDayOfMonth()) : null;
+  }
 }

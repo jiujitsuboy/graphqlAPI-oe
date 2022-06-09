@@ -55,5 +55,5 @@
       name: String,
       licenseId: String,
       endDate: String,
-      privateClasses: Int
+      privateClasses: String
   }
