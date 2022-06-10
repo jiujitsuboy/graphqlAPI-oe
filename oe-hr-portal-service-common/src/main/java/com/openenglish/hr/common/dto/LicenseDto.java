@@ -13,6 +13,7 @@ public class LicenseDto {
     private String organization;
     private String name;
     private String licenseId;
+    private long inactiveDays;
     private LocalDate endDate;
     private String privateClasses;
 }
