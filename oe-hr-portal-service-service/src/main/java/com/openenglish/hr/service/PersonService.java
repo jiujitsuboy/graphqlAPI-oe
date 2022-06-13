@@ -9,6 +9,7 @@ import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import com.openenglish.hr.persistence.repository.PersonRepository;
 import com.openenglish.sfdc.client.SalesforceClient;
+import com.openenglish.sfdc.client.dto.SfHrManagerInfoDto;
 import com.openenglish.sfdc.client.dto.SfLicenseDto;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -161,19 +162,10 @@ public class PersonService {
         LocalDate.of(jodaLocalDate.getYear(), jodaLocalDate.getMonthOfYear(),
             jodaLocalDate.getDayOfMonth()) : null;
   }
-  public Optional<HRManagerDto> getHRManager(String salesforcePurchaserId, String organization) {
+  public Optional<SfHrManagerInfoDto> getHRManager(String salesforcePurchaserId, String organization) {
     Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
     Preconditions.checkArgument(StringUtils.isNotBlank(organization), "organization should not be null or empty");
 
-    return getHRManagerInfo(salesforcePurchaserId, organization);
-  }
-
-  private Optional<HRManagerDto> getHRManagerInfo(String salesforcePurchaserId, String organization) {
-    return Optional.of(HRManagerDto.builder()
-        .id("0037c0000155DX4AAM")
-        .name("Andrea OM")
-        .email("andrea.bragoli+testt@openenglish.com")
-        .preferredLanguage("en-US")
-        .build());
+    return Optional.of(salesforceClient.getHrManagerInfo(salesforcePurchaserId, organization));
   }
 }

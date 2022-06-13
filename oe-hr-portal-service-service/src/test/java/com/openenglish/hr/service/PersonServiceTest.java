@@ -1,7 +1,6 @@
 package com.openenglish.hr.service;
 
 import com.openenglish.hr.common.dto.LicenseDto;
-import com.openenglish.hr.common.dto.HRManagerDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.PersonDetail;
@@ -10,6 +9,7 @@ import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import com.openenglish.hr.persistence.repository.PersonRepository;
 import com.openenglish.hr.service.util.InterfaceUtil;
 import com.openenglish.sfdc.client.SalesforceClient;
+import com.openenglish.sfdc.client.dto.SfHrManagerInfoDto;
 import com.openenglish.sfdc.client.dto.SfLicenseDto;
 import com.openenglish.sfdc.client.dto.SfLicenseDto.StudentDto;
 import java.time.Clock;
@@ -270,23 +270,27 @@ public class PersonServiceTest {
     public void getHRManager(){
         String salesforcePurchaserId = "12345";
         String organization = "Open Mundo";
-        HRManagerDto expectedHRManager =  HRManagerDto.builder()
-            .id("0037c0000155DX4AAM")
-            .name("Andrea OM")
-            .email("andrea.bragoli+testt@openenglish.com")
-            .preferredLanguage("en-US")
-            .build();
 
+        SfHrManagerInfoDto expectedSfHrManagerInfoDto = new SfHrManagerInfoDto();
+        expectedSfHrManagerInfoDto.setContactId("0037c0000155DX4AAM");
+        expectedSfHrManagerInfoDto.setName("Andrea OM");
+        expectedSfHrManagerInfoDto.setEmail("andrea.bragoli+testt@openenglish.com");
+        expectedSfHrManagerInfoDto.setPreferredLanguage("es-US");
 
-        Optional<HRManagerDto> optHrManagerDto = personService.getHRManager(salesforcePurchaserId,organization);
+        new Expectations() {{
+            salesforceClient.getHrManagerInfo(anyString, anyString);
+            returns(expectedSfHrManagerInfoDto);
+        }};
+
+        Optional<SfHrManagerInfoDto> optHrManagerDto = personService.getHRManager(salesforcePurchaserId,organization);
         assertTrue(optHrManagerDto.isPresent());
 
-        HRManagerDto hrManagerDto = optHrManagerDto.get();
+        SfHrManagerInfoDto hrManagerDto = optHrManagerDto.get();
 
-        assertThat(hrManagerDto.getId(), is(expectedHRManager.getId()));
-        assertThat(hrManagerDto.getName(), is(expectedHRManager.getName()));
-        assertThat(hrManagerDto.getEmail(), is(expectedHRManager.getEmail()));
-        assertThat(hrManagerDto.getPreferredLanguage(), is(expectedHRManager.getPreferredLanguage()));
+        assertThat(hrManagerDto.getContactId(), is(expectedSfHrManagerInfoDto.getContactId()));
+        assertThat(hrManagerDto.getName(), is(expectedSfHrManagerInfoDto.getName()));
+        assertThat(hrManagerDto.getEmail(), is(expectedSfHrManagerInfoDto.getEmail()));
+        assertThat(hrManagerDto.getPreferredLanguage(), is(expectedSfHrManagerInfoDto.getPreferredLanguage()));
     }
 
     @Test
