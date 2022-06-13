@@ -71,6 +71,11 @@
             <artifactId>lp2-commons-datatype</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.openenglish.sfdc</groupId>
+            <artifactId>sfdc-client</artifactId>
+        </dependency>
+
         <!--Testing dependencies-->
         <dependency>
             <groupId>org.jmockit</groupId>

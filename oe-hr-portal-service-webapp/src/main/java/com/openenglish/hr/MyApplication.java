@@ -1,5 +1,6 @@
 package com.openenglish.hr;
 
+import com.openenglish.sfdc.client.SalesforceClientConfig;
 import com.openenglish.substrate.SubstrateConfig;
 import com.openenglish.substrate.environment.EnvironmentPropertyConfigurer;
 import com.openenglish.substrate.logging.LogbackGraylogConfig;
@@ -16,7 +17,7 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import({ServiceConfig.class, SubstrateConfig.class,
-        LogbackGraylogConfig.class})
+        LogbackGraylogConfig.class, SalesforceClientConfig.class})
 public class MyApplication {
 
     /**

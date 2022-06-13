@@ -53,3 +53,14 @@
      MEDIUM_LOW
      LOW
   }
+
+ type License {
+      person: Person
+      status: String
+      startDate: String
+      organization: String
+      name: String,
+      licenseId: String,
+      endDate: String,
+      privateClasses: String
+  }
