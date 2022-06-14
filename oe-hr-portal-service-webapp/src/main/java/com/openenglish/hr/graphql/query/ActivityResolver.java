@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 public class ActivityResolver {
 
     private final ActivityService activityService;
-    private final Mapper mapper;
 
     @DgsData(parentType = "Query", field = "getAllActivitiesOverview")
     public ActivitiesOverviewDto getAllActivitiesOverview(String salesforcePurchaserId) {

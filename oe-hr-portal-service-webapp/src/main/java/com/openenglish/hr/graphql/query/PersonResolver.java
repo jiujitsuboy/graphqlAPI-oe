@@ -10,7 +10,6 @@ import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.service.PersonService;
 import com.openenglish.hr.service.mapper.Mapper;
-import com.openenglish.sfdc.client.dto.SfHrManagerInfoDto;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
@@ -48,12 +47,6 @@ public class PersonResolver {
 
     @DgsData(parentType = "Query", field = "getHRManager")
     public Optional<HRManagerDto> getHRManager(String salesforcePurchaserId, String organization) {
-
-        Optional<HRManagerDto> optHrManagerDto = Optional.empty();
-
-        Optional<SfHrManagerInfoDto> optSfHrManagerInfoDto = personService.getHRManager(salesforcePurchaserId, organization);
-
-        return optSfHrManagerInfoDto.map(sfHrManagerInfoDto -> Optional.of(mapper.map(sfHrManagerInfoDto, HRManagerDto.class)))
-            .orElse(optHrManagerDto);
+        return personService.getHRManager(salesforcePurchaserId, organization);
     }
 }

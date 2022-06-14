@@ -8,6 +8,7 @@ import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import com.openenglish.hr.persistence.repository.PersonRepository;
+import com.openenglish.hr.service.mapper.Mapper;
 import com.openenglish.sfdc.client.SalesforceClient;
 import com.openenglish.sfdc.client.dto.SfHrManagerInfoDto;
 import com.openenglish.sfdc.client.dto.SfLicenseDto;
@@ -34,6 +35,7 @@ public class PersonService {
   private final SalesforceClient salesforceClient;
   private final ActivityService activityService;
   private final Clock clock;
+  private final Mapper mapper;
 
   public List<Person> getPersons(String salesforcePurchaserId) {
     Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
@@ -162,10 +164,14 @@ public class PersonService {
         LocalDate.of(jodaLocalDate.getYear(), jodaLocalDate.getMonthOfYear(),
             jodaLocalDate.getDayOfMonth()) : null;
   }
-  public Optional<SfHrManagerInfoDto> getHRManager(String salesforcePurchaserId, String organization) {
+  public Optional<HRManagerDto> getHRManager(String salesforcePurchaserId, String organization) {
     Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
     Preconditions.checkArgument(StringUtils.isNotBlank(organization), "organization should not be null or empty");
 
-    return Optional.of(salesforceClient.getHrManagerInfo(salesforcePurchaserId, organization));
+    Optional<HRManagerDto> optHrManagerDto = Optional.empty();
+    Optional<SfHrManagerInfoDto> opSfHrManagerInfoDto = Optional.of(salesforceClient.getHrManagerInfo(salesforcePurchaserId, organization));
+
+    return opSfHrManagerInfoDto.map(sfHrManagerInfoDto -> Optional.of(mapper.map(sfHrManagerInfoDto, HRManagerDto.class)))
+        .orElse(optHrManagerDto);
   }
 }

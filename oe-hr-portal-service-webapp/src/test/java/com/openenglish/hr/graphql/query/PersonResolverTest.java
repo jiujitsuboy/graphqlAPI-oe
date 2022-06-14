@@ -14,7 +14,6 @@ import com.openenglish.hr.persistence.entity.PersonDetail;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.service.PersonService;
 import com.openenglish.hr.service.mapper.MappingConfig;
-import com.openenglish.sfdc.client.dto.SfHrManagerInfoDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -228,13 +227,12 @@ public class PersonResolverTest {
     @Test
     public void getHRManager() {
 
-        SfHrManagerInfoDto sfHrManagerInfoDto = new SfHrManagerInfoDto();
-        sfHrManagerInfoDto.setContactId("0037c0000155DX4AAM");
-        sfHrManagerInfoDto.setName("Andrea OM");
-        sfHrManagerInfoDto.setEmail("andrea.bragoli+testt@openenglish.com");
-        sfHrManagerInfoDto.setPreferredLanguage("es-US");
-
-        Optional<SfHrManagerInfoDto> optExpectedHRManager =  Optional.of(sfHrManagerInfoDto);
+        Optional<HRManagerDto> optExpectedHRManager =  Optional.of(HRManagerDto.builder()
+                .id("0037c0000155DX4AAM")
+                .name("Andrea OM")
+                .email("andrea.bragoli+testt@openenglish.com")
+                .preferredLanguage("es-US")
+            .build());
 
         Mockito.when(personService.getHRManager(anyString(), anyString())).thenReturn(optExpectedHRManager);
 
@@ -252,7 +250,7 @@ public class PersonResolverTest {
 
         assertNotNull(hrManagerDto);
 
-        assertThat(hrManagerDto.getId(), is(optExpectedHRManager.get().getContactId()));
+        assertThat(hrManagerDto.getId(), is(optExpectedHRManager.get().getId()));
         assertThat(hrManagerDto.getName(), is(optExpectedHRManager.get().getName()));
         assertThat(hrManagerDto.getEmail(), is(optExpectedHRManager.get().getEmail()));
         assertThat(hrManagerDto.getPreferredLanguage(), is(optExpectedHRManager.get().getPreferredLanguage()));
