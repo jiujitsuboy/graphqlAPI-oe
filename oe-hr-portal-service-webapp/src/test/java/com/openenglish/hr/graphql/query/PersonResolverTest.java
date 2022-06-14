@@ -4,6 +4,8 @@ import com.jayway.jsonpath.TypeRef;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
+import com.openenglish.hr.common.dto.LicenseDto;
+import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
@@ -23,6 +25,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -150,6 +153,73 @@ public class PersonResolverTest {
 
             assertEquals(expected.getLevelName(), received.getLevelName());
             assertEquals(expected.getTotalNumber(), received.getTotalNumber());
+        }
+    }
+
+    @Test
+    public void getLicenseInfo(){
+
+        final int TWO_RECORDS = 2;
+
+        List<LicenseDto> licenseDtoExpected = List.of(LicenseDto.builder()
+                .person(PersonDto.builder()
+                    .id(1234567890)
+                    .firstName("Brian")
+                    .lastName("Redfield")
+                    .email("brianred@gmail.com")
+                    .build())
+                .licenseId("a0a7c000004NaGGAA0")
+                .name("PLID-1489253")
+                .organization("Open Mundo")
+                .status("Active")
+                .privateClasses("10")
+                .build(),
+            LicenseDto.builder()
+                .person(PersonDto.builder()
+                    .id(987654321)
+                    .firstName("Ryan")
+                    .lastName("Cooperfiled")
+                    .email("ryancop@gmail.com")
+                    .build())
+                .licenseId("b0a8c3068904NaGGAA0")
+                .name("PLID-1233253")
+                .organization("Open Mundo")
+                .status("Active")
+                .privateClasses("20")
+                .build());
+
+        Mockito.when(personService.getLicenseInfo(anyString(),anyString())).thenReturn(licenseDtoExpected);
+
+        String query = "{"
+            + "     getLicenseInfo(salesforcePurchaserId:\"12345\", organization: \"Open Mundo\"){"
+            + "          person{"
+            + "             id"
+            + "             firstName"
+            + "             lastName"
+            + "             email"
+            + "         }"
+            + "         status"
+            + "         organization"
+            + "         licenseId"
+            + "         name"
+            + "         privateClasses"
+            + "         startDate"
+            + "         endDate"
+            + "  }"
+            + "}";
+        String projection = "data.getLicenseInfo[*]";
+
+        List<LicenseDto> licenseDtos = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
+        });
+
+        assertTrue(licenseDtos.size() == TWO_RECORDS);
+
+        for (int licenceIndex = 0; licenceIndex < licenseDtos.size(); licenceIndex++) {
+            assertThat(licenseDtos.get(licenceIndex).getLicenseId(), is(licenseDtoExpected.get(licenceIndex).getLicenseId()));
+            assertThat(licenseDtos.get(licenceIndex).getName(), is(licenseDtoExpected.get(licenceIndex).getName()));
+            assertThat(licenseDtos.get(licenceIndex).getPrivateClasses(), is(licenseDtoExpected.get(licenceIndex).getPrivateClasses()));
+            assertThat(licenseDtos.get(licenceIndex).getOrganization(), is(licenseDtoExpected.get(licenceIndex).getOrganization()));
+            assertThat(licenseDtos.get(licenceIndex).getStatus(), is(licenseDtoExpected.get(licenceIndex).getStatus()));
         }
     }
 }
