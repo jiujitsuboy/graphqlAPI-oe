@@ -10,7 +10,6 @@ import com.openenglish.hr.common.dto.PersonActivityTotalDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.common.dto.YearActivityStatisticsDto;
 import com.openenglish.hr.service.ActivityService;
-import com.openenglish.hr.service.mapper.Mapper;
 import com.openenglish.hr.service.util.ActivityTypeMapper;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
