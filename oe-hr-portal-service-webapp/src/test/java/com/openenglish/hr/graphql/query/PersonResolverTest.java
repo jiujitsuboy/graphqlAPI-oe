@@ -4,6 +4,7 @@ import com.jayway.jsonpath.TypeRef;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
+import com.openenglish.hr.common.dto.HRManagerDto;
 import com.openenglish.hr.common.dto.LicenseDto;
 import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.PersonsPerLevelDto;
@@ -221,5 +222,37 @@ public class PersonResolverTest {
             assertThat(licenseDtos.get(licenceIndex).getOrganization(), is(licenseDtoExpected.get(licenceIndex).getOrganization()));
             assertThat(licenseDtos.get(licenceIndex).getStatus(), is(licenseDtoExpected.get(licenceIndex).getStatus()));
         }
+    }
+
+    @Test
+    public void getHRManager() {
+
+        Optional<HRManagerDto> optExpectedHRManager =  Optional.of(HRManagerDto.builder()
+                .id("0037c0000155DX4AAM")
+                .name("Andrea OM")
+                .email("andrea.bragoli+testt@openenglish.com")
+                .preferredLanguage("es-US")
+            .build());
+
+        Mockito.when(personService.getHRManager(anyString(), anyString())).thenReturn(optExpectedHRManager);
+
+        String query = "{ " +
+            "  getHRManager(salesforcePurchaserId:\"12345\", organization: \"Open Mundo\"){ " +
+            "    id " +
+            "    name " +
+            "    email " +
+            "    preferredLanguage " +
+            "    }" +
+            "}";
+        String projection = "data.getHRManager";
+
+        HRManagerDto hrManagerDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, HRManagerDto.class);
+
+        assertNotNull(hrManagerDto);
+
+        assertThat(hrManagerDto.getId(), is(optExpectedHRManager.get().getId()));
+        assertThat(hrManagerDto.getName(), is(optExpectedHRManager.get().getName()));
+        assertThat(hrManagerDto.getEmail(), is(optExpectedHRManager.get().getEmail()));
+        assertThat(hrManagerDto.getPreferredLanguage(), is(optExpectedHRManager.get().getPreferredLanguage()));
     }
 }

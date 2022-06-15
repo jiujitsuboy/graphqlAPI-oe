@@ -40,6 +40,13 @@
     inactiveDays: Int
  }
 
+ type HRManager {
+    id: String
+    name: String
+    email: String
+    preferredLanguage: String
+ }
+
  enum UsageLevel{
      HIGH
      MEDIUM_HIGH

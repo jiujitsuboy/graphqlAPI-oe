@@ -20,4 +20,12 @@
             <b>salesforcePurchaserId</b>
         </field>
     </mapping>
+    <mapping>
+        <class-a>com.openenglish.sfdc.client.dto.SfHrManagerInfoDto</class-a>
+        <class-b>com.openenglish.hr.common.dto.HRManagerDto</class-b>
+        <field>
+            <a>contactId</a>
+            <b>id</b>
+        </field>
+    </mapping>
 </mappings>

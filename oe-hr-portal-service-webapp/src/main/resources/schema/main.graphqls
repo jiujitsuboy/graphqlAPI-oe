@@ -9,4 +9,5 @@ type Query{
   getUsageLevelOverviewPerPerson(salesforcePurchaserId: String!, contactId: String!) : PersonsUsageLevelOverview
   getLicensesOverview(salesforcePurchaserId: String!, organization: String!) : LicensesOverview!
   getLicenseInfo(salesforcePurchaserId: String!, organization: String!): [License]!
+  getHRManager(salesforcePurchaserId: String!, organization: String!): HRManager
 }

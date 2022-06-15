@@ -1,5 +1,6 @@
 package com.openenglish.hr.service;
 
+import com.openenglish.hr.common.dto.HRManagerDto;
 import com.openenglish.hr.common.dto.LicenseDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
@@ -7,8 +8,11 @@ import com.openenglish.hr.persistence.entity.PersonDetail;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import com.openenglish.hr.persistence.repository.PersonRepository;
+import com.openenglish.hr.service.mapper.Mapper;
+import com.openenglish.hr.service.mapper.MappingConfig;
 import com.openenglish.hr.service.util.InterfaceUtil;
 import com.openenglish.sfdc.client.SalesforceClient;
+import com.openenglish.sfdc.client.dto.SfHrManagerInfoDto;
 import com.openenglish.sfdc.client.dto.SfLicenseDto;
 import com.openenglish.sfdc.client.dto.SfLicenseDto.StudentDto;
 import java.time.Clock;
@@ -18,9 +22,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Optional;
+import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Tested;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -39,12 +45,20 @@ public class PersonServiceTest {
     private SalesforceClient salesforceClient;
     @Injectable
     private ActivityService activityService;
-    @Tested
-    private PersonService personService;
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
     @Injectable
     private Clock clock;
+
+    private Mapper mapper = new MappingConfig().mapper();
+    private PersonService personService;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
+
+    @Before
+    public void init(){
+        personService = new PersonService(personRepository, salesforceClient, activityService,clock,mapper);
+    }
 
     @Test
     public void getPersons(){
@@ -262,5 +276,52 @@ public class PersonServiceTest {
         String salesforcePurchaserId = "12345";
         String organization = "";
         personService.getLicenseInfo(salesforcePurchaserId,organization);
+    }
+
+    @Test
+    public void getHRManager(){
+        String salesforcePurchaserId = "12345";
+        String organization = "Open Mundo";
+
+        SfHrManagerInfoDto expectedSfHrManagerInfoDto = new SfHrManagerInfoDto();
+        expectedSfHrManagerInfoDto.setContactId("0037c0000155DX4AAM");
+        expectedSfHrManagerInfoDto.setName("Andrea OM");
+        expectedSfHrManagerInfoDto.setEmail("andrea.bragoli+testt@openenglish.com");
+        expectedSfHrManagerInfoDto.setPreferredLanguage("es-US");
+
+        Deencapsulation.setField(personService, "mapper", mapper);
+
+        new Expectations() {{
+            salesforceClient.getHrManagerInfo(anyString, anyString);
+            returns(expectedSfHrManagerInfoDto);
+        }};
+
+        Optional<HRManagerDto> optHrManagerDto = personService.getHRManager(salesforcePurchaserId,organization);
+        assertTrue(optHrManagerDto.isPresent());
+
+        HRManagerDto hrManagerDto = optHrManagerDto.get();
+
+        assertThat(hrManagerDto.getId(), is(expectedSfHrManagerInfoDto.getContactId()));
+        assertThat(hrManagerDto.getName(), is(expectedSfHrManagerInfoDto.getName()));
+        assertThat(hrManagerDto.getEmail(), is(expectedSfHrManagerInfoDto.getEmail()));
+        assertThat(hrManagerDto.getPreferredLanguage(), is(expectedSfHrManagerInfoDto.getPreferredLanguage()));
+    }
+
+    @Test
+    public void getHRManagerEmptyPurchaserId(){
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
+        String salesforcePurchaserId = "";
+        String organization = "Open Mundo";
+        personService.getHRManager(salesforcePurchaserId,organization);
+    }
+
+    @Test
+    public void getHRManagerEmptyOrganization(){
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("organization should not be null or empty");
+        String salesforcePurchaserId = "12345";
+        String organization = "";
+        personService.getHRManager(salesforcePurchaserId,organization);
     }
 }
