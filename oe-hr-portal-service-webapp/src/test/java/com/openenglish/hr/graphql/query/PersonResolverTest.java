@@ -5,13 +5,10 @@ import com.netflix.graphql.dgs.DgsQueryExecutor;
 
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import com.openenglish.hr.common.dto.HRManagerDto;
+import com.openenglish.hr.common.dto.LevelDto;
 import com.openenglish.hr.common.dto.LicenseDto;
 import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.PersonsPerLevelDto;
-import com.openenglish.hr.persistence.entity.Level;
-import com.openenglish.hr.persistence.entity.Person;
-import com.openenglish.hr.persistence.entity.PersonDetail;
-import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.service.PersonService;
 import com.openenglish.hr.service.mapper.MappingConfig;
 import org.junit.Test;
@@ -43,17 +40,14 @@ public class PersonResolverTest {
 
     @Test
     public void getPersons() {
-        List<Person> persons = List.of(Person.builder()
+        List<PersonDto> persons = List.of(PersonDto.builder()
                         .id(1L)
                         .firstName("joseph")
                         .lastName("murray")
                         .email("fake1@openenglish.com")
                         .contactId("2")
-                        .details(PersonDetail.builder()
-                                .id(12L)
-                                .salesforcePurchaserId("12345")
-                                .build())
-                        .workingLevel(Level.builder()
+                        .salesforcePurchaserId("12345")
+                        .workingLevel(LevelDto.builder()
                                 .id(1L)
                                 .active(true)
                                 .description("description1")
@@ -66,17 +60,14 @@ public class PersonResolverTest {
                                 .sequence(111)
                                 .build())
                         .build(),
-                Person.builder()
+            PersonDto.builder()
                         .id(2L)
                         .firstName("mary")
                         .lastName("jonshon")
                         .email("fake2@openenglish.com")
                         .contactId("3")
-                        .details(PersonDetail.builder()
-                                .id(22L)
-                                .salesforcePurchaserId("12345")
-                                .build())
-                        .workingLevel(Level.builder()
+                        .salesforcePurchaserId("12345")
+                        .workingLevel(LevelDto.builder()
                                 .id(2L)
                                 .active(true)
                                 .description("description2")
@@ -108,30 +99,18 @@ public class PersonResolverTest {
 
     @Test
     public void getAllPersonsByLevel() {
+        List<PersonsPerLevelDto> expectedPersonsPerLevelDtos = List.of(
+            PersonsPerLevelDto.builder()
+                .levelName("Level 1")
+                .totalNumber(42)
+                .build(),
+            PersonsPerLevelDto.builder()
+                .levelName("Level 2")
+                .totalNumber(56)
+                .build()
+        );
 
-        List<PersonsPerLevel> personsPerLevelExpected = List.of(new PersonsPerLevel() {
-            @Override
-            public String getLevelName() {
-                return "Level 1";
-            }
-
-            @Override
-            public long getTotalNumber() {
-                return 42;
-            }
-        }, new PersonsPerLevel() {
-            @Override
-            public String getLevelName() {
-                return "Level 2";
-            }
-
-            @Override
-            public long getTotalNumber() {
-                return 56;
-            }
-        });
-
-        Mockito.when(personService.getAllPersonsByLevel(anyString())).thenReturn(personsPerLevelExpected);
+        Mockito.when(personService.getAllPersonsByLevel(anyString())).thenReturn(expectedPersonsPerLevelDtos);
 
         String query = "{ " +
                 "  getAllPersonsByLevel (salesforcePurchaserId: \"12345\"){ " +
@@ -142,15 +121,15 @@ public class PersonResolverTest {
         String projection = "data.getAllPersonsByLevel[*]";
 
 
-        List<PersonsPerLevelDto> personsPerLevel = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
+        List<PersonsPerLevelDto> personsPerLevelDtos = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, new TypeRef<>() {
         });
 
-        assertNotNull(personsPerLevel);
+        assertNotNull(personsPerLevelDtos);
 
-        for (int index = 0; index < personsPerLevel.size(); index++) {
+        for (int index = 0; index < personsPerLevelDtos.size(); index++) {
 
-            PersonsPerLevel expected = personsPerLevelExpected.get(index);
-            PersonsPerLevelDto received = personsPerLevel.get(index);
+            PersonsPerLevelDto expected = expectedPersonsPerLevelDtos.get(index);
+            PersonsPerLevelDto received = personsPerLevelDtos.get(index);
 
             assertEquals(expected.getLevelName(), received.getLevelName());
             assertEquals(expected.getTotalNumber(), received.getTotalNumber());

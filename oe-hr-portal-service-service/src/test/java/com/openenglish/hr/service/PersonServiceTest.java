@@ -2,6 +2,8 @@ package com.openenglish.hr.service;
 
 import com.openenglish.hr.common.dto.HRManagerDto;
 import com.openenglish.hr.common.dto.LicenseDto;
+import com.openenglish.hr.common.dto.PersonDto;
+import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.PersonDetail;
@@ -116,7 +118,7 @@ public class PersonServiceTest {
             returns(personsExpected);
         }};
 
-        List<Person> persons =  personService.getPersons(salesforcePurchaserId);
+        List<PersonDto> persons =  personService.getPersons(salesforcePurchaserId);
 
         assertNotNull(persons);
     }
@@ -126,7 +128,7 @@ public class PersonServiceTest {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
         String salesforcePurchaserId = "";
-        List<Person> persons =  personService.getPersons(salesforcePurchaserId);
+        personService.getPersons(salesforcePurchaserId);
     }
 
     @Test
@@ -161,7 +163,7 @@ public class PersonServiceTest {
             returns(personsPerLevelExpected);
         }};
 
-        List<PersonsPerLevel> personsPerLevels =  personService.getAllPersonsByLevel(salesforcePurchaserId);
+        List<PersonsPerLevelDto> personsPerLevels =  personService.getAllPersonsByLevel(salesforcePurchaserId);
 
         assertNotNull(personsPerLevels);
 
@@ -172,7 +174,7 @@ public class PersonServiceTest {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
         String salesforcePurchaserId = "";
-        List<PersonsPerLevel> personsPerLevels =  personService.getAllPersonsByLevel(salesforcePurchaserId);
+        personService.getAllPersonsByLevel(salesforcePurchaserId);
     }
 
     @Test

@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.openenglish.hr.common.dto.LicenseDto;
 import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.HRManagerDto;
+import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
@@ -37,14 +38,23 @@ public class PersonService {
   private final Clock clock;
   private final Mapper mapper;
 
-  public List<Person> getPersons(String salesforcePurchaserId) {
+  public List<PersonDto> getPersons(String salesforcePurchaserId) {
     Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-    return personRepository.findPersonByDetailsSalesforcePurchaserId(salesforcePurchaserId);
+
+    List<Person> persons = personRepository.findPersonByDetailsSalesforcePurchaserId(salesforcePurchaserId);
+    return persons.stream()
+        .map(person -> mapper.map(person, PersonDto.class))
+        .collect(Collectors.toList());
   }
 
-  public List<PersonsPerLevel> getAllPersonsByLevel(String salesforcePurchaserId) {
+  public List<PersonsPerLevelDto> getAllPersonsByLevel(String salesforcePurchaserId) {
     Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-    return personRepository.getAllPersonsPerLevel(salesforcePurchaserId);
+
+    List<PersonsPerLevel> personsByLevel = personRepository.getAllPersonsPerLevel(salesforcePurchaserId);
+
+    return personsByLevel.stream()
+        .map(personByLevel -> mapper.map(personByLevel, PersonsPerLevelDto.class))
+        .collect(Collectors.toList());
   }
 
   public List<LicenseDto> getLicenseInfo(String salesforcePurchaserId, String organization) {
