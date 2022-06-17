@@ -22,6 +22,7 @@
 
 <logger name="org.hibernate" level="WARN" />
 <logger name="org.springframework" level="WARN" />
+<logger name="org.springframework.security" level="DEBUG" />
 
 <root level="INFO">
     <appender-ref ref="STDOUT"/>

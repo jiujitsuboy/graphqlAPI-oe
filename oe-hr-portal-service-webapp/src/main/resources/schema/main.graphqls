@@ -1,10 +1,15 @@
+directive @SecuredByClaim(
+  claim: String = "custom:purchaserId"
+) on ARGUMENT_DEFINITION
+
 type Query{
-  getPersons(salesforcePurchaserId: String!): [Person]!
-  getAllPersonsByLevel(salesforcePurchaserId: String!): [PersonsPerLevel]!
-  getAllActivitiesOverview(salesforcePurchaserId: String!): ActivitiesOverview
-  getYearActivityStatistics(salesforcePurchaserId: String!, year: Int!, activity: ActivityType!, contactId: String): YearActivityStatistics!
-  getTopStudentsByActivityStatistics(salesforcePurchaserId: String!, year: Int!, month: Int!, activities: [ActivityType]!, top: Int!): [PersonActivitiesTotal]!
-  getUsageLevelOverview(salesforcePurchaserId: String!) : UsageLevelOverview!
-  getLeastActiveStudents(salesforcePurchaserId: String!) : [PersonsUsageLevelOverview]!
-  getUsageLevelOverviewPerPerson(salesforcePurchaserId: String!, contactId: String!) : PersonsUsageLevelOverview
+  getPersons(salesforcePurchaserId: String! @SecuredByClaim): [Person]!
+  getAllPersonsByLevel(salesforcePurchaserId: String! @SecuredByClaim): [PersonsPerLevel]!
+  getAllActivitiesOverview(salesforcePurchaserId: String! @SecuredByClaim): ActivitiesOverview
+  getYearActivityStatistics(salesforcePurchaserId: String! @SecuredByClaim, year: Int!, activity: ActivityType!, contactId: String): YearActivityStatistics!
+  getTopStudentsByActivityStatistics(salesforcePurchaserId: String! @SecuredByClaim, year: Int!, month: Int!, activities: [ActivityType]!, top: Int!): [PersonActivitiesTotal]!
+  getUsageLevelOverview(salesforcePurchaserId: String! @SecuredByClaim) : UsageLevelOverview!
+  getLeastActiveStudents(salesforcePurchaserId: String! @SecuredByClaim)  : [PersonsUsageLevelOverview]!
+  getUsageLevelOverviewPerPerson(salesforcePurchaserId: String! @SecuredByClaim, contactId: String!) : PersonsUsageLevelOverview
+  hello(salesforcePurchaserId: String! @SecuredByClaim): String!
 }
