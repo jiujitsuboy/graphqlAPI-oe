@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 
 import java.time.Clock;
@@ -28,8 +27,6 @@ public class ServiceConfig {
         AwsBasicCredentials awsBasicCredentials = AwsBasicCredentials.create(awsAccessID, awsSecretAccessKey);
         return CognitoIdentityProviderClient.builder()
                 //Region not specified explicity, it is grab of the default region configured in the credentials file of the user profile
-                //TODO : setup env vars. LE: it does not pick up the region in ~/oe-hr.props
-                .region(Region.EU_WEST_1)
                 .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
                 .build();
     }

@@ -17,7 +17,7 @@ liquibase.contexts=dev
 connection.pool.maxWait=5000
 connection.pool.initialSize=1
 connection.pool.maxActive=10
-security.hrportal.enable=false # disable access token checks 
+hr-portal.security.enabled=false # to disable security layer, by default it is enabled 
 ```
 
 ### Database Setup

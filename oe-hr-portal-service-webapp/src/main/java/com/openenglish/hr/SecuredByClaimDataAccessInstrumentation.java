@@ -20,6 +20,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class SecuredByClaimDataAccessInstrumentation extends SimpleInstrumentation {
 
+    private final SecurityConfigProperties securityConfigProperties;
     private final JwtTokenService jwtTokenService;
 
     Map<String, String> extractClaimCheckBindings(InstrumentationFieldFetchParameters parameters){
@@ -42,8 +43,8 @@ public class SecuredByClaimDataAccessInstrumentation extends SimpleInstrumentati
 
     @Override
     public DataFetcher<?> instrumentDataFetcher(DataFetcher<?> dataFetcher, InstrumentationFieldFetchParameters parameters) {
-        // We only care about user code
-        if (parameters.isTrivialDataFetcher()) {
+        // Only if security layer is enabled and only on user code
+        if (!securityConfigProperties.isEnabled() || parameters.isTrivialDataFetcher()) {
             return dataFetcher;
         }
 
