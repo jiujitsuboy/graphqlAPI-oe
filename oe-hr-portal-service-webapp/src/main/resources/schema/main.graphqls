@@ -11,3 +11,7 @@ type Query{
   getLicenseInfo(salesforcePurchaserId: String!, organization: String!): [License]!
   getHRManager(salesforcePurchaserId: String!, organization: String!): HRManager
 }
+
+type Mutation {
+  sendContactUsMessage(salesforcePurchaserId: String!, name: String!, email: String!, message: String!): MutationResult!
+}
