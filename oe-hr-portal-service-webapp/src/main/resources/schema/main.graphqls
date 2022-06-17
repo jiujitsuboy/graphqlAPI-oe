@@ -9,7 +9,10 @@ type Query{
   getYearActivityStatistics(salesforcePurchaserId: String! @SecuredByClaim, year: Int!, activity: ActivityType!, contactId: String): YearActivityStatistics!
   getTopStudentsByActivityStatistics(salesforcePurchaserId: String! @SecuredByClaim, year: Int!, month: Int!, activities: [ActivityType]!, top: Int!): [PersonActivitiesTotal]!
   getUsageLevelOverview(salesforcePurchaserId: String! @SecuredByClaim) : UsageLevelOverview!
-  getLeastActiveStudents(salesforcePurchaserId: String! @SecuredByClaim)  : [PersonsUsageLevelOverview]!
+  getLeastActiveStudents(salesforcePurchaserId: String! @SecuredByClaim) : [PersonsUsageLevelOverview]!
   getUsageLevelOverviewPerPerson(salesforcePurchaserId: String! @SecuredByClaim, contactId: String!) : PersonsUsageLevelOverview
+  getLicensesOverview(salesforcePurchaserId: String! @SecuredByClaim, organization: String!) : LicensesOverview!
+  getLicenseInfo(salesforcePurchaserId: String! @SecuredByClaim, organization: String!): [License]!
+  getHRManager(salesforcePurchaserId: String! @SecuredByClaim, organization: String!): HRManager
   hello(salesforcePurchaserId: String! @SecuredByClaim): String!
 }

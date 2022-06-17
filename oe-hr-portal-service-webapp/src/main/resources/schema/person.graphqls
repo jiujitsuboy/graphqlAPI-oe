@@ -40,9 +40,27 @@
     inactiveDays: Int
  }
 
+ type HRManager {
+    id: String
+    name: String
+    email: String
+    preferredLanguage: String
+ }
+
  enum UsageLevel{
      HIGH
      MEDIUM_HIGH
      MEDIUM_LOW
      LOW
+  }
+
+ type License {
+      person: Person
+      status: String
+      startDate: String
+      organization: String
+      name: String,
+      licenseId: String,
+      endDate: String,
+      privateClasses: String
   }

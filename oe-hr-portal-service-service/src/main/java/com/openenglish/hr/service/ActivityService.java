@@ -201,7 +201,7 @@ public class ActivityService {
      */
     public UsageLevelOverviewDto getUsageLevelOverview(String salesforcePurchaserId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, Collections.emptySet());
+        List<UsageLevel> usageLevels = getMaxActivityDateGroupedByPerson(salesforcePurchaserId, Collections.emptySet());
 
         Map<UsageLevelEnum, Long> usageLevelCountingByPersons = usageLevels.stream()
             .collect(Collectors.groupingBy(this::mapStudentsToUsageLevel,
@@ -225,7 +225,7 @@ public class ActivityService {
         LocalDateTime currentTime = LocalDateTime.now(clock);
 
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        List<UsageLevel> usageLevels = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, Collections.emptySet());
+        List<UsageLevel> usageLevels = getMaxActivityDateGroupedByPerson(salesforcePurchaserId, Collections.emptySet());
 
         List<PersonUsageLevelDto> personUsageLevelDtos = usageLevels.stream()
                 .map(usageLevel ->  PersonUsageLevelDtoMapper.map(usageLevel, currentTime, this::mapStudentsToUsageLevel))
@@ -255,7 +255,7 @@ public class ActivityService {
         Optional<PersonUsageLevelDto> personUsageLevelDto = Optional.empty();
         LocalDateTime currentTime = LocalDateTime.now(clock);
 
-        List<UsageLevel> usageLevel = personCourseAuditRepository.findMaxActivityDateGroupedByPerson(salesforcePurchaserId, Set.of(contactId));
+        List<UsageLevel> usageLevel = getMaxActivityDateGroupedByPerson(salesforcePurchaserId, Set.of(contactId));
 
         if (!usageLevel.isEmpty()) {
             personUsageLevelDto = PersonUsageLevelDtoMapper.map(usageLevel.get(0), currentTime, this::mapStudentsToUsageLevel);
@@ -264,6 +264,16 @@ public class ActivityService {
         return personUsageLevelDto;
     }
 
+    /**
+     * Get last activity date for every person associated with the specified salesforcePurchaserId
+     * @param salesforcePurchaserId Id of the owner of the license
+     * @param contactsId set of persons contact id
+     * @return List<UsageLevel>
+     */
+    public List<UsageLevel> getMaxActivityDateGroupedByPerson(String salesforcePurchaserId, Set<String> contactsId) {
+        return personCourseAuditRepository.findMaxActivityDateGroupedByPerson(
+            salesforcePurchaserId, contactsId);
+    }
     /**
      * Sort the students from most active to less and retrieve the specified number
      *
