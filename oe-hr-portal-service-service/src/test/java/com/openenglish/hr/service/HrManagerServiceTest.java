@@ -1,78 +1,78 @@
 package com.openenglish.hr.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import com.openenglish.hr.common.dto.MutationResultDto;
 import mockit.Tested;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class EmailServiceTest {
+public class HrManagerServiceTest {
 
     @Tested
-    private EmailService emailService;
+    private HrManagerService emailService;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void sendContactUsEmail(){
+    public void sendContactUsMessage(){
         String salesforcePurchaserId = "12345";
         String name = "Jack";
         String email = "jack@gmail.com";
         String message = "I need your assistance with....";
-        String expectedResultMessage = String.format("Message from %s, successfully sent.",name);
 
-        String resultMessage =  emailService.sendContactUsEmail(salesforcePurchaserId, name, email, message);
+        MutationResultDto mutationResultDto =  emailService.sendContactUsMessage(salesforcePurchaserId, name, email, message);
 
-        assertNotNull(resultMessage);
-        assertEquals(expectedResultMessage,resultMessage);
+        assertNotNull(mutationResultDto);
+        assertTrue(mutationResultDto.isSuccess());
     }
 
     @Test
-    public void sendContactUsEmailFailure(){
+    public void sendContactUsMessageFailure(){
         String salesforcePurchaserId = "12346";
         String name = "fail";
         String email = "jack@gmail.com";
         String message = "I need your assistance with....";
-        String expectedResultMessage = String.format("Message from %s, was not able to be delivered.",name);
 
-        String resultMessage =  emailService.sendContactUsEmail(salesforcePurchaserId, name, email, message);
+        MutationResultDto mutationResultDto =   emailService.sendContactUsMessage(salesforcePurchaserId, name, email, message);
 
-        assertNotNull(resultMessage);
-        assertEquals(expectedResultMessage,resultMessage);
+        assertNotNull(mutationResultDto);
+        assertFalse(mutationResultDto.isSuccess());
     }
 
     @Test
-    public void sendContactUsEmailEmptyPurchaserId(){
+    public void sendContactUsMessageEmptyPurchaserId(){
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
         String salesforcePurchaserId = "";
         String name = "Jack";
         String email = "jack@gmail.com";
         String message = "I need your assistance with....";
-        emailService.sendContactUsEmail(salesforcePurchaserId, name, email, message);
+        emailService.sendContactUsMessage(salesforcePurchaserId, name, email, message);
     }
 
     @Test
-    public void sendContactUsEmailEmptyName(){
+    public void sendContactUsMessageEmptyName(){
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("name should not be null or empty");
         String salesforcePurchaserId = "12345";
         String name = "";
         String email = "jack@gmail.com";
         String message = "I need your assistance with....";
-        emailService.sendContactUsEmail(salesforcePurchaserId, name, email, message);
+        emailService.sendContactUsMessage(salesforcePurchaserId, name, email, message);
     }
     @Test
-    public void sendContactUsEmailEmptyEmail(){
+    public void sendContactUsMessageEmptyEmail(){
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("email should not be null or empty");
         String salesforcePurchaserId = "12345";
         String name = "Jack";
         String email = "";
         String message = "I need your assistance with....";
-        emailService.sendContactUsEmail(salesforcePurchaserId, name, email, message);
+        emailService.sendContactUsMessage(salesforcePurchaserId, name, email, message);
     }
 }
