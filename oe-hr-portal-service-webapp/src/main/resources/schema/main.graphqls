@@ -14,5 +14,4 @@ type Query{
   getLicensesOverview(salesforcePurchaserId: String! @SecuredByClaim, organization: String!) : LicensesOverview!
   getLicenseInfo(salesforcePurchaserId: String! @SecuredByClaim, organization: String!): [License]!
   getHRManager(salesforcePurchaserId: String! @SecuredByClaim, organization: String!): HRManager
-  hello(salesforcePurchaserId: String! @SecuredByClaim): String!
 }

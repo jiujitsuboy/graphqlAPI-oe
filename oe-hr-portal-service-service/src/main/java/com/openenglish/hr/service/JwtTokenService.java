@@ -61,14 +61,14 @@ public class JwtTokenService {
   }
 
   /**
-   * Retrieve the user's purchaser Id using his JWT access token
+   * Retrieve the specified user attribute
    *
    * @param accessToken JWT access token
-   * @param claim JWT claim to retrieve
-   * @return claim value
+   * @param userAttributeName user attribute name to retrieve
+   * @return user attribute value
    */
-  public Optional<String> getUserInfoClaim(String accessToken, String claim) {
-    return getUserRequest(accessToken, claim);
+  public Optional<String> getUserInfoClaim(String accessToken, String userAttributeName) {
+    return getUserRequest(accessToken, userAttributeName);
   }
 
   private Optional<String> getUserRequest(String accessToken, String userAttributeName) {
