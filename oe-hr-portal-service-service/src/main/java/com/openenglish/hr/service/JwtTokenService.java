@@ -11,12 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserResponse;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +64,7 @@ public class JwtTokenService {
   }
 
   /**
-   * Retrieve the specified user attribute
+   * Retrieve the specified user attribute in Cognito
    *
    * @param accessToken JWT access token
    * @param userAttributeName user attribute name to retrieve
@@ -69,6 +72,25 @@ public class JwtTokenService {
    */
   public Optional<String> getUserInfoClaim(String accessToken, String userAttributeName) {
     return getUserRequest(accessToken, userAttributeName);
+  }
+
+  /**
+   * Retrieve all user attributes in Cognito
+   *
+   * @param accessToken JWT access token
+   * @return user attribute values
+   */
+  public Map<String, String> getUserAttributes(String accessToken) {
+    GetUserRequest userRequest = GetUserRequest.builder().accessToken(accessToken).build();
+    try {
+      GetUserResponse userResponse = cognitoIdentityProviderClient.getUser(userRequest);
+      return userResponse.userAttributes().stream()
+              .collect(Collectors.toMap(AttributeType::name, AttributeType::value));
+    }
+    catch (Exception e){
+      logger.error(e.getMessage());
+      return Collections.emptyMap();
+    }
   }
 
   private Optional<String> getUserRequest(String accessToken, String userAttributeName) {

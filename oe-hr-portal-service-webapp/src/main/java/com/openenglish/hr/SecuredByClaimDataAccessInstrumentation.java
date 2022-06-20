@@ -1,7 +1,11 @@
 package com.openenglish.hr;
 
 import com.openenglish.hr.service.JwtTokenService;
+import graphql.ExecutionResult;
+import graphql.execution.instrumentation.InstrumentationContext;
+import graphql.execution.instrumentation.InstrumentationState;
 import graphql.execution.instrumentation.SimpleInstrumentation;
+import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationFieldFetchParameters;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
@@ -17,6 +21,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,7 +34,32 @@ public class SecuredByClaimDataAccessInstrumentation extends SimpleInstrumentati
 
     @Value("${hrportal.purchaserIdSecurityCheck.enabled:true}")
     private boolean purchaserIdSecurityCheck = true;
+
     private final JwtTokenService jwtTokenService;
+
+    private static final class DataAccessState implements InstrumentationState {
+        private Map<String, String> userAttributes;
+    }
+
+    @Override
+    public InstrumentationState createState() {
+        return new DataAccessState();
+    }
+
+    @Override
+    public InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters) {
+        DataAccessState dataAccessState = parameters.getInstrumentationState();
+
+        if(purchaserIdSecurityCheck) {
+            JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken)
+                    (SecurityContextHolder.getContext().getAuthentication());
+            String accessToken = jwtAuthenticationToken.getToken().getTokenValue();
+
+            dataAccessState.userAttributes = jwtTokenService.getUserAttributes(accessToken);
+        }
+
+        return super.beginExecution(parameters);
+    }
 
     private List<Pair<String, String>> extractClaimCheckBindings(InstrumentationFieldFetchParameters parameters) {
         return parameters.getField().getArguments().stream()
@@ -54,31 +84,31 @@ public class SecuredByClaimDataAccessInstrumentation extends SimpleInstrumentati
         }
 
         List<Pair<String, String>> argNameClaimNamePairs = extractClaimCheckBindings(parameters);
+        DataAccessState state = parameters.getInstrumentationState();
 
         return environment -> {
             if (!argNameClaimNamePairs.isEmpty()) {
-                verifyPairs(argNameClaimNamePairs, environment);
+                verifyPairs(argNameClaimNamePairs, state, environment);
             }
 
             return dataFetcher.get(environment);
         };
     }
 
-    private void verifyPairs(List<Pair<String, String>> argNameClaimNamePairs, DataFetchingEnvironment environment) {
-
-        JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken)
-                (SecurityContextHolder.getContext().getAuthentication());
-        String accessToken = jwtAuthenticationToken.getToken().getTokenValue();
-
+    private void verifyPairs(
+            List<Pair<String, String>> argNameClaimNamePairs,
+            DataAccessState state,
+            DataFetchingEnvironment environment
+    ) {
         for (Pair<String, String> claimAndArgNames : argNameClaimNamePairs) {
             String argumentToCheck = claimAndArgNames.getLeft();
             String claimToCheck = claimAndArgNames.getRight();
 
-            String claimValue = jwtTokenService.getUserInfoClaim(accessToken, claimToCheck).orElseThrow(
-                    () -> {
-                        throw new IllegalArgumentException("Missing required claim :" + claimToCheck);
-                    }
-            );
+            String claimValue = state.userAttributes.get(claimToCheck);
+
+            if (claimValue == null) {
+                throw new IllegalArgumentException("Missing required claim :" + claimToCheck);
+            }
 
             String argumentValue = environment.getArgument(argumentToCheck);
 

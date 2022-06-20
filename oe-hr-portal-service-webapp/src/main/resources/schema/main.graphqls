@@ -17,5 +17,5 @@ type Query{
 }
 
 type Mutation {
-  sendContactUsMessage(salesforcePurchaserId: String!, name: String!, email: String!, message: String!): MutationResult!
+  sendContactUsMessage(salesforcePurchaserId: String! @SecuredByClaim, name: String!, email: String!, message: String!): MutationResult!
 }
