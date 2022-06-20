@@ -1,0 +1,11 @@
+ type HRManager {
+     id: String
+     name: String
+     email: String
+     preferredLanguage: String
+  }
+
+  type MutationResult {
+    success: Boolean!
+    message: String
+  }
