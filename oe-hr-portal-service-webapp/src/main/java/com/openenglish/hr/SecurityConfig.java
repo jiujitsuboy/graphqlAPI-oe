@@ -27,14 +27,15 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final SecurityConfigProperties securityConfigProperties;
+    @Value("${hrportal.purchaserIdSecurityCheck.enabled:true}")
+    private boolean purchaserIdSecurityCheck = true;
 
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String issuerUrl;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        if (securityConfigProperties.isEnabled()) {
+        if (purchaserIdSecurityCheck) {
             // @formatter:off
             http
                     .authorizeRequests()
