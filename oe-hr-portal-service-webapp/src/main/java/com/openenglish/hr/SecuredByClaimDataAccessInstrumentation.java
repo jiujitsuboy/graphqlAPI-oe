@@ -16,6 +16,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
@@ -107,14 +108,14 @@ public class SecuredByClaimDataAccessInstrumentation extends SimpleInstrumentati
             String claimValue = state.userAttributes.get(claimToCheck);
 
             if (claimValue == null) {
-                throw new IllegalArgumentException("Missing required claim :" + claimToCheck);
+                throw new ResourceNotFoundException("Missing required claim :" + claimToCheck);
             }
 
             String argumentValue = environment.getArgument(argumentToCheck);
 
             if (!StringUtils.equals(claimValue, argumentValue)) {
                 logger.error("Claim vs Argument mismatch: query={} token={}", argumentValue, claimValue);
-                throw new IllegalArgumentException("Claim vs Argument mismatch: query=" + argumentValue + " token=" + claimValue);
+                throw new ResourceNotFoundException("Claim vs Argument mismatch: query=" + argumentValue + " token=" + claimValue);
             }
         }
     }
