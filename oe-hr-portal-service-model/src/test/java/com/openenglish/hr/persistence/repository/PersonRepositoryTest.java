@@ -4,7 +4,9 @@ import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import com.openenglish.hr.persistence.entity.Person;
+import com.openenglish.hr.persistence.entity.aggregation.EmailBelongPurchaserId;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
+import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,5 +74,33 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
 
         assertNotNull(personsPerLevel);
         assertEquals(ZERO_RECORDS,personsPerLevel.size());
+    }
+
+    @Test
+    public void findIfEmailsBelongsToSalesforcePurchaserId(){
+        final int FOURTH_RECORDS  = 4;
+        String salesforcePurchaserId = "12347";
+        Set<String> emails = Set.of("josephp430@unknowdomain.com", "mark0123450@unknowdomain.com", "lauren0456760@unknowdomain.com", "jack_sullivan@unknowdomain.com");
+        List<EmailBelongPurchaserId> emailBelongPurchaserIds =  personRepository.findIfEmailsBelongsToSalesforcePurchaserId(salesforcePurchaserId, emails);
+
+        assertEquals(emailBelongPurchaserIds.size(), FOURTH_RECORDS);
+        emailBelongPurchaserIds.forEach(emailBelongPurchaserId -> {
+            if(emailBelongPurchaserId.getEmail().equals("jack_sullivan@unknowdomain.com")){
+                assertFalse(emailBelongPurchaserId.isMatchSalesForcePurchaserId());
+            }
+            else{
+                assertTrue(emailBelongPurchaserId.isMatchSalesForcePurchaserId());
+            }
+        });
+    }
+
+    @Test
+    public void findIfEmailsBelongsToSalesforcePurchaserIdNonExisting(){
+
+        String salesforcePurchaserId = "12347";
+        Set<String> emails = Set.of("josephp431@unknowdomain.com", "mark0123452@unknowdomain.com", "lauren0456763@unknowdomain.com");
+        List<EmailBelongPurchaserId> emailBelongPurchaserIds =  personRepository.findIfEmailsBelongsToSalesforcePurchaserId(salesforcePurchaserId, emails);
+
+        assertTrue(emailBelongPurchaserIds.isEmpty());
     }
 }

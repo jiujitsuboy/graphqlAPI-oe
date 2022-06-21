@@ -1,7 +1,8 @@
-package com.openenglish.hr.graphql.query;
+package com.openenglish.hr.graphql.mutation;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
@@ -46,6 +47,31 @@ public class HrManagerResolverTest {
             + "}";
 
         String projection = "data.sendContactUsMessage";
+
+        MutationResultDto result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(mutation, projection, MutationResultDto.class);
+
+        assertTrue(result.isSuccess());
+        assertNull(result.getMessage());
+
+    }
+
+    @Test
+    public void sendEmailToSF() {
+        MutationResultDto expectedMutationResultDto = MutationResultDto.builder()
+            .success(true)
+            .build();
+
+        Mockito.when(
+            managerService.sendEmailToSF(anyString(),any(),any(),anyString(),anyString())).thenReturn(expectedMutationResultDto);
+
+        String mutation = "mutation {"
+            + "  sendEmailToSF(salesforcePurchaserId:\"12345\", emails: [\"josephp430@unknowdomain.com\"], contactsId: [\"sf_synegen801\"], message: \"message\", language:\"en-EU\"){"
+            + "    success"
+            + "    message"
+            + "  }"
+            + "}";
+
+        String projection = "data.sendEmailToSF";
 
         MutationResultDto result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(mutation, projection, MutationResultDto.class);
 
