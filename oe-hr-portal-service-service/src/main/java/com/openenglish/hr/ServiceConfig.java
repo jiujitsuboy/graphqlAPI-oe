@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 
 import java.time.Clock;
@@ -23,10 +24,11 @@ public class ServiceConfig {
 
     @Bean
     public CognitoIdentityProviderClient cognitoIdentityProviderClient(@Value("${COGNITO_AWS_HR_PORTAL_ACCESS_KEY_ID}") String awsAccessID,
-                                                                       @Value("${COGNITO_AWS_HR_PORTAL_ACCESS_SECRET_KEY}") String awsSecretAccessKey){
+                                                                       @Value("${COGNITO_AWS_HR_PORTAL_ACCESS_SECRET_KEY}") String awsSecretAccessKey,
+                                                                       @Value("${AWS_REGION}") String awsRegion){
         AwsBasicCredentials awsBasicCredentials = AwsBasicCredentials.create(awsAccessID, awsSecretAccessKey);
         return CognitoIdentityProviderClient.builder()
-                //Region not specified explicity, it is grab of the default region configured in the credentials file of the user profile
+                .region(Region.of(awsRegion))
                 .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
                 .build();
     }
