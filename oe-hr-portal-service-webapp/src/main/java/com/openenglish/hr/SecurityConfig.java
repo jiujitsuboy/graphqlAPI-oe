@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoderJwkSupport;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
@@ -122,5 +123,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
+    @Bean
+    public BearerTokenResolver bearerTokenResolver(){
+        return new APIGatewayCompatibleBearerTokenResolver();
+    }
 
 }
