@@ -107,7 +107,7 @@ public class SecuredByClaimDataAccessInstrumentation extends SimpleInstrumentati
 
             String claimValue = state.userAttributes.get(claimToCheck);
 
-            if (claimValue == null) {
+            if (StringUtils.isEmpty(claimValue)) {
                 throw new ResourceNotFoundException("Missing required claim :" + claimToCheck);
             }
 
