@@ -137,13 +137,14 @@ public class SecuredByClaimDataAccessInstrumentation extends SimpleInstrumentati
       String claimValue = state.userAttributes.get(claimName);
 
       if (StringUtils.isEmpty(claimValue)) {
-        throw new IllegalArgumentException("Missing required claim :" + claimName);
+        logger.error("Missing required claim: {}", claimName);
+        throw new IllegalArgumentException("Missing required claim: " + claimName);
       }
 
       String argumentValue = environment.getArgument(argumentName);
 
       if (!StringUtils.equals(argumentValue, claimValue)) {
-        logger.error("Claim vs Argument mismatch: query={} token={}", argumentValue, claimValue);
+        logger.error("Argument vs Claim mismatch: query={} token={}", argumentValue, claimValue);
         throw new IllegalArgumentException("Argument vs Claim mismatch: query="
                                            + argumentValue + " token=" + claimValue);
       }
