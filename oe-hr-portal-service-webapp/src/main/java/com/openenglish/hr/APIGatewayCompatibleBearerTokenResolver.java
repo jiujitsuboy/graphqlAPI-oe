@@ -14,7 +14,6 @@ import org.springframework.security.oauth2.server.resource.web.DefaultBearerToke
 import org.springframework.util.StringUtils;
 
 /**
- * <p>
  * Modified copy of {@link DefaultBearerTokenResolver} to
  * match Authorization headers having the  format :
  * <pre> Authorization: access_token</pre>
@@ -25,8 +24,8 @@ import org.springframework.util.StringUtils;
  *     APIGatewayCompatibleBearerTokenResolver divergence from DefaultBearerTokenResolver
  * </pre>
  * where this implementation differs from DefaultBearerTokenResolver. All the rest is an exact copy of
- * DefaultBearerTokenResolver</p>
- * <hr/>
+ * DefaultBearerTokenResolver
+ * <hr>
  * <p>The default {@link BearerTokenResolver} implementation based on RFC 6750.</p>
  *
  * @author Vedran Pavic
