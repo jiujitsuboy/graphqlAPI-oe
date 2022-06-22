@@ -99,6 +99,7 @@ public class ActivityService {
      * @param salesforcePurchaserId id of the owner of the license
      * @param year                  target year
      * @param courseTypeEnums       target activities
+     * @param contactId             person's contact id
      * @return the total sum of all activities by  month
      */
     public YearActivityStatisticsDto getActivityStatistics(String salesforcePurchaserId, int year, Set<CourseTypeEnum> courseTypeEnums, String contactId) {
@@ -268,7 +269,7 @@ public class ActivityService {
      * Get last activity date for every person associated with the specified salesforcePurchaserId
      * @param salesforcePurchaserId Id of the owner of the license
      * @param contactsId set of persons contact id
-     * @return List<UsageLevel>
+     * @return List of UsageLevel
      */
     public List<UsageLevel> getMaxActivityDateGroupedByPerson(String salesforcePurchaserId, Set<String> contactsId) {
         return personCourseAuditRepository.findMaxActivityDateGroupedByPerson(
