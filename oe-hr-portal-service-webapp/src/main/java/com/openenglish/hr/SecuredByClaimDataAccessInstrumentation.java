@@ -16,7 +16,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
@@ -56,6 +55,9 @@ public class SecuredByClaimDataAccessInstrumentation extends SimpleInstrumentati
                     (SecurityContextHolder.getContext().getAuthentication());
             String accessToken = jwtAuthenticationToken.getToken().getTokenValue();
 
+            // stores the user attributes in cognito,
+            // later used in all DataFetchers executed for the current GraphQL request
+            // to check data assertions
             dataAccessState.userAttributes = jwtTokenService.getUserAttributes(accessToken);
         }
 
@@ -89,33 +91,57 @@ public class SecuredByClaimDataAccessInstrumentation extends SimpleInstrumentati
 
         return environment -> {
             if (!argNameClaimNamePairs.isEmpty()) {
-                verifyPairs(argNameClaimNamePairs, state, environment);
+                verifyDataAccessAssertions(argNameClaimNamePairs, state, environment);
             }
 
             return dataFetcher.get(environment);
         };
     }
 
-    private void verifyPairs(
+    private void verifyDataAccessAssertions(
             List<Pair<String, String>> argNameClaimNamePairs,
             DataAccessState state,
             DataFetchingEnvironment environment
     ) {
-        for (Pair<String, String> claimAndArgNames : argNameClaimNamePairs) {
-            String argumentToCheck = claimAndArgNames.getLeft();
-            String claimToCheck = claimAndArgNames.getRight();
+        for (Pair<String, String> argNameClaimNamePair : argNameClaimNamePairs) {
+            // A pair represents a data access security assertion, there can be 0..n assertions, all must pass
+            // to execute the dataFetcher. Required empty claims are treated as errors
+            //
+            // Given a graphql definition :
+            //   getPersons(salesforcePurchaserId: String! @SecuredByClaim(claim: "custom:purchaserId")): [Person]!
+            // the Pair under test here would be:
+            // argumentName = salesforcePurchaserId
+            // claimName = custom:purchaserId
+            // Using the names then the values are computed and compared
+            // - argumentValue from the GraphQL environment model
+            // - claimValue from the userAttributes retrieved from cognito
+            //
+            // Claim name in SecuredByClaim defaults to "custom:purchaserId" and is usually omitted.
+            // But it can be another field in the userAttributes, as an example:
+            // sendContactUsMessage(
+            //      salesforcePurchaserId: String! @SecuredByClaim,
+            //      name: String!,
+            //      email: String! @SecuredByClaim(claim: "email"),
+            //      message: String!
+            // ): MutationResult!
+            // would check both salesforcePurchaserId against custom:purchaserId and query param email against
+            // user attributes email
 
-            String claimValue = state.userAttributes.get(claimToCheck);
+            String argumentName = argNameClaimNamePair.getLeft();
+            String claimName = argNameClaimNamePair.getRight();
+
+            String claimValue = state.userAttributes.get(claimName);
 
             if (StringUtils.isEmpty(claimValue)) {
-                throw new ResourceNotFoundException("Missing required claim :" + claimToCheck);
+                throw new IllegalArgumentException("Missing required claim :" + claimName);
             }
 
-            String argumentValue = environment.getArgument(argumentToCheck);
+            String argumentValue = environment.getArgument(argumentName);
 
-            if (!StringUtils.equals(claimValue, argumentValue)) {
+            if (!StringUtils.equals(argumentValue, claimValue)) {
                 logger.error("Claim vs Argument mismatch: query={} token={}", argumentValue, claimValue);
-                throw new ResourceNotFoundException("Claim vs Argument mismatch: query=" + argumentValue + " token=" + claimValue);
+                throw new IllegalArgumentException("Argument vs Claim mismatch: query="
+                        + argumentValue + " token=" + claimValue);
             }
         }
     }

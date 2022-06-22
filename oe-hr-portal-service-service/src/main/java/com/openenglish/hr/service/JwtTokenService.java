@@ -88,7 +88,7 @@ public class JwtTokenService {
               .collect(Collectors.toMap(AttributeType::name, AttributeType::value));
     }
     catch (Exception e){
-      logger.error(e.getMessage());
+      logger.error("Could not retrieve user attributes for authenticated user", e);
       return Collections.emptyMap();
     }
   }

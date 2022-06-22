@@ -22,10 +22,17 @@ import java.time.Clock;
 @Import({PersistenceConfig.class})
 public class ServiceConfig {
 
+    @Value("${COGNITO_AWS_HR_PORTAL_ACCESS_KEY_ID}")
+    private String awsAccessID;
+
+    @Value("${COGNITO_AWS_HR_PORTAL_ACCESS_SECRET_KEY}")
+    private String awsSecretAccessKey;
+
+    @Value("${COGNITO_AWS_REGION}")
+    private String awsRegion;
+
     @Bean
-    public CognitoIdentityProviderClient cognitoIdentityProviderClient(@Value("${COGNITO_AWS_HR_PORTAL_ACCESS_KEY_ID}") String awsAccessID,
-                                                                       @Value("${COGNITO_AWS_HR_PORTAL_ACCESS_SECRET_KEY}") String awsSecretAccessKey,
-                                                                       @Value("${AWS_REGION}") String awsRegion){
+    public CognitoIdentityProviderClient cognitoIdentityProviderClient(){
         AwsBasicCredentials awsBasicCredentials = AwsBasicCredentials.create(awsAccessID, awsSecretAccessKey);
         return CognitoIdentityProviderClient.builder()
                 .region(Region.of(awsRegion))
