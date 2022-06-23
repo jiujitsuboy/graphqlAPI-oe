@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import com.openenglish.hr.common.dto.MutationResultDto;
-import com.openenglish.hr.graphql.mutation.HrManagerResolver;
 import com.openenglish.hr.service.HrManagerService;
 import com.openenglish.hr.service.mapper.MappingConfig;
 import org.junit.Test;
@@ -56,22 +55,22 @@ public class HrManagerResolverTest {
     }
 
     @Test
-    public void sendEmailToSF() {
+    public void sendEncouragementEmails() {
         MutationResultDto expectedMutationResultDto = MutationResultDto.builder()
             .success(true)
             .build();
 
         Mockito.when(
-            managerService.sendEmailToSF(anyString(),any(),any(),anyString(),anyString())).thenReturn(expectedMutationResultDto);
+            managerService.sendEncouragementEmails(anyString(),anyString(),any(),anyString(),anyString())).thenReturn(expectedMutationResultDto);
 
         String mutation = "mutation {"
-            + "  sendEmailToSF(salesforcePurchaserId:\"12345\", emails: [\"josephp430@unknowdomain.com\"], contactsId: [\"sf_synegen801\"], message: \"message\", language:\"en-EU\"){"
+            + "  sendEncouragementEmails(salesforcePurchaserId:\"12345\", managerId: \"Q12qwe3333\", contactsId: [\"sf_synegen801\"], message: \"message\", language:\"en-EU\"){"
             + "    success"
             + "    message"
             + "  }"
             + "}";
 
-        String projection = "data.sendEmailToSF";
+        String projection = "data.sendEncouragementEmails";
 
         MutationResultDto result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(mutation, projection, MutationResultDto.class);
 

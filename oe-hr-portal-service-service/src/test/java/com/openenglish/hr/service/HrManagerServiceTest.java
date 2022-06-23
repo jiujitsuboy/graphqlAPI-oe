@@ -44,9 +44,9 @@ public class HrManagerServiceTest {
     @Test
     public void sendContactUsMessageFailure(){
         String salesforcePurchaserId = "12346";
-        String name = "fail";
+        String name = "Jack";
         String email = "jack@gmail.com";
-        String message = "I need your assistance with....";
+        String message = "";
 
         MutationResultDto mutationResultDto =   emailService.sendContactUsMessage(salesforcePurchaserId, name, email, message);
 
@@ -87,9 +87,9 @@ public class HrManagerServiceTest {
     }
 
     @Test
-    public void sendEmailToSF(){
+    public void sendEncouragementEmails(){
         String salesforcePurchaserId = "12345";
-        Set<String> emails = Set.of("josephp431@unknowdomain.com", "mark0123452@unknowdomain.com", "lauren0456763@unknowdomain.com");
+        String managerId = "QWE434566";
         Set<String> contactsId = Set.of("sf_synegen801","sf_synegen091","sf_synegen1001");
         String message="Test message.....";
         String language="en-US";
@@ -105,17 +105,17 @@ public class HrManagerServiceTest {
             returns(emailBelongPurchaserIdList);
         }};
 
-        MutationResultDto mutationResultDto =  emailService.sendEmailToSF(salesforcePurchaserId, emails, contactsId, message, language);
+        MutationResultDto mutationResultDto =  emailService.sendEncouragementEmails(salesforcePurchaserId, managerId, contactsId, message, language);
 
         assertNotNull(mutationResultDto);
         assertTrue(mutationResultDto.isSuccess());
     }
 
     @Test
-    public void sendEmailToSFOneEmailNotBelongingPurchaserId(){
+    public void sendEncouragementEmailsOneEmailNotBelongingPurchaserId(){
 
         String salesforcePurchaserId = "12345";
-        Set<String> emails = Set.of("josephp431@unknowdomain.com", "mark0123452@unknowdomain.com", "lauren0456763@unknowdomain.com");
+        String managerId = "QWE434566";
         Set<String> contactsId = Set.of("sf_synegen801","sf_synegen091","sf_synegen1001");
         String message="Test message.....";
         String language="en-US";
@@ -132,7 +132,7 @@ public class HrManagerServiceTest {
             returns(emailBelongPurchaserIdList);
         }};
 
-        MutationResultDto mutationResultDto =  emailService.sendEmailToSF(salesforcePurchaserId, emails, contactsId, message, language);
+        MutationResultDto mutationResultDto =  emailService.sendEncouragementEmails(salesforcePurchaserId, managerId, contactsId, message, language);
 
         assertNotNull(mutationResultDto);
         assertFalse(mutationResultDto.isSuccess());
@@ -140,38 +140,38 @@ public class HrManagerServiceTest {
     }
 
     @Test
-    public void sendEmailToSFEmptyPurchaserId(){
+    public void sendEncouragementEmailsEmptyPurchaserId(){
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
         String salesforcePurchaserId = "";
-        Set<String> emails = Set.of("josephp431@unknowdomain.com", "mark0123452@unknowdomain.com", "lauren0456763@unknowdomain.com");
+        String managerId = "QWE434566";
         Set<String> contactsId = Set.of("sf_synegen801","sf_synegen091","sf_synegen1001");
         String message="Test message.....";
         String language="en-US";
-        emailService.sendEmailToSF(salesforcePurchaserId, emails, contactsId, message, language);
+        emailService.sendEncouragementEmails(salesforcePurchaserId, managerId, contactsId, message, language);
     }
 
     @Test
-    public void sendEmailToSFEmptyEmails(){
+    public void sendEncouragementEmailsEmptyManagerId(){
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("emails should not be null or empty");
+        expectedException.expectMessage("managerId should not be null or empty");
         String salesforcePurchaserId = "12345";
-        Set<String> emails = null;
+        String managerId = "";
         Set<String> contactsId = Set.of("sf_synegen801","sf_synegen091","sf_synegen1001");
         String message="Test message.....";
         String language="en-US";
-        emailService.sendEmailToSF(salesforcePurchaserId, emails, contactsId, message, language);
+        emailService.sendEncouragementEmails(salesforcePurchaserId, managerId, contactsId, message, language);
     }
 
     @Test
-    public void sendEmailToSFEmptyContactId(){
+    public void sendEncouragementEmailsEmptyContactId(){
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("contactsId should not be null or empty");
         String salesforcePurchaserId = "12345";
-        Set<String> emails = Set.of("josephp431@unknowdomain.com", "mark0123452@unknowdomain.com", "lauren0456763@unknowdomain.com");
+        String managerId = "QWE434566";
         Set<String> contactsId = null;
         String message="Test message.....";
         String language="en-US";
-        emailService.sendEmailToSF(salesforcePurchaserId, emails, contactsId, message, language);
+        emailService.sendEncouragementEmails(salesforcePurchaserId, managerId, contactsId, message, language);
     }
 }

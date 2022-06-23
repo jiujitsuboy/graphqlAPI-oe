@@ -80,8 +80,8 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
     public void findIfEmailsBelongsToSalesforcePurchaserId(){
         final int FOURTH_RECORDS  = 4;
         String salesforcePurchaserId = "12347";
-        Set<String> emails = Set.of("josephp430@unknowdomain.com", "mark0123450@unknowdomain.com", "lauren0456760@unknowdomain.com", "jack_sullivan@unknowdomain.com");
-        List<EmailBelongPurchaserId> emailBelongPurchaserIds =  personRepository.findIfEmailsBelongsToSalesforcePurchaserId(salesforcePurchaserId, emails);
+        Set<String> contactId = Set.of("sf_synegen801", "sf_synegen091", "sf_synegen1001", "sf_synegen2002");
+        List<EmailBelongPurchaserId> emailBelongPurchaserIds =  personRepository.findIfEmailsBelongsToSalesforcePurchaserId(salesforcePurchaserId, contactId);
 
         assertEquals(emailBelongPurchaserIds.size(), FOURTH_RECORDS);
         emailBelongPurchaserIds.forEach(emailBelongPurchaserId -> {
@@ -98,8 +98,8 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
     public void findIfEmailsBelongsToSalesforcePurchaserIdNonExisting(){
 
         String salesforcePurchaserId = "12347";
-        Set<String> emails = Set.of("josephp431@unknowdomain.com", "mark0123452@unknowdomain.com", "lauren0456763@unknowdomain.com");
-        List<EmailBelongPurchaserId> emailBelongPurchaserIds =  personRepository.findIfEmailsBelongsToSalesforcePurchaserId(salesforcePurchaserId, emails);
+        Set<String> contactId = Set.of("sf_synegen8010", "sf_synegen0910", "sf_synegen10010", "sf_synegen20020");
+        List<EmailBelongPurchaserId> emailBelongPurchaserIds =  personRepository.findIfEmailsBelongsToSalesforcePurchaserId(salesforcePurchaserId, contactId);
 
         assertTrue(emailBelongPurchaserIds.isEmpty());
     }

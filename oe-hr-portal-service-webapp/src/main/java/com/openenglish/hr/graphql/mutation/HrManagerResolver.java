@@ -17,8 +17,8 @@ public class HrManagerResolver {
     public MutationResultDto sendContactUsMessage(String salesforcePurchaserId, String name, String email, String message) {
         return managerService.sendContactUsMessage(salesforcePurchaserId, name, email, message);
     }
-    @DgsData(parentType = "Mutation", field = "sendEmailToSF")
-    public MutationResultDto sendEmailToSF(String salesforcePurchaserId, Set<String> emails, Set<String> contactsId, String message, String language) {
-        return managerService.sendEmailToSF(salesforcePurchaserId, emails, contactsId, message, language);
+    @DgsData(parentType = "Mutation", field = "sendEncouragementEmails")
+    public MutationResultDto sendEncouragementEmails(String salesforcePurchaserId, String managerId, Set<String> contactsId, String message, String language) {
+        return managerService.sendEncouragementEmails(salesforcePurchaserId, managerId, contactsId, message, language);
     }
 }

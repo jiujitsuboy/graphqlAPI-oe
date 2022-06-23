@@ -48,19 +48,19 @@ public class HrManagerService {
   /**
    * Sending a message created by the manager to a list of students
    * @param salesforcePurchaserId id of the owner of the license
-   * @param emails set of destination emails
+   * @param managerId manager's Id
    * @param contactsId set of student's contactId
    * @param message message content
    * @param language template's language
    * @return MutationResultDto
    */
-  public MutationResultDto sendEmailToSF(String salesforcePurchaserId, Set<String> emails, Set<String> contactsId, String message, String language) {
+  public MutationResultDto sendEncouragementEmails(String salesforcePurchaserId, String managerId, Set<String> contactsId, String message, String language) {
 
     Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-    Preconditions.checkArgument(!CollectionUtils.isEmpty(emails), "emails should not be null or empty");
+    Preconditions.checkArgument(StringUtils.isNotBlank(managerId), "managerId should not be null or empty");
     Preconditions.checkArgument(!CollectionUtils.isEmpty(contactsId), "contactsId should not be null or empty");
 
-    List<EmailBelongPurchaserId> emailBelongPurchaserIds = personRepository.findIfEmailsBelongsToSalesforcePurchaserId(salesforcePurchaserId, emails);
+    List<EmailBelongPurchaserId> emailBelongPurchaserIds = personRepository.findIfEmailsBelongsToSalesforcePurchaserId(salesforcePurchaserId, contactsId);
 
     String notBelongingEmails =  emailBelongPurchaserIds.stream()
         .filter(emailBelongPurchaserId -> !emailBelongPurchaserId.isMatchSalesForcePurchaserId())
@@ -70,10 +70,6 @@ public class HrManagerService {
     List<EmailBelongPurchaserId> validRecordsBelongingPurchaserId = emailBelongPurchaserIds.stream()
         .filter(emailBelongPurchaserId -> emailBelongPurchaserId.isMatchSalesForcePurchaserId())
         .collect(Collectors.toList());
-
-    Set<String> validEmailsBelongingPurchaserId = validRecordsBelongingPurchaserId.stream()
-        .map(emailBelongPurchaserId -> emailBelongPurchaserId.getEmail())
-        .collect(Collectors.toSet());
 
     Set<String> validContactIdsBelongingPurchaserId = validRecordsBelongingPurchaserId.stream()
         .map(emailBelongPurchaserId -> emailBelongPurchaserId.getContactId())
@@ -87,7 +83,7 @@ public class HrManagerService {
         throw new IllegalArgumentException(notBelongingEmails);
       }
 
-      doSendEmailToSF(salesforcePurchaserId, validEmailsBelongingPurchaserId, validContactIdsBelongingPurchaserId, message, language);
+      doSendEncouragementEmails(managerId, validContactIdsBelongingPurchaserId, message, language);
       mutationResultDto.setSuccess(true);
     }
     catch (Exception ex){
@@ -107,22 +103,21 @@ public class HrManagerService {
    *  @param message message content
    */
   private void doSendContactUsMessage(String salesforcePurchaserId, String name, String email, String message){
-    if(name.equals("fail")){
+    if(message.isEmpty()){
       throw new RuntimeException();
     }
   }
 
   /**
    * Stub for email sending to SF
-   * @param salesforcePurchaserId id of the owner of the license
-   * @param emails set of destination emails
+   * @param managerId manager's Id
    * @param contactsId set of student's contactId
    * @param message message content
    * @param language template's language
    */
-  private void doSendEmailToSF(String salesforcePurchaserId, Set<String> emails, Set<String> contactsId, String message, String language){
+  private void doSendEncouragementEmails(String managerId, Set<String> contactsId, String message, String language){
     if(message.isEmpty()){
-      throw new RuntimeException();
+      throw new RuntimeException("Empty message");
     }
   }
 }

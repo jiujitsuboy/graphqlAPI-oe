@@ -28,7 +28,7 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
         + "CASE WHEN pd.salesforce_purchaser_id=:salesforcePurchaserId THEN true ELSE false END AS matchSalesForcePurchaserId "
         + "FROM person p "
         + "INNER JOIN person_detail pd ON p.id = pd.person_id "
-        + "WHERE p.email IN (:emails)", nativeQuery = true)
+        + "WHERE p.contactid IN (:contactsId)", nativeQuery = true)
     List<EmailBelongPurchaserId> findIfEmailsBelongsToSalesforcePurchaserId(@Param("salesforcePurchaserId")String salesforcePurchaserId,
-        @Param("emails") Set<String> emails);
+        @Param("contactsId") Set<String> contactsId);
 }
