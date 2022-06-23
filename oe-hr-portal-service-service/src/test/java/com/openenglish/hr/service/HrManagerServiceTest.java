@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.openenglish.hr.common.dto.MutationResultDto;
-import com.openenglish.hr.persistence.entity.aggregation.EmailBelongPurchaserId;
+import com.openenglish.hr.persistence.entity.aggregation.ContactBelongPurchaserId;
 import com.openenglish.hr.persistence.repository.PersonRepository;
 import com.openenglish.hr.service.util.InterfaceUtil;
 import java.util.List;
@@ -94,14 +94,14 @@ public class HrManagerServiceTest {
         String message="Test message.....";
         String language="en-US";
 
-        List<EmailBelongPurchaserId> emailBelongPurchaserIdList = List.of(
+        List<ContactBelongPurchaserId> emailBelongPurchaserIdList = List.of(
             InterfaceUtil.createEmailBelongPurchaserId("sf_synegen801", "josephp431@unknowdomain.com", salesforcePurchaserId, true),
             InterfaceUtil.createEmailBelongPurchaserId("sf_synegen091", "mark0123452@unknowdomain.com", salesforcePurchaserId, true),
             InterfaceUtil.createEmailBelongPurchaserId("sf_synegen1001", "lauren0456763@unknowdomain.com", salesforcePurchaserId, true));
 
 
         new Expectations() {{
-            personRepository.findIfEmailsBelongsToSalesforcePurchaserId(anyString, (Set<String>)any);
+            personRepository.findIfContactsIdBelongsToSalesforcePurchaserId(anyString, (Set<String>)any);
             returns(emailBelongPurchaserIdList);
         }};
 
@@ -120,15 +120,15 @@ public class HrManagerServiceTest {
         String message="Test message.....";
         String language="en-US";
 
-        List<EmailBelongPurchaserId> emailBelongPurchaserIdList = List.of(
+        List<ContactBelongPurchaserId> emailBelongPurchaserIdList = List.of(
             InterfaceUtil.createEmailBelongPurchaserId("sf_synegen801", "josephp431@unknowdomain.com", salesforcePurchaserId, false),
             InterfaceUtil.createEmailBelongPurchaserId("sf_synegen091", "mark0123452@unknowdomain.com", salesforcePurchaserId, true),
             InterfaceUtil.createEmailBelongPurchaserId("sf_synegen1001", "lauren0456763@unknowdomain.com", salesforcePurchaserId, true));
 
-        final String errorMessage = String.format("%s does not belong to purchaser Id %s ", emailBelongPurchaserIdList.get(0).getEmail(), salesforcePurchaserId);
+        final String errorMessage = String.format("%s does not belong to purchaser Id %s ", emailBelongPurchaserIdList.get(0).getContactId(), salesforcePurchaserId);
 
         new Expectations() {{
-            personRepository.findIfEmailsBelongsToSalesforcePurchaserId(anyString, (Set<String>)any);
+            personRepository.findIfContactsIdBelongsToSalesforcePurchaserId(anyString, (Set<String>)any);
             returns(emailBelongPurchaserIdList);
         }};
 

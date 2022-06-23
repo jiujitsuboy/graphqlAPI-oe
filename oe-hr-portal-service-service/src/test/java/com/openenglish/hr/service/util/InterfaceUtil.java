@@ -1,6 +1,6 @@
 package com.openenglish.hr.service.util;
 
-import com.openenglish.hr.persistence.entity.aggregation.EmailBelongPurchaserId;
+import com.openenglish.hr.persistence.entity.aggregation.ContactBelongPurchaserId;
 import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import java.time.LocalDateTime;
@@ -67,27 +67,22 @@ public class InterfaceUtil {
     };
   }
 
-  public static EmailBelongPurchaserId createEmailBelongPurchaserId(String contactId, String email,
+  public static ContactBelongPurchaserId createEmailBelongPurchaserId(String contactId, String email,
       String salesForcePurchaserId, boolean matchSalesForcePurchaserId){
 
-    return new EmailBelongPurchaserId() {
+    return new ContactBelongPurchaserId() {
       @Override
       public String getContactId() {
         return contactId;
       }
 
       @Override
-      public String getEmail() {
-        return email;
-      }
-
-      @Override
-      public String getSalesForcePurchaserId() {
+      public String getSalesforcePurchaserId() {
         return salesForcePurchaserId;
       }
 
       @Override
-      public boolean isMatchSalesForcePurchaserId() {
+      public boolean isMatchSalesforcePurchaserId() {
         return matchSalesForcePurchaserId;
       }
     };

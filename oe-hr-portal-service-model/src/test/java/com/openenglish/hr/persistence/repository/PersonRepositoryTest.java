@@ -4,7 +4,7 @@ import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import com.openenglish.hr.persistence.entity.Person;
-import com.openenglish.hr.persistence.entity.aggregation.EmailBelongPurchaserId;
+import com.openenglish.hr.persistence.entity.aggregation.ContactBelongPurchaserId;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import java.util.Set;
 import org.junit.Assert;
@@ -77,30 +77,30 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
     }
 
     @Test
-    public void findIfEmailsBelongsToSalesforcePurchaserId(){
+    public void findIfContactsIdBelongsToSalesforcePurchaserId(){
         final int FOURTH_RECORDS  = 4;
         String salesforcePurchaserId = "12347";
         Set<String> contactId = Set.of("sf_synegen801", "sf_synegen091", "sf_synegen1001", "sf_synegen2002");
-        List<EmailBelongPurchaserId> emailBelongPurchaserIds =  personRepository.findIfEmailsBelongsToSalesforcePurchaserId(salesforcePurchaserId, contactId);
+        List<ContactBelongPurchaserId> contactIdBelongPurchaserIds =  personRepository.findIfContactsIdBelongsToSalesforcePurchaserId(salesforcePurchaserId, contactId);
 
-        assertEquals(emailBelongPurchaserIds.size(), FOURTH_RECORDS);
-        emailBelongPurchaserIds.forEach(emailBelongPurchaserId -> {
-            if(emailBelongPurchaserId.getEmail().equals("jack_sullivan@unknowdomain.com")){
-                assertFalse(emailBelongPurchaserId.isMatchSalesForcePurchaserId());
+        assertEquals(contactIdBelongPurchaserIds.size(), FOURTH_RECORDS);
+        contactIdBelongPurchaserIds.forEach(contactIdBelongPurchaserId -> {
+            if(contactIdBelongPurchaserId.getContactId().equals("sf_synegen2002")){
+                assertFalse(contactIdBelongPurchaserId.isMatchSalesforcePurchaserId());
             }
             else{
-                assertTrue(emailBelongPurchaserId.isMatchSalesForcePurchaserId());
+                assertTrue(contactIdBelongPurchaserId.isMatchSalesforcePurchaserId());
             }
         });
     }
 
     @Test
-    public void findIfEmailsBelongsToSalesforcePurchaserIdNonExisting(){
+    public void findIfContactsIdBelongsToSalesforcePurchaserIdNonExisting(){
 
         String salesforcePurchaserId = "12347";
         Set<String> contactId = Set.of("sf_synegen8010", "sf_synegen0910", "sf_synegen10010", "sf_synegen20020");
-        List<EmailBelongPurchaserId> emailBelongPurchaserIds =  personRepository.findIfEmailsBelongsToSalesforcePurchaserId(salesforcePurchaserId, contactId);
+        List<ContactBelongPurchaserId> contactIdBelongPurchaserIds =  personRepository.findIfContactsIdBelongsToSalesforcePurchaserId(salesforcePurchaserId, contactId);
 
-        assertTrue(emailBelongPurchaserIds.isEmpty());
+        assertTrue(contactIdBelongPurchaserIds.isEmpty());
     }
 }

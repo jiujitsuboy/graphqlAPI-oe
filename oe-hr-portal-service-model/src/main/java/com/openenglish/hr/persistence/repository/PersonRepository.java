@@ -1,7 +1,7 @@
 package com.openenglish.hr.persistence.repository;
 
 import com.openenglish.hr.persistence.entity.Person;
-import com.openenglish.hr.persistence.entity.aggregation.EmailBelongPurchaserId;
+import com.openenglish.hr.persistence.entity.aggregation.ContactBelongPurchaserId;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,12 +23,11 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     List<PersonsPerLevel> getAllPersonsPerLevel(@Param("salesforcePurchaserId")String salesforcePurchaserId);
 
     @Query(value ="SELECT p.contactid AS contactId, "
-        + "p.email AS email,"
         + "pd.salesforce_purchaser_id AS salesForcePurchaserId, "
         + "CASE WHEN pd.salesforce_purchaser_id=:salesforcePurchaserId THEN true ELSE false END AS matchSalesForcePurchaserId "
         + "FROM person p "
         + "INNER JOIN person_detail pd ON p.id = pd.person_id "
         + "WHERE p.contactid IN (:contactsId)", nativeQuery = true)
-    List<EmailBelongPurchaserId> findIfEmailsBelongsToSalesforcePurchaserId(@Param("salesforcePurchaserId")String salesforcePurchaserId,
+    List<ContactBelongPurchaserId> findIfContactsIdBelongsToSalesforcePurchaserId(@Param("salesforcePurchaserId")String salesforcePurchaserId,
         @Param("contactsId") Set<String> contactsId);
 }

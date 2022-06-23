@@ -2,7 +2,7 @@ package com.openenglish.hr.service;
 
 import com.google.common.base.Preconditions;
 import com.openenglish.hr.common.dto.MutationResultDto;
-import com.openenglish.hr.persistence.entity.aggregation.EmailBelongPurchaserId;
+import com.openenglish.hr.persistence.entity.aggregation.ContactBelongPurchaserId;
 import com.openenglish.hr.persistence.repository.PersonRepository;
 import java.util.List;
 import java.util.Set;
@@ -60,27 +60,24 @@ public class HrManagerService {
     Preconditions.checkArgument(StringUtils.isNotBlank(managerId), "managerId should not be null or empty");
     Preconditions.checkArgument(!CollectionUtils.isEmpty(contactsId), "contactsId should not be null or empty");
 
-    List<EmailBelongPurchaserId> emailBelongPurchaserIds = personRepository.findIfEmailsBelongsToSalesforcePurchaserId(salesforcePurchaserId, contactsId);
+    List<ContactBelongPurchaserId> contactsIdBelongPurchaserIds = personRepository.findIfContactsIdBelongsToSalesforcePurchaserId(salesforcePurchaserId, contactsId);
 
-    String notBelongingEmails =  emailBelongPurchaserIds.stream()
-        .filter(emailBelongPurchaserId -> !emailBelongPurchaserId.isMatchSalesForcePurchaserId())
-        .map(emailBelongPurchaserId -> String.format("%s does not belong to purchaser Id %s ",emailBelongPurchaserId.getEmail(), emailBelongPurchaserId.getSalesForcePurchaserId()))
+    String notBelongingContactsId =  contactsIdBelongPurchaserIds.stream()
+        .filter(emailBelongPurchaserId -> !emailBelongPurchaserId.isMatchSalesforcePurchaserId())
+        .map(emailBelongPurchaserId -> String.format("%s does not belong to purchaser Id %s ",emailBelongPurchaserId.getContactId(), emailBelongPurchaserId.getSalesforcePurchaserId()))
         .collect(Collectors.joining(", "));
 
-    List<EmailBelongPurchaserId> validRecordsBelongingPurchaserId = emailBelongPurchaserIds.stream()
-        .filter(emailBelongPurchaserId -> emailBelongPurchaserId.isMatchSalesForcePurchaserId())
-        .collect(Collectors.toList());
-
-    Set<String> validContactIdsBelongingPurchaserId = validRecordsBelongingPurchaserId.stream()
-        .map(emailBelongPurchaserId -> emailBelongPurchaserId.getContactId())
+    Set<String> validContactIdsBelongingPurchaserId = contactsIdBelongPurchaserIds.stream()
+        .filter(contactIdBelongPurchaserId -> contactIdBelongPurchaserId.isMatchSalesforcePurchaserId())
+        .map(contactIdBelongPurchaserId -> contactIdBelongPurchaserId.getContactId())
         .collect(Collectors.toSet());
 
     MutationResultDto  mutationResultDto = new MutationResultDto();
 
     try {
 
-      if(!notBelongingEmails.isEmpty()){
-        throw new IllegalArgumentException(notBelongingEmails);
+      if(!notBelongingContactsId.isEmpty()){
+        throw new IllegalArgumentException(notBelongingContactsId);
       }
 
       doSendEncouragementEmails(managerId, validContactIdsBelongingPurchaserId, message, language);
