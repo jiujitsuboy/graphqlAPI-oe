@@ -19,6 +19,9 @@ import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoderJwkSupport;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.util.Assert;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.function.Predicate;
@@ -40,11 +43,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     if (purchaserIdSecurityCheck) {
       // @formatter:off
       http
-          .authorizeRequests()
-            .antMatchers("/ping", "/effectiveProperties", "/graphiql/**").permitAll()
-            .antMatchers(HttpMethod.POST, "/graphql").authenticated()
-            .antMatchers(HttpMethod.OPTIONS, "/graphql").authenticated()
-            .anyRequest().denyAll()
+          .cors()
+          .and()
+            .authorizeRequests()
+              .antMatchers("/ping", "/effectiveProperties", "/graphiql/**").permitAll()
+              .antMatchers(HttpMethod.POST, "/graphql").authenticated()
+              .anyRequest().denyAll()
           .and()
             .oauth2ResourceServer()
               .jwt();
@@ -57,6 +61,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/").permitAll();
       // @formatter:on
     }
+  }
+
+  @Bean
+  CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.applyPermitDefaultValues();
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
   }
 
   @Bean
