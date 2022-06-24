@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       // @formatter:off
       http
           .authorizeRequests()
-            .antMatchers("/ping", "/effectiveProperties").permitAll()
+            .antMatchers("/ping", "/effectiveProperties", "/graphiql/**").permitAll()
             .antMatchers(HttpMethod.POST, "/graphql").authenticated()
             .antMatchers(HttpMethod.OPTIONS, "/graphql").authenticated()
             .anyRequest().denyAll()
