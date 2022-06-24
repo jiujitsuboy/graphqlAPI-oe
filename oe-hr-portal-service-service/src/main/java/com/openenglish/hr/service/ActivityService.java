@@ -40,6 +40,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class ActivityService {
 
+    public static final int ZERO_TIME = 0;
     public static final int ONE_ACTIVITY = 1;
     public static final int MINUTES_PER_LESSON_UNIT_ASSESSMENT_BEFORE_JUN2022 = 25;
     public static final int MINUTES_PER_LESSON_UNIT_ASSESSMENT_AFTER_JUN2022 = 12;
@@ -417,7 +418,12 @@ public class ActivityService {
      * @return time for activity
      */
     private int getAmountOfTimePerActivity(PersonCourseSummary personCourseSummary) {
-        return PRACTICE_COURSE_TYPES.contains(this.getCourseTypeEnum(personCourseSummary.getCourse()).getValue()) ? personCourseSummary.getTimeontask() : ONE_ACTIVITY;
+        int timeOnTask = personCourseSummary.getTimeontask() != null ? personCourseSummary.getTimeontask()
+            : ZERO_TIME;
+
+        return PRACTICE_COURSE_TYPES.contains(this.getCourseTypeEnum(personCourseSummary.getCourse()).getValue())
+            ? timeOnTask
+            : ONE_ACTIVITY;
     }
 
     /**
@@ -479,7 +485,9 @@ public class ActivityService {
         LocalDateTime dateCompleted = personCourseAudit.getDateCompleted();
 
         if (PRACTICE_COURSE_TYPES.contains(courseType.getValue())) {
-            timeInSecondsOrNumberOfTimes = personCourseAudit.getTimeontask();
+            timeInSecondsOrNumberOfTimes =
+                (personCourseAudit.getTimeontask() != null) ? personCourseAudit.getTimeontask()
+                    : ZERO_TIME;
         }
         return convertActivitiesOccurrenceToSeconds(courseType, timeInSecondsOrNumberOfTimes, dateCompleted);
     }

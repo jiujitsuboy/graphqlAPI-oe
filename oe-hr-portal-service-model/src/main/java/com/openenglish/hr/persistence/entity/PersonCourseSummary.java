@@ -38,5 +38,5 @@ public class PersonCourseSummary implements Serializable {
   private LocalDateTime createdDate;
 
   @Column(name = "timeontask")
-  private int timeontask;
+  private Integer timeontask;
 }

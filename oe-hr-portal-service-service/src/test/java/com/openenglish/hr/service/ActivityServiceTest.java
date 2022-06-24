@@ -83,6 +83,12 @@ public class ActivityServiceTest {
             .lastDateCompleted(LocalDateTime.of(2022,2,15, 0 ,0))
             .build();
 
+        PersonCourseSummary personCourseSummary25 = PersonCourseSummary.builder()
+            .course(Course.builder().courseType(CourseType.builder().id(10L).build()).build())
+            .timeontask(null)
+            .lastDateCompleted(LocalDateTime.of(2022,2,16, 0 ,0))
+            .build();
+
         PersonCourseSummary personCourseSummary31 = PersonCourseSummary.builder()
                 .course(Course.builder().courseType(CourseType.builder().id(4L).build()).build())
                 .timeontask(30)
@@ -100,7 +106,7 @@ public class ActivityServiceTest {
                 .build();
 
         List<PersonCourseSummary> personCourseSummaries = List.of(personCourseSummary11, personCourseSummary12, personCourseSummary13,
-                personCourseSummary21, personCourseSummary22, personCourseSummary23, personCourseSummary24, personCourseSummary31,
+                personCourseSummary21, personCourseSummary22, personCourseSummary23, personCourseSummary24, personCourseSummary25, personCourseSummary31,
                 personCourseSummary32, personCourseSummary33);
 
         new Expectations() {{
@@ -441,11 +447,19 @@ public class ActivityServiceTest {
                 .timeontask(10)
                 .build();
 
+        PersonCourseAudit person6CourseAudit = PersonCourseAudit.builder()
+            .person(Person.builder().id(6L).build())
+            .course(Course.builder().courseType(CourseType.builder().id(3L).build()).build())
+            .dateCompleted(LocalDateTime.of(YEAR, MARCH, 2, 13, 0, 0))
+            .timeontask(null)
+            .build();
+
         List<PersonCourseAudit> personCourseAudits = List.of(person1CourseAudit,
                 person2CourseAudit,
                 person4CourseAudit,
                 person3CourseAudit,
-                person5CourseAudit);
+                person5CourseAudit,
+                person6CourseAudit);
 
         new Expectations() {{
             personCourseAuditRepository.findActivityStatistics(anyString, (LocalDateTime) any, (LocalDateTime) any, (Set<Long>) any, (Set<String>) any);
