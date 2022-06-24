@@ -1,12 +1,12 @@
-package com.openenglish.hr.graphql.query;
+package com.openenglish.hr.graphql.mutation;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
 import com.openenglish.hr.common.dto.MutationResultDto;
-import com.openenglish.hr.graphql.mutation.HrManagerResolver;
 import com.openenglish.hr.service.HrManagerService;
 import com.openenglish.hr.service.mapper.MappingConfig;
 import org.junit.Test;
@@ -46,6 +46,31 @@ public class HrManagerResolverTest {
             + "}";
 
         String projection = "data.sendContactUsMessage";
+
+        MutationResultDto result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(mutation, projection, MutationResultDto.class);
+
+        assertTrue(result.isSuccess());
+        assertNull(result.getMessage());
+
+    }
+
+    @Test
+    public void sendEncouragementEmails() {
+        MutationResultDto expectedMutationResultDto = MutationResultDto.builder()
+            .success(true)
+            .build();
+
+        Mockito.when(
+            managerService.sendEncouragementEmails(anyString(),anyString(),any(),anyString(),anyString())).thenReturn(expectedMutationResultDto);
+
+        String mutation = "mutation {"
+            + "  sendEncouragementEmails(salesforcePurchaserId:\"12345\", managerId: \"Q12qwe3333\", contactsId: [\"sf_synegen801\"], message: \"message\", language:\"en-EU\"){"
+            + "    success"
+            + "    message"
+            + "  }"
+            + "}";
+
+        String projection = "data.sendEncouragementEmails";
 
         MutationResultDto result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(mutation, projection, MutationResultDto.class);
 
