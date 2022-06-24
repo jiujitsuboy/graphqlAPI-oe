@@ -4,7 +4,9 @@ import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import com.openenglish.hr.persistence.entity.Person;
+import com.openenglish.hr.persistence.entity.aggregation.ContactBelongPurchaserId;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
+import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,5 +74,33 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
 
         assertNotNull(personsPerLevel);
         assertEquals(ZERO_RECORDS,personsPerLevel.size());
+    }
+
+    @Test
+    public void findIfContactsIdBelongsToSalesforcePurchaserId(){
+        final int FOURTH_RECORDS  = 4;
+        String salesforcePurchaserId = "12347";
+        Set<String> contactId = Set.of("sf_synegen801", "sf_synegen091", "sf_synegen1001", "sf_synegen2002");
+        List<ContactBelongPurchaserId> contactIdBelongPurchaserIds =  personRepository.findIfContactsIdBelongsToSalesforcePurchaserId(salesforcePurchaserId, contactId);
+
+        assertEquals(contactIdBelongPurchaserIds.size(), FOURTH_RECORDS);
+        contactIdBelongPurchaserIds.forEach(contactIdBelongPurchaserId -> {
+            if(contactIdBelongPurchaserId.getContactId().equals("sf_synegen2002")){
+                assertFalse(contactIdBelongPurchaserId.isMatchSalesforcePurchaserId());
+            }
+            else{
+                assertTrue(contactIdBelongPurchaserId.isMatchSalesforcePurchaserId());
+            }
+        });
+    }
+
+    @Test
+    public void findIfContactsIdBelongsToSalesforcePurchaserIdNonExisting(){
+
+        String salesforcePurchaserId = "12347";
+        Set<String> contactId = Set.of("sf_synegen8010", "sf_synegen0910", "sf_synegen10010", "sf_synegen20020");
+        List<ContactBelongPurchaserId> contactIdBelongPurchaserIds =  personRepository.findIfContactsIdBelongsToSalesforcePurchaserId(salesforcePurchaserId, contactId);
+
+        assertTrue(contactIdBelongPurchaserIds.isEmpty());
     }
 }
