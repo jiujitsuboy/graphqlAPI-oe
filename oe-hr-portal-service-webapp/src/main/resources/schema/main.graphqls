@@ -1,18 +1,22 @@
+directive @SecuredByClaim(
+  claim: String = "custom:purchaserId"
+) on ARGUMENT_DEFINITION
+
 type Query{
-  getPersons(salesforcePurchaserId: String!): [Person]!
-  getAllPersonsByLevel(salesforcePurchaserId: String!): [PersonsPerLevel]!
-  getAllActivitiesOverview(salesforcePurchaserId: String!): ActivitiesOverview
-  getYearActivityStatistics(salesforcePurchaserId: String!, year: Int!, activity: ActivityType!, contactId: String): YearActivityStatistics!
-  getTopStudentsByActivityStatistics(salesforcePurchaserId: String!, year: Int!, month: Int!, activities: [ActivityType]!, top: Int!): [PersonActivitiesTotal]!
-  getUsageLevelOverview(salesforcePurchaserId: String!) : UsageLevelOverview!
-  getLeastActiveStudents(salesforcePurchaserId: String!) : [PersonsUsageLevelOverview]!
-  getUsageLevelOverviewPerPerson(salesforcePurchaserId: String!, contactId: String!) : PersonsUsageLevelOverview
-  getLicensesOverview(salesforcePurchaserId: String!, organization: String!) : LicensesOverview!
-  getLicenseInfo(salesforcePurchaserId: String!, organization: String!): [License]!
-  getHRManager(salesforcePurchaserId: String!, organization: String!): HRManager
+  getPersons(salesforcePurchaserId: String! @SecuredByClaim): [Person]!
+  getAllPersonsByLevel(salesforcePurchaserId: String! @SecuredByClaim): [PersonsPerLevel]!
+  getAllActivitiesOverview(salesforcePurchaserId: String! @SecuredByClaim): ActivitiesOverview
+  getYearActivityStatistics(salesforcePurchaserId: String! @SecuredByClaim, year: Int!, activity: ActivityType!, contactId: String): YearActivityStatistics!
+  getTopStudentsByActivityStatistics(salesforcePurchaserId: String! @SecuredByClaim, year: Int!, month: Int!, activities: [ActivityType]!, top: Int!): [PersonActivitiesTotal]!
+  getUsageLevelOverview(salesforcePurchaserId: String! @SecuredByClaim) : UsageLevelOverview!
+  getLeastActiveStudents(salesforcePurchaserId: String! @SecuredByClaim) : [PersonsUsageLevelOverview]!
+  getUsageLevelOverviewPerPerson(salesforcePurchaserId: String! @SecuredByClaim, contactId: String!) : PersonsUsageLevelOverview
+  getLicensesOverview(salesforcePurchaserId: String! @SecuredByClaim, organization: String!) : LicensesOverview!
+  getLicenseInfo(salesforcePurchaserId: String! @SecuredByClaim, organization: String!): [License]!
+  getHRManager(salesforcePurchaserId: String! @SecuredByClaim, organization: String!): HRManager
 }
 
 type Mutation {
-  sendContactUsMessage(salesforcePurchaserId: String!, name: String!, email: String!, message: String!): MutationResult!
-  sendEncouragementEmails(salesforcePurchaserId: String!, managerId: String!, contactsId: [String]!, message: String!, language: String!): MutationResult!
+  sendContactUsMessage(salesforcePurchaserId: String! @SecuredByClaim, name: String!, email: String!, message: String!): MutationResult!
+  sendEncouragementEmails(salesforcePurchaserId: String! @SecuredByClaim, managerId: String!, contactsId: [String]!, message: String!, language: String!): MutationResult!
 }

@@ -17,6 +17,9 @@ liquibase.contexts=dev
 connection.pool.maxWait=5000
 connection.pool.initialSize=1
 connection.pool.maxActive=10
+hrportal.purchaserIdSecurityCheck.enabled=false # to disable security layer, by default it is enabled
+hrportal.cognito.userpool.id=eu-west-1_HoLcrJ6LZ
+COGNITO_AWS_REGION=eu-west-1 
 ```
 
 ### Database Setup
