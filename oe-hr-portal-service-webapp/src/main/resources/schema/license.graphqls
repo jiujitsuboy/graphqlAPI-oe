@@ -3,3 +3,9 @@ type LicensesOverview {
     assignedLicenses: Int
     activeLicenses: Int
 }
+
+input LicenseAssignee {
+    firstName: String!,
+    lastName: String!,
+    email: String!
+}

@@ -1,6 +1,7 @@
 package com.openenglish.hr.service;
 
 import com.google.common.base.Preconditions;
+import com.openenglish.hr.common.dto.LicenseAssigneeDto;
 import com.openenglish.hr.common.dto.MutationResultDto;
 import com.openenglish.hr.persistence.entity.aggregation.ContactBelongPurchaserId;
 import com.openenglish.hr.persistence.repository.PersonRepository;
@@ -90,6 +91,49 @@ public class HrManagerService {
 
     return mutationResultDto;
 
+  }
+
+  /**
+   * Reassign an active license from one student to a new one
+   * @param licenseId license id number
+   * @param contactId id of the current license student
+   * @param currentAssignee current license student
+   * @param newAssignee new license student
+   * @return MutationResultDto
+   */
+  public MutationResultDto reassignLicense(String licenseId, String contactId, LicenseAssigneeDto currentAssignee, LicenseAssigneeDto newAssignee) {
+    Preconditions.checkArgument(StringUtils.isNotBlank(licenseId), "licenseId should not be null or empty");
+    Preconditions.checkArgument(StringUtils.isNotBlank(contactId), "contactId should not be null or empty");
+    Preconditions.checkArgument(currentAssignee!= null && StringUtils.isNotBlank(currentAssignee.getFirstName()), "currentAssignee firstname should not be null or empty");
+    Preconditions.checkArgument(currentAssignee!= null && StringUtils.isNotBlank(currentAssignee.getEmail()), "currentAssignee email should not be null or empty");
+    Preconditions.checkArgument(newAssignee!= null && StringUtils.isNotBlank(newAssignee.getFirstName()), "newAssignee firstname should not be null or empty");
+    Preconditions.checkArgument(newAssignee!= null && StringUtils.isNotBlank(newAssignee.getEmail()), "newAssignee email should not be null or empty");
+
+    MutationResultDto  mutationResultDto = new MutationResultDto();
+
+    try{
+      doReassignLicense(licenseId, contactId,currentAssignee,newAssignee);
+      mutationResultDto.setSuccess(true);
+    }
+    catch (Exception ex){
+      mutationResultDto.setSuccess(false);
+      mutationResultDto.setMessage(ex.getMessage());
+    }
+
+    return mutationResultDto;
+  }
+
+  /**
+   * Stub Reassign license flow
+   * @param licenseId license id number
+   * @param contactId id of the current license student
+   * @param currentAssignee current license student
+   * @param newAssignee new license student
+   */
+  private void doReassignLicense(String licenseId, String contactId, LicenseAssigneeDto currentAssignee, LicenseAssigneeDto newAssignee) {
+    if(newAssignee.getLastName()==null){
+      throw new RuntimeException("Empty newAssignee lastname");
+    }
   }
 
   /**

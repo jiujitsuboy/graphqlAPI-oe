@@ -2,6 +2,7 @@ package com.openenglish.hr.graphql.mutation;
 
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsData;
+import com.openenglish.hr.common.dto.LicenseAssigneeDto;
 import com.openenglish.hr.common.dto.MutationResultDto;
 import com.openenglish.hr.service.HrManagerService;
 import java.util.Set;
@@ -20,5 +21,10 @@ public class HrManagerResolver {
     @DgsData(parentType = "Mutation", field = "sendEncouragementEmails")
     public MutationResultDto sendEncouragementEmails(String salesforcePurchaserId, String managerId, Set<String> contactsId, String message, String language) {
         return managerService.sendEncouragementEmails(salesforcePurchaserId, managerId, contactsId, message, language);
+    }
+
+    @DgsData(parentType = "Mutation", field = "reassignLicense")
+    public MutationResultDto reassignLicense(String licenseId, String contactId, LicenseAssigneeDto currentAssignee, LicenseAssigneeDto newAssignee) {
+        return managerService.reassignLicense(licenseId, contactId,currentAssignee,newAssignee);
     }
 }
