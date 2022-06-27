@@ -41,7 +41,7 @@ public class PersonCourseAudit implements Serializable {
   private LocalDateTime dateStarted;
 
   @Column(name = "timeontask")
-  private int timeontask;
+  private Integer timeontask;
 
   @Column(name = "loggedinuserinfo_uuid")
   private String loggedInUserInfoUUID;
