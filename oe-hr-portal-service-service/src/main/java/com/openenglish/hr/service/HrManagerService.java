@@ -95,15 +95,17 @@ public class HrManagerService {
 
   /**
    * Reassign an active license from one student to a new one
+   * @param salesforcePurchaserId id of the owner of the license
    * @param licenseId license id number
-   * @param contactId id of the current license student
+   * @param managerId id of the current license student
    * @param currentAssignee current license student
    * @param newAssignee new license student
    * @return MutationResultDto
    */
-  public MutationResultDto reassignLicense(String licenseId, String contactId, LicenseAssigneeDto currentAssignee, LicenseAssigneeDto newAssignee) {
+  public MutationResultDto reassignLicense(String salesforcePurchaserId, String licenseId, String managerId, LicenseAssigneeDto currentAssignee, LicenseAssigneeDto newAssignee) {
+    Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
     Preconditions.checkArgument(StringUtils.isNotBlank(licenseId), "licenseId should not be null or empty");
-    Preconditions.checkArgument(StringUtils.isNotBlank(contactId), "contactId should not be null or empty");
+    Preconditions.checkArgument(StringUtils.isNotBlank(managerId), "managerId should not be null or empty");
     Preconditions.checkArgument(currentAssignee!= null && StringUtils.isNotBlank(currentAssignee.getFirstName()), "currentAssignee firstname should not be null or empty");
     Preconditions.checkArgument(currentAssignee!= null && StringUtils.isNotBlank(currentAssignee.getEmail()), "currentAssignee email should not be null or empty");
     Preconditions.checkArgument(newAssignee!= null && StringUtils.isNotBlank(newAssignee.getFirstName()), "newAssignee firstname should not be null or empty");
@@ -112,7 +114,7 @@ public class HrManagerService {
     MutationResultDto  mutationResultDto = new MutationResultDto();
 
     try{
-      doReassignLicense(licenseId, contactId,currentAssignee,newAssignee);
+      doReassignLicense(licenseId, managerId,newAssignee);
       mutationResultDto.setSuccess(true);
     }
     catch (Exception ex){
@@ -127,10 +129,9 @@ public class HrManagerService {
    * Stub Reassign license flow
    * @param licenseId license id number
    * @param contactId id of the current license student
-   * @param currentAssignee current license student
    * @param newAssignee new license student
    */
-  private void doReassignLicense(String licenseId, String contactId, LicenseAssigneeDto currentAssignee, LicenseAssigneeDto newAssignee) {
+  private void doReassignLicense(String licenseId, String contactId, LicenseAssigneeDto newAssignee) {
     if(newAssignee.getLastName()==null){
       throw new RuntimeException("Empty newAssignee lastname");
     }

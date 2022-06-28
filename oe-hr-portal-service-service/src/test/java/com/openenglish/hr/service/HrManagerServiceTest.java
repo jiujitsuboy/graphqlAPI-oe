@@ -179,15 +179,30 @@ public class HrManagerServiceTest {
     @Test
     public void reassignLicense(){
 
+        String salesforcePurchaserId = "12345";
         String licenseId = "ACX456EDd";
-        String contactId = "123ASDc455";
+        String managerId = "123ASDc455";
         LicenseAssigneeDto currentAssignee = LicenseAssigneeDto.builder().firstName("jack").lastName("sullivan").email("jacksul@gmail.com").build();
         LicenseAssigneeDto newAssignee = LicenseAssigneeDto.builder().firstName("mary").lastName("smite").email("mary@gmail.com").build();
 
-        MutationResultDto mutationResultDto = hrManagerService.reassignLicense(licenseId, contactId, currentAssignee, newAssignee);
+        MutationResultDto mutationResultDto = hrManagerService.reassignLicense(salesforcePurchaserId, licenseId, managerId, currentAssignee, newAssignee);
 
         assertNotNull(mutationResultDto);
          assertTrue(mutationResultDto.isSuccess());
+    }
+
+    @Test
+    public void reassignLicenseEmpytPurchaserId(){
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
+
+        String salesforcePurchaserId = "";
+        String licenseId = "ACX456EDd";
+        String managerId = "123ASDc455";
+        LicenseAssigneeDto currentAssignee = LicenseAssigneeDto.builder().firstName("jack").lastName("sullivan").email("jacksul@gmail.com").build();
+        LicenseAssigneeDto newAssignee = LicenseAssigneeDto.builder().firstName("mary").lastName("smite").email("mary@gmail.com").build();
+
+        hrManagerService.reassignLicense(salesforcePurchaserId, licenseId, managerId, currentAssignee, newAssignee);
     }
 
     @Test
@@ -195,25 +210,27 @@ public class HrManagerServiceTest {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("licenseId should not be null or empty");
 
+        String salesforcePurchaserId = "12345";
         String licenseId = "";
-        String contactId = "123ASDc455";
+        String managerId = "123ASDc455";
         LicenseAssigneeDto currentAssignee = LicenseAssigneeDto.builder().firstName("jack").lastName("sullivan").email("jacksul@gmail.com").build();
         LicenseAssigneeDto newAssignee = LicenseAssigneeDto.builder().firstName("mary").lastName("smite").email("mary@gmail.com").build();
 
-        hrManagerService.reassignLicense(licenseId, contactId, currentAssignee, newAssignee);
+        hrManagerService.reassignLicense(salesforcePurchaserId, licenseId, managerId, currentAssignee, newAssignee);
     }
 
     @Test
-    public void reassignLicenseEmpytContactId(){
+    public void reassignLicenseEmpytManagerId(){
         expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("contactId should not be null or empty");
+        expectedException.expectMessage("managerId should not be null or empty");
 
+        String salesforcePurchaserId = "12345";
         String licenseId = "ACX456EDd";
-        String contactId = "";
+        String managerId = "";
         LicenseAssigneeDto currentAssignee = LicenseAssigneeDto.builder().firstName("jack").lastName("sullivan").email("jacksul@gmail.com").build();
         LicenseAssigneeDto newAssignee = LicenseAssigneeDto.builder().firstName("mary").lastName("smite").email("mary@gmail.com").build();
 
-        hrManagerService.reassignLicense(licenseId, contactId, currentAssignee, newAssignee);
+        hrManagerService.reassignLicense(salesforcePurchaserId, licenseId, managerId, currentAssignee, newAssignee);
     }
 
     @Test
@@ -221,12 +238,13 @@ public class HrManagerServiceTest {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("currentAssignee firstname should not be null or empty");
 
+        String salesforcePurchaserId = "12345";
         String licenseId = "ACX456EDd";
-        String contactId = "123ASDc455";
+        String managerId = "123ASDc455";
         LicenseAssigneeDto currentAssignee = LicenseAssigneeDto.builder().firstName("").lastName("sullivan").email("jacksul@gmail.com").build();
         LicenseAssigneeDto newAssignee = LicenseAssigneeDto.builder().firstName("mary").lastName("smite").email("mary@gmail.com").build();
 
-        hrManagerService.reassignLicense(licenseId, contactId, currentAssignee, newAssignee);
+        hrManagerService.reassignLicense(salesforcePurchaserId, licenseId, managerId, currentAssignee, newAssignee);
     }
 
     @Test
@@ -234,24 +252,26 @@ public class HrManagerServiceTest {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("currentAssignee email should not be null or empty");
 
+        String salesforcePurchaserId = "12345";
         String licenseId = "ACX456EDd";
-        String contactId = "123ASDc455";
+        String managerId = "123ASDc455";
         LicenseAssigneeDto currentAssignee = LicenseAssigneeDto.builder().firstName("jack").lastName("sullivan").email("").build();
         LicenseAssigneeDto newAssignee = LicenseAssigneeDto.builder().firstName("mary").lastName("smite").email("mary@gmail.com").build();
 
-        hrManagerService.reassignLicense(licenseId, contactId, currentAssignee, newAssignee);
+        hrManagerService.reassignLicense(salesforcePurchaserId, licenseId, managerId, currentAssignee, newAssignee);
     }
     @Test
     public void reassignLicenseEmpytNewAssigneeFirstName(){
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("newAssignee firstname should not be null or empty");
 
+        String salesforcePurchaserId = "12345";
         String licenseId = "ACX456EDd";
-        String contactId = "123ASDc455";
+        String managerId = "123ASDc455";
         LicenseAssigneeDto currentAssignee = LicenseAssigneeDto.builder().firstName("jack").lastName("sullivan").email("jacksul@gmail.com").build();
         LicenseAssigneeDto newAssignee = LicenseAssigneeDto.builder().firstName("").lastName("smite").email("mary@gmail.com").build();
 
-        hrManagerService.reassignLicense(licenseId, contactId, currentAssignee, newAssignee);
+        hrManagerService.reassignLicense(salesforcePurchaserId, licenseId, managerId, currentAssignee, newAssignee);
     }
 
     @Test
@@ -259,11 +279,12 @@ public class HrManagerServiceTest {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("newAssignee email should not be null or empty");
 
+        String salesforcePurchaserId = "12345";
         String licenseId = "ACX456EDd";
-        String contactId = "123ASDc455";
+        String managerId = "123ASDc455";
         LicenseAssigneeDto currentAssignee = LicenseAssigneeDto.builder().firstName("jack").lastName("sullivan").email("jacksul@gmail.com").build();
         LicenseAssigneeDto newAssignee = LicenseAssigneeDto.builder().firstName("mary").lastName("smite").email("").build();
 
-        hrManagerService.reassignLicense(licenseId, contactId, currentAssignee, newAssignee);
+        hrManagerService.reassignLicense(salesforcePurchaserId, licenseId, managerId, currentAssignee, newAssignee);
     }
 }

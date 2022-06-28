@@ -24,7 +24,7 @@ public class HrManagerResolver {
     }
 
     @DgsData(parentType = "Mutation", field = "reassignLicense")
-    public MutationResultDto reassignLicense(String licenseId, String contactId, LicenseAssigneeDto currentAssignee, LicenseAssigneeDto newAssignee) {
-        return managerService.reassignLicense(licenseId, contactId,currentAssignee,newAssignee);
+    public MutationResultDto reassignLicense(String salesforcePurchaserId, String licenseId, String managerId, LicenseAssigneeDto currentAssignee, LicenseAssigneeDto newAssignee) {
+        return managerService.reassignLicense(salesforcePurchaserId, licenseId, managerId,currentAssignee,newAssignee);
     }
 }

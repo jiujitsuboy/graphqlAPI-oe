@@ -87,11 +87,12 @@ public class HrManagerResolverTest {
             .build();
 
         Mockito.when(
-            managerService.reassignLicense(anyString(), anyString(),any(LicenseAssigneeDto.class), any(LicenseAssigneeDto.class))).thenReturn(expectedMutationResultDto);
+            managerService.reassignLicense(anyString(), anyString(), anyString(),any(LicenseAssigneeDto.class), any(LicenseAssigneeDto.class))).thenReturn(expectedMutationResultDto);
 
         String mutation = "mutation {"
-            + "  reassignLicense(licenseId:\"1234545\", "
-            + "                  contactId: \"Q12qwe3333\", "
+            + "  reassignLicense(salesforcePurchaserId:\"12345\","
+            + "                  licenseId:\"1234545\", "
+            + "                  managerId: \"Q12qwe3333\", "
             + "                  currentAssignee: {"
             + "                       firstName: \"Lindsay\","
             + "                       lastName: \"Guerrero\","
