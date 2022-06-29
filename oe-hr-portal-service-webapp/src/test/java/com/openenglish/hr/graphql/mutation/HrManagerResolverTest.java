@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
+import com.openenglish.hr.common.dto.LicenseAssigneeDto;
 import com.openenglish.hr.common.dto.MutationResultDto;
 import com.openenglish.hr.service.HrManagerService;
 import com.openenglish.hr.service.mapper.MappingConfig;
@@ -71,6 +72,44 @@ public class HrManagerResolverTest {
             + "}";
 
         String projection = "data.sendEncouragementEmails";
+
+        MutationResultDto result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(mutation, projection, MutationResultDto.class);
+
+        assertTrue(result.isSuccess());
+        assertNull(result.getMessage());
+
+    }
+
+    @Test
+    public void reassignLicense() {
+        MutationResultDto expectedMutationResultDto = MutationResultDto.builder()
+            .success(true)
+            .build();
+
+        Mockito.when(
+            managerService.reassignLicense(anyString(), anyString(), anyString(),any(LicenseAssigneeDto.class), any(LicenseAssigneeDto.class))).thenReturn(expectedMutationResultDto);
+
+        String mutation = "mutation {"
+            + "  reassignLicense(salesforcePurchaserId:\"12345\","
+            + "                  licenseId:\"1234545\", "
+            + "                  managerId: \"Q12qwe3333\", "
+            + "                  currentAssignee: {"
+            + "                       firstName: \"Lindsay\","
+            + "                       lastName: \"Guerrero\","
+            + "                       email: \"mgcontradorpublico@gmail.com\""
+            + "                  }, "
+            + "                  newAssignee: {"
+            + "                       firstName: \"Jose\","
+            + "                       lastName: \"Nino\","
+            + "                       email: \"josenino@gmail.com\""
+            + "                   }"
+            + "                  ){"
+            + "    success"
+            + "    message"
+            + "  }"
+            + "}";
+
+        String projection = "data.reassignLicense";
 
         MutationResultDto result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(mutation, projection, MutationResultDto.class);
 
