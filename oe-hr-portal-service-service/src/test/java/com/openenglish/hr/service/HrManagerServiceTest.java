@@ -10,6 +10,9 @@ import com.openenglish.hr.common.dto.MutationResultDto;
 import com.openenglish.hr.persistence.entity.aggregation.ContactBelongPurchaserId;
 import com.openenglish.hr.persistence.repository.PersonRepository;
 import com.openenglish.hr.service.util.InterfaceUtil;
+import com.openenglish.sfdc.client.SalesforceClient;
+import com.openenglish.sfdc.client.dto.SfEncouragementEmailsDto;
+import com.openenglish.sfdc.client.dto.SfMessageToKeyAccountManagerDto;
 import java.util.List;
 import java.util.Set;
 import mockit.Expectations;
@@ -23,6 +26,8 @@ public class HrManagerServiceTest {
 
     @Injectable
     private PersonRepository personRepository;
+    @Injectable
+    private SalesforceClient salesforceClient;
     @Tested
     private HrManagerService hrManagerService;
 
@@ -49,7 +54,12 @@ public class HrManagerServiceTest {
         String email = "jack@gmail.com";
         String message = "";
 
-        MutationResultDto mutationResultDto =   hrManagerService.sendContactUsMessage(salesforcePurchaserId, name, email, message);
+        new Expectations() {{
+            salesforceClient.sendMessageToKeyAccountManager(anyString, (SfMessageToKeyAccountManagerDto) any);
+            result=new RuntimeException();
+        }};
+
+        MutationResultDto mutationResultDto = hrManagerService.sendContactUsMessage(salesforcePurchaserId, name, email, message);
 
         assertNotNull(mutationResultDto);
         assertFalse(mutationResultDto.isSuccess());
@@ -110,6 +120,34 @@ public class HrManagerServiceTest {
 
         assertNotNull(mutationResultDto);
         assertTrue(mutationResultDto.isSuccess());
+    }
+
+    @Test
+    public void sendEncouragementEmailsFailure(){
+        String salesforcePurchaserId = "12345";
+        String managerId = "QWE434566";
+        Set<String> contactsId = Set.of("sf_synegen801","sf_synegen091","sf_synegen1001");
+        String message="Test message.....";
+        String language="en-US";
+
+        List<ContactBelongPurchaserId> emailBelongPurchaserIdList = List.of(
+            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen801", "josephp431@unknowdomain.com", salesforcePurchaserId, true),
+            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen091", "mark0123452@unknowdomain.com", salesforcePurchaserId, true),
+            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen1001", "lauren0456763@unknowdomain.com", salesforcePurchaserId, true));
+
+
+        new Expectations() {{
+            personRepository.findIfContactsIdBelongsToSalesforcePurchaserId(anyString, (Set<String>)any);
+            returns(emailBelongPurchaserIdList);
+
+            salesforceClient.sendEncouragementEmails((SfEncouragementEmailsDto)any);
+            result = new RuntimeException();
+        }};
+
+        MutationResultDto mutationResultDto =  hrManagerService.sendEncouragementEmails(salesforcePurchaserId, managerId, contactsId, message, language);
+
+        assertNotNull(mutationResultDto);
+        assertFalse(mutationResultDto.isSuccess());
     }
 
     @Test
