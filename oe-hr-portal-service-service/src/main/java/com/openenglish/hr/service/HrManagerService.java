@@ -4,6 +4,9 @@ import com.google.common.base.Preconditions;
 import com.openenglish.hr.common.dto.MutationResultDto;
 import com.openenglish.hr.persistence.entity.aggregation.ContactBelongPurchaserId;
 import com.openenglish.hr.persistence.repository.PersonRepository;
+import com.openenglish.sfdc.client.SalesforceClient;
+import com.openenglish.sfdc.client.dto.SfEncouragementEmailsDto;
+import com.openenglish.sfdc.client.dto.SfMessageToKeyAccountManagerDto;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,6 +20,8 @@ import org.springframework.stereotype.Service;
 public class HrManagerService {
 
   private final PersonRepository personRepository;
+  private final SalesforceClient salesforceClient;
+
   /**
    * Sending a message created by the manager to contact the account executive.
    * @param salesforcePurchaserId id of the owner of the license
@@ -33,7 +38,13 @@ public class HrManagerService {
     MutationResultDto  mutationResultDto = new MutationResultDto();
 
     try{
-      doSendContactUsMessage(salesforcePurchaserId, name, email, message);
+      SfMessageToKeyAccountManagerDto sfMessageToKeyAccountManagerDto = new SfMessageToKeyAccountManagerDto();
+      sfMessageToKeyAccountManagerDto.setMessage(message);
+      sfMessageToKeyAccountManagerDto.setEmail(email);
+      sfMessageToKeyAccountManagerDto.setName(name);
+
+      salesforceClient.sendMessageToKeyAccountManager(salesforcePurchaserId, sfMessageToKeyAccountManagerDto);
+
       mutationResultDto.setSuccess(true);
     }
     catch (Exception ex){
@@ -67,10 +78,10 @@ public class HrManagerService {
         .map(emailBelongPurchaserId -> String.format("%s does not belong to purchaser Id %s ",emailBelongPurchaserId.getContactId(), emailBelongPurchaserId.getSalesforcePurchaserId()))
         .collect(Collectors.joining(", "));
 
-    Set<String> validContactIdsBelongingPurchaserId = contactsIdBelongPurchaserIds.stream()
+    List<String> validContactIdsBelongingPurchaserId = contactsIdBelongPurchaserIds.stream()
         .filter(contactIdBelongPurchaserId -> contactIdBelongPurchaserId.isMatchSalesforcePurchaserId())
         .map(contactIdBelongPurchaserId -> contactIdBelongPurchaserId.getContactId())
-        .collect(Collectors.toSet());
+        .collect(Collectors.toList());
 
     MutationResultDto  mutationResultDto = new MutationResultDto();
 
@@ -80,7 +91,12 @@ public class HrManagerService {
         throw new IllegalArgumentException(notBelongingContactsId);
       }
 
-      doSendEncouragementEmails(managerId, validContactIdsBelongingPurchaserId, message, language);
+      SfEncouragementEmailsDto sfEncouragementEmailsDto = new SfEncouragementEmailsDto();
+      sfEncouragementEmailsDto.setFromManagerContactId(managerId);
+      sfEncouragementEmailsDto.setMessage(message);
+      sfEncouragementEmailsDto.setToContactIds(validContactIdsBelongingPurchaserId);
+      salesforceClient.sendEncouragementEmails(sfEncouragementEmailsDto);
+
       mutationResultDto.setSuccess(true);
     }
     catch (Exception ex){
@@ -90,31 +106,5 @@ public class HrManagerService {
 
     return mutationResultDto;
 
-  }
-
-  /**
-   * Stub for email sending
-   *  @param salesforcePurchaserId id of the owner of the license
-   *  @param name sender's name
-   *  @param email sender's email
-   *  @param message message content
-   */
-  private void doSendContactUsMessage(String salesforcePurchaserId, String name, String email, String message){
-    if(message.isEmpty()){
-      throw new RuntimeException();
-    }
-  }
-
-  /**
-   * Stub for email sending to SF
-   * @param managerId manager's Id
-   * @param contactsId set of student's contactId
-   * @param message message content
-   * @param language template's language
-   */
-  private void doSendEncouragementEmails(String managerId, Set<String> contactsId, String message, String language){
-    if(message.isEmpty()){
-      throw new RuntimeException("Empty message");
-    }
   }
 }
