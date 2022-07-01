@@ -8,11 +8,9 @@ import com.openenglish.hr.common.dto.HRManagerDto;
 import com.openenglish.hr.common.dto.LevelDto;
 import com.openenglish.hr.common.dto.LicenseDto;
 import com.openenglish.hr.common.dto.PersonDto;
-import com.openenglish.hr.common.dto.PersonOldestActivityDto;
 import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.service.PersonService;
 import com.openenglish.hr.service.mapper.MappingConfig;
-import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -27,7 +25,6 @@ import java.util.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @RunWith(SpringRunner.class)
@@ -236,22 +233,5 @@ public class PersonResolverTest {
         assertThat(hrManagerDto.getName(), is(optExpectedHRManager.get().getName()));
         assertThat(hrManagerDto.getEmail(), is(optExpectedHRManager.get().getEmail()));
         assertThat(hrManagerDto.getPreferredLanguage(), is(optExpectedHRManager.get().getPreferredLanguage()));
-    }
-
-    @Test
-    public void getOldestActivity(){
-
-        LocalDateTime expectedOldestActivityDateTime = LocalDateTime.of(2022,1,30,10,20,50);
-
-        Mockito.when(personService.getOldestActivity(anyString(),any())).thenReturn(expectedOldestActivityDateTime);
-
-        String query = "{"
-            + "     getOldestActivity(salesforcePurchaserId:\"12345\", activities:[LIVE_CLASS])"
-            + "}";
-        String projection = "data.getOldestActivity";
-
-        String oldestActivityDateTime = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, String.class);
-
-        assertTrue(oldestActivityDateTime.equals(expectedOldestActivityDateTime.toString()));
     }
 }

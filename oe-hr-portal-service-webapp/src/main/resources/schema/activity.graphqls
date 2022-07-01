@@ -25,6 +25,10 @@
     low: Int
  }
 
+ type OldestActivity{
+      oldestActivityDate: String
+   }
+
  enum ActivityType{
     LIVE_CLASS
     PRIVATE_CLASS

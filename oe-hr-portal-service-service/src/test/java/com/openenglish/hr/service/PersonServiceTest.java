@@ -3,7 +3,6 @@ package com.openenglish.hr.service;
 import com.openenglish.hr.common.dto.HRManagerDto;
 import com.openenglish.hr.common.dto.LicenseDto;
 import com.openenglish.hr.common.dto.PersonDto;
-import com.openenglish.hr.common.dto.PersonOldestActivityDto;
 import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.persistence.entity.Level;
 import com.openenglish.hr.persistence.entity.Person;
@@ -23,7 +22,6 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,6 +29,7 @@ import java.util.Optional;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
+import mockit.Tested;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,7 +54,9 @@ public class PersonServiceTest {
     @Injectable
     private Clock clock;
 
-    private Mapper mapper = new MappingConfig().mapper();
+    @Injectable
+    private Mapper mapper;
+    @Tested
     private PersonService personService;
 
     @Rule
@@ -64,7 +65,7 @@ public class PersonServiceTest {
 
     @Before
     public void init(){
-        personService = new PersonService(personRepository, personCourseAuditRepository, salesforceClient, activityService, clock, mapper);
+        mapper = new MappingConfig().mapper();
     }
 
     @Test
@@ -330,43 +331,5 @@ public class PersonServiceTest {
         String salesforcePurchaserId = "12345";
         String organization = "";
         personService.getHRManager(salesforcePurchaserId,organization);
-    }
-
-    @Test
-    public void getOldestActivity(){
-
-        String salesforcePurchaserId = "12345";
-        Set<Long> courseTypesValues = Set.of(1L, 2L);
-
-        LocalDateTime expectedlocalDateTime = LocalDateTime.of(2022,03,15,17,50,52,235000000);
-
-        new Expectations() {{
-            personCourseAuditRepository.findMinActivityDateGroupedByPerson(anyString, (Set<Long>)any);
-            returns(expectedlocalDateTime);
-        }};
-
-        LocalDateTime oldestActivityDateTime = personService.getOldestActivity(salesforcePurchaserId, courseTypesValues);
-
-        assertTrue(oldestActivityDateTime.isEqual(expectedlocalDateTime));
-    }
-
-    @Test
-    public void getOldestActivityEmptyPurchaserId(){
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
-        String salesforcePurchaserId = "";
-        Set<Long> courseTypesValues = Set.of(1L, 2L);
-
-        personService.getOldestActivity(salesforcePurchaserId, courseTypesValues);
-    }
-
-    @Test
-    public void getOldestActivityEmptyCourseTypesValues(){
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("courseTypesValues should not be null or empty");
-        String salesforcePurchaserId = "12345";
-        Set<Long> courseTypesValues = Collections.emptySet();
-
-        personService.getOldestActivity(salesforcePurchaserId, courseTypesValues);
     }
 }

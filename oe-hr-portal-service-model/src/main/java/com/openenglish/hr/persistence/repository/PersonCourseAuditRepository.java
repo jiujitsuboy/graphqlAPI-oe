@@ -51,6 +51,6 @@ public interface PersonCourseAuditRepository extends JpaRepository<PersonCourseA
         "WHERE pd.salesforce_purchaser_id = :salesforcePurchaserId AND " +
         "(c.coursetype_id IN (3,8,10) OR (c.coursetype_id NOT IN (3,8,10) AND pca.datecompleted IS NOT NULL)) AND " +
         "(COALESCE (:courseTypeIds, NULL) IS NULL OR c.coursetype_id in (:courseTypeIds));", nativeQuery = true)
-    LocalDateTime findMinActivityDateGroupedByPerson(@Param("salesforcePurchaserId") String salesforcePurchaserId,
+    LocalDateTime findMinActivityDate(@Param("salesforcePurchaserId") String salesforcePurchaserId,
         @Param("courseTypeIds") Set<Long> courseTypeIds);
 }

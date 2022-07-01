@@ -148,35 +148,35 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     }
 
     @Test
-    public void findMinActivityDateGroupedByPersonNoActivity(){
+    public void findMinActivityDateNoActivity(){
         String salesforcePurchaserId = "12347";
         Set<Long> courseTypeIds = Collections.emptySet();
         LocalDateTime expectedlocalDateTime = LocalDateTime.of(2022,1,5,17,50,52,235000000);
 
-        LocalDateTime oldestActivityDateTime = personCourseAuditRepository.findMinActivityDateGroupedByPerson(salesforcePurchaserId,courseTypeIds);
+        LocalDateTime oldestActivityDateTime = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId,courseTypeIds);
 
         assertNotNull(oldestActivityDateTime);
     }
 
     @Test
-    public void findMinActivityDateGroupedByPersonLiveClasses(){
+    public void findMinActivityDateLiveClasses(){
         String salesforcePurchaserId = "12347";
         final long LIVE_CLASS_COURSE_TYPE = 1l;
         Set<Long> courseTypeIds = Set.of(LIVE_CLASS_COURSE_TYPE);
 
         LocalDateTime expectedlocalDateTime = LocalDateTime.of(2022,03,15,17,50,52,235000000);
 
-        LocalDateTime oldestActivityDateTime =  personCourseAuditRepository.findMinActivityDateGroupedByPerson(salesforcePurchaserId,courseTypeIds);
+        LocalDateTime oldestActivityDateTime =  personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId,courseTypeIds);
 
         assertNotNull(oldestActivityDateTime);
     }
 
     @Test
-    public void findMinActivityDateGroupedByPersonEmptyResult(){
+    public void findMinActivityDateEmptyResult(){
         String salesforcePurchaserId = "12347";
         Set<Long> courseTypeIds = Set.of(12L);
 
-        LocalDateTime oldestActivityDateTime = personCourseAuditRepository.findMinActivityDateGroupedByPerson(salesforcePurchaserId,courseTypeIds);
+        LocalDateTime oldestActivityDateTime = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId,courseTypeIds);
         assertNull(oldestActivityDateTime);
     }
 }

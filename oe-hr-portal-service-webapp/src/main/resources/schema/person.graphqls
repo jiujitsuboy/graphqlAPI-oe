@@ -40,14 +40,6 @@
     inactiveDays: Int
  }
 
-  type PersonOldestActivity{
-     personId: ID
-     firstname: String
-     lastname: String
-     contactId: String
-     earliestActivity: String
-  }
-
  enum UsageLevel{
      HIGH
      MEDIUM_HIGH

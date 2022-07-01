@@ -43,9 +43,7 @@ public class ActivityResolver {
 
         LocalDateTime localDateTime = LocalDateTime.of(year, month, 1, 0, 0, 0);
 
-        Set<CourseTypeEnum> courseTypeEnums =  activities.stream().map(ActivityTypeEnum::valueOf)
-                .flatMap(activityTypeEnum ->  ActivityTypeMapper.mapToCourseTypes(activityTypeEnum).stream())
-                .collect(Collectors.toSet());
+        Set<CourseTypeEnum> courseTypeEnums =  ActivityTypeMapper.convertActivityTypeToCourseType(activities);
 
         LinkedHashMap<PersonDto, Double> personsTop = activityService.getTopStudentsByActivityStatistics(salesforcePurchaserId, localDateTime, courseTypeEnums, top);
 
@@ -74,4 +72,13 @@ public class ActivityResolver {
         return activityService.getUsageLevelOverviewPerPerson(salesforcePurchaserId, contactId);
     }
 
+    @DgsData(parentType = "Query", field = "getOldestActivity")
+    public OldestActivityDto getOldestActivity(String salesforcePurchaserId, List<String> activities) {
+
+        Set<Long> courseTypesValues =  ActivityTypeMapper.convertActivityTypeToCourseType(activities).stream()
+            .map(CourseTypeEnum::getValue)
+            .collect(Collectors.toSet());
+
+        return activityService.getOldestActivity(salesforcePurchaserId, courseTypesValues);
+    }
 }
