@@ -9,6 +9,7 @@ import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.PersonDetail;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
+import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonRepository;
 import com.openenglish.hr.service.mapper.Mapper;
 import com.openenglish.hr.service.mapper.MappingConfig;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
+import mockit.Tested;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,13 +46,17 @@ public class PersonServiceTest {
     @Injectable
     private PersonRepository personRepository;
     @Injectable
+    private  PersonCourseAuditRepository personCourseAuditRepository;
+    @Injectable
     private SalesforceClient salesforceClient;
     @Injectable
     private ActivityService activityService;
     @Injectable
     private Clock clock;
 
-    private Mapper mapper = new MappingConfig().mapper();
+    @Injectable
+    private Mapper mapper;
+    @Tested
     private PersonService personService;
 
     @Rule
@@ -59,7 +65,7 @@ public class PersonServiceTest {
 
     @Before
     public void init(){
-        personService = new PersonService(personRepository, salesforceClient, activityService,clock,mapper);
+        mapper = new MappingConfig().mapper();
     }
 
     @Test

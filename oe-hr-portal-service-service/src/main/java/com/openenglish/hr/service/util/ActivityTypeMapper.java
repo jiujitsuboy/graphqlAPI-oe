@@ -3,8 +3,10 @@ package com.openenglish.hr.service.util;
 import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.api.model.ActivityTypeEnum;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ActivityTypeMapper {
     private static Map<ActivityTypeEnum, Set<CourseTypeEnum>> activityTypeLookupMap =
@@ -20,5 +22,11 @@ public class ActivityTypeMapper {
 
     public static Set<CourseTypeEnum> mapToCourseTypes(ActivityTypeEnum activity) {
         return activityTypeLookupMap.get(activity);
+    }
+
+    public static Set<CourseTypeEnum> convertActivityTypeToCourseType(List<String> activities) {
+      return activities.stream().map(ActivityTypeEnum::valueOf)
+          .flatMap(activityTypeEnum -> ActivityTypeMapper.mapToCourseTypes(activityTypeEnum).stream())
+          .collect(Collectors.toSet());
     }
 }

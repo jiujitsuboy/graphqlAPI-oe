@@ -41,4 +41,16 @@ public interface PersonCourseAuditRepository extends JpaRepository<PersonCourseA
             "GROUP BY p.id,p.firstname, p.lastname;", nativeQuery = true)
     List<UsageLevel> findMaxActivityDateGroupedByPerson(@Param("salesforcePurchaserId") String salesforcePurchaserId,
         @Param("contactId") Set<String> contactId);
+
+    @Query(value="SELECT " +
+        "min(CASE WHEN c.coursetype_id IN (3,8,10) THEN pca.datestarted ELSE pca.datecompleted END) AS lastActivity " +
+        "FROM person p " +
+        "INNER JOIN person_detail pd ON p.id = pd.person_id " +
+        "INNER JOIN personcourseaudit pca ON p.id = pca.person_id " +
+        "INNER JOIN course c ON c.id = pca.course_id " +
+        "WHERE pd.salesforce_purchaser_id = :salesforcePurchaserId AND " +
+        "(c.coursetype_id IN (3,8,10) OR (c.coursetype_id NOT IN (3,8,10) AND pca.datecompleted IS NOT NULL)) AND " +
+        "(COALESCE (:courseTypeIds, NULL) IS NULL OR c.coursetype_id in (:courseTypeIds));", nativeQuery = true)
+    LocalDateTime findMinActivityDate(@Param("salesforcePurchaserId") String salesforcePurchaserId,
+        @Param("courseTypeIds") Set<Long> courseTypeIds);
 }

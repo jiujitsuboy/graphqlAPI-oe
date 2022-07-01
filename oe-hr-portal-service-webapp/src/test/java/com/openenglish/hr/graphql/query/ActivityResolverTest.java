@@ -7,6 +7,7 @@ import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.*;
 import com.openenglish.hr.service.ActivityService;
 import com.openenglish.hr.service.mapper.MappingConfig;
+import java.time.LocalDateTime;
 import java.util.Map.Entry;
 import java.util.Optional;
 import org.junit.Test;
@@ -335,5 +336,25 @@ public class ActivityResolverTest {
             assertEquals(expected.getMonth(), received.getMonth());
             assertEquals(expected.getValue(), received.getValue(), 0);
         }
+    }
+    @Test
+    public void getOldestActivity(){
+
+        OldestActivityDto expectedOldestActivityDto = OldestActivityDto.builder()
+            .oldestActivityDate(LocalDateTime.of(2022,1,30,10,20,50))
+            .build();
+
+        Mockito.when(activityService.getOldestActivity(anyString(),any())).thenReturn(expectedOldestActivityDto);
+
+        String query = "{"
+            + "     getOldestActivity(salesforcePurchaserId:\"12345\", activities:[LIVE_CLASS]){"
+            + "     oldestActivityDate"
+            + "     }"
+            + "}";
+        String projection = "data.getOldestActivity.oldestActivityDate";
+
+        String oldestActivityDto = dgsQueryExecutor.executeAndExtractJsonPathAsObject(query, projection, String.class);
+
+        assertTrue(oldestActivityDto.equals(expectedOldestActivityDto.getOldestActivityDate().toString()));
     }
 }

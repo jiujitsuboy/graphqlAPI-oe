@@ -8,6 +8,7 @@ import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
+import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonRepository;
 import com.openenglish.hr.service.mapper.Mapper;
 import com.openenglish.sfdc.client.SalesforceClient;
@@ -33,6 +34,7 @@ import java.util.List;
 public class PersonService {
 
   private final PersonRepository personRepository;
+  private final PersonCourseAuditRepository personCourseAuditRepository;
   private final SalesforceClient salesforceClient;
   private final ActivityService activityService;
   private final Clock clock;

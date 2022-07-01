@@ -8,6 +8,7 @@ import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.common.dto.MonthActivityStatisticsDto;
 import com.openenglish.hr.common.dto.PersonDto;
+import com.openenglish.hr.common.dto.OldestActivityDto;
 import com.openenglish.hr.common.dto.PersonUsageLevelDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
 import com.openenglish.hr.common.dto.YearActivityStatisticsDto;
@@ -275,6 +276,23 @@ public class ActivityService {
     public List<UsageLevel> getMaxActivityDateGroupedByPerson(String salesforcePurchaserId, Set<String> contactsId) {
         return personCourseAuditRepository.findMaxActivityDateGroupedByPerson(
             salesforcePurchaserId, contactsId);
+    }
+
+    /**
+     * Obtain the oldest activity by person associated to a purchaser Id
+     * @param salesforcePurchaserId Id of the owner of the license
+     * @param courseTypesValues target activities
+     * @return OldestActivityDto
+     */
+    public OldestActivityDto getOldestActivity(String salesforcePurchaserId, Set<Long> courseTypesValues) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(courseTypesValues), "courseTypesValues should not be null or empty");
+
+        LocalDateTime oldestActivity = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId, courseTypesValues);
+
+        return OldestActivityDto.builder()
+            .oldestActivityDate(oldestActivity)
+            .build();
     }
     /**
      * Sort the students from most active to less and retrieve the specified number

@@ -2,6 +2,7 @@ package com.openenglish.hr.service;
 
 import com.oe.lp2.enums.CourseTypeEnum;
 import com.openenglish.hr.common.api.model.UsageLevelEnum;
+import com.openenglish.hr.common.dto.OldestActivityDto;
 import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.PersonUsageLevelDto;
 import com.openenglish.hr.common.dto.UsageLevelOverviewDto;
@@ -1105,5 +1106,43 @@ public class ActivityServiceTest {
         yearActivityStatisticsDto.getMonthsActivityStatistics()
             .stream()
             .forEach(activityStatistic -> assertThat(activityStatistic.getValue(), equalTo(ZERO)));
+    }
+
+    @Test
+    public void getOldestActivity(){
+
+        String salesforcePurchaserId = "12345";
+        Set<Long> courseTypesValues = Set.of(1L, 2L);
+
+        LocalDateTime expectedlocalDateTime = LocalDateTime.of(2022,03,15,17,50,52,235000000);
+
+        new Expectations() {{
+            personCourseAuditRepository.findMinActivityDate(anyString, (Set<Long>)any);
+            returns(expectedlocalDateTime);
+        }};
+
+        OldestActivityDto oldestActivityDto = activityService.getOldestActivity(salesforcePurchaserId, courseTypesValues);
+
+        assertTrue(oldestActivityDto.getOldestActivityDate().isEqual(expectedlocalDateTime));
+    }
+
+    @Test
+    public void getOldestActivityEmptyPurchaserId(){
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
+        String salesforcePurchaserId = "";
+        Set<Long> courseTypesValues = Set.of(1L, 2L);
+
+        activityService.getOldestActivity(salesforcePurchaserId, courseTypesValues);
+    }
+
+    @Test
+    public void getOldestActivityEmptyCourseTypesValues(){
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("courseTypesValues should not be null or empty");
+        String salesforcePurchaserId = "12345";
+        Set<Long> courseTypesValues = Collections.emptySet();
+
+        activityService.getOldestActivity(salesforcePurchaserId, courseTypesValues);
     }
 }
