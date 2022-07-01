@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @DatabaseSetup(value = "classpath:personCourseAuditData.xml", type = DatabaseOperation.INSERT)
@@ -143,5 +145,38 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
         List<PersonCourseAudit> personCourseAudits = personCourseAuditRepository.findActivityStatistics(salesforcePurchaserId, startDate, endDate, courseTypeIds, Set.of(contactId));
 
         assertEquals(NUMBER_RECORDS_EXPECTED, personCourseAudits.size());
+    }
+
+    @Test
+    public void findMinActivityDateGroupedByPersonNoActivity(){
+        String salesforcePurchaserId = "12347";
+        Set<Long> courseTypeIds = Collections.emptySet();
+        LocalDateTime expectedlocalDateTime = LocalDateTime.of(2022,1,5,17,50,52,235000000);
+
+        LocalDateTime oldestActivityDateTime = personCourseAuditRepository.findMinActivityDateGroupedByPerson(salesforcePurchaserId,courseTypeIds);
+
+        assertNotNull(oldestActivityDateTime);
+    }
+
+    @Test
+    public void findMinActivityDateGroupedByPersonLiveClasses(){
+        String salesforcePurchaserId = "12347";
+        final long LIVE_CLASS_COURSE_TYPE = 1l;
+        Set<Long> courseTypeIds = Set.of(LIVE_CLASS_COURSE_TYPE);
+
+        LocalDateTime expectedlocalDateTime = LocalDateTime.of(2022,03,15,17,50,52,235000000);
+
+        LocalDateTime oldestActivityDateTime =  personCourseAuditRepository.findMinActivityDateGroupedByPerson(salesforcePurchaserId,courseTypeIds);
+
+        assertNotNull(oldestActivityDateTime);
+    }
+
+    @Test
+    public void findMinActivityDateGroupedByPersonEmptyResult(){
+        String salesforcePurchaserId = "12347";
+        Set<Long> courseTypeIds = Set.of(12L);
+
+        LocalDateTime oldestActivityDateTime = personCourseAuditRepository.findMinActivityDateGroupedByPerson(salesforcePurchaserId,courseTypeIds);
+        assertNull(oldestActivityDateTime);
     }
 }

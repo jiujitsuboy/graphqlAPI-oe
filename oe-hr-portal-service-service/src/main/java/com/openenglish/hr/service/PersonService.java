@@ -4,10 +4,12 @@ import com.google.common.base.Preconditions;
 import com.openenglish.hr.common.dto.LicenseDto;
 import com.openenglish.hr.common.dto.PersonDto;
 import com.openenglish.hr.common.dto.HRManagerDto;
+import com.openenglish.hr.common.dto.PersonOldestActivityDto;
 import com.openenglish.hr.common.dto.PersonsPerLevelDto;
 import com.openenglish.hr.persistence.entity.Person;
 import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
+import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonRepository;
 import com.openenglish.hr.service.mapper.Mapper;
 import com.openenglish.sfdc.client.SalesforceClient;
@@ -23,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +36,7 @@ import java.util.List;
 public class PersonService {
 
   private final PersonRepository personRepository;
+  private final PersonCourseAuditRepository personCourseAuditRepository;
   private final SalesforceClient salesforceClient;
   private final ActivityService activityService;
   private final Clock clock;
@@ -183,5 +187,18 @@ public class PersonService {
 
     return opSfHrManagerInfoDto.map(sfHrManagerInfoDto -> Optional.of(mapper.map(sfHrManagerInfoDto, HRManagerDto.class)))
         .orElse(optHrManagerDto);
+  }
+
+  /**
+   * Obtain the oldest activity by person associated to a purchaser Id
+   * @param salesforcePurchaserId Id of the owner of the license
+   * @param courseTypesValues target activities
+   * @return LocalDateTime
+   */
+  public LocalDateTime getOldestActivity(String salesforcePurchaserId, Set<Long> courseTypesValues) {
+    Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
+    Preconditions.checkArgument(!CollectionUtils.isEmpty(courseTypesValues), "courseTypesValues should not be null or empty");
+
+    return  personCourseAuditRepository.findMinActivityDateGroupedByPerson(salesforcePurchaserId, courseTypesValues);
   }
 }
