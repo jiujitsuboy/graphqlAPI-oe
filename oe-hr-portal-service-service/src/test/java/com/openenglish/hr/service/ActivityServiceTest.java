@@ -1135,14 +1135,4 @@ public class ActivityServiceTest {
 
         activityService.getOldestActivity(salesforcePurchaserId, courseTypesValues);
     }
-
-    @Test
-    public void getOldestActivityEmptyCourseTypesValues(){
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("courseTypesValues should not be null or empty");
-        String salesforcePurchaserId = "12345";
-        Set<Long> courseTypesValues = Collections.emptySet();
-
-        activityService.getOldestActivity(salesforcePurchaserId, courseTypesValues);
-    }
 }
