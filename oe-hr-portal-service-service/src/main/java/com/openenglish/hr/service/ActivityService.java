@@ -286,7 +286,6 @@ public class ActivityService {
      */
     public OldestActivityDto getOldestActivity(String salesforcePurchaserId, Set<Long> courseTypesValues) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
-        Preconditions.checkArgument(!CollectionUtils.isEmpty(courseTypesValues), "courseTypesValues should not be null or empty");
 
         LocalDateTime oldestActivity = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId, courseTypesValues);
 
