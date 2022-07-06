@@ -10,6 +10,7 @@ import com.openenglish.hr.common.dto.YearActivityStatisticsDto;
 import com.openenglish.hr.persistence.entity.*;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
+import com.openenglish.hr.persistence.entity.aggregation.OldestActivity;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import com.openenglish.hr.persistence.repository.LevelTestRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
@@ -1112,18 +1113,19 @@ public class ActivityServiceTest {
     public void getOldestActivity(){
 
         String salesforcePurchaserId = "12345";
-        Set<Long> courseTypesValues = Set.of(1L, 2L);
-
-        LocalDateTime expectedlocalDateTime = LocalDateTime.of(2022,03,15,17,50,52,235000000);
+        List<OldestActivity> expectedOldestActivities = List.of(InterfaceUtil.createOldestActivity("Live Class","2022-03-15 17:50:52"),
+            InterfaceUtil.createOldestActivity("Private Class","2022-02-13 11:30:42"));
 
         new Expectations() {{
-            personCourseAuditRepository.findMinActivityDate(anyString, (Set<Long>)any);
-            returns(expectedlocalDateTime);
+            personCourseAuditRepository.findMinActivityDate(anyString);
+            returns(expectedOldestActivities);
         }};
 
-        OldestActivityDto oldestActivityDto = activityService.getOldestActivity(salesforcePurchaserId, courseTypesValues);
+        List<OldestActivityDto> oldestActivityDtos = activityService.getOldestActivity(salesforcePurchaserId);
 
-        assertTrue(oldestActivityDto.getOldestActivityDate().isEqual(expectedlocalDateTime));
+        for(int index = 0; index < oldestActivityDtos.size(); index++){
+            assertTrue(expectedOldestActivities.get(index).getOldestActivityDate().equals(oldestActivityDtos.get(index).getOldestActivityDate()));
+        }
     }
 
     @Test
@@ -1131,8 +1133,7 @@ public class ActivityServiceTest {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("salesforcePurchaserId should not be null or empty");
         String salesforcePurchaserId = "";
-        Set<Long> courseTypesValues = Set.of(1L, 2L);
 
-        activityService.getOldestActivity(salesforcePurchaserId, courseTypesValues);
+        activityService.getOldestActivity(salesforcePurchaserId);
     }
 }

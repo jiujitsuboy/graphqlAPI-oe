@@ -14,7 +14,7 @@ type Query{
   getLicensesOverview(salesforcePurchaserId: String! @SecuredByClaim, organization: String!) : LicensesOverview!
   getLicenseInfo(salesforcePurchaserId: String! @SecuredByClaim, organization: String!): [License]!
   getHRManager(salesforcePurchaserId: String! @SecuredByClaim, organization: String!): HRManager
-  getOldestActivity(salesforcePurchaserId: String! @SecuredByClaim, activities: [ActivityType]!): OldestActivity
+  getOldestActivity(salesforcePurchaserId: String! @SecuredByClaim): [OldestActivity]!
 }
 
 type Mutation {

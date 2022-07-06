@@ -16,6 +16,7 @@ import com.openenglish.hr.persistence.entity.Course;
 import com.openenglish.hr.persistence.entity.PersonCourseSummary;
 import com.openenglish.hr.persistence.entity.PersonCourseAudit;
 import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
+import com.openenglish.hr.persistence.entity.aggregation.OldestActivity;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import com.openenglish.hr.persistence.repository.LevelTestRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
@@ -281,17 +282,19 @@ public class ActivityService {
     /**
      * Obtain the oldest activity by person associated to a purchaser Id
      * @param salesforcePurchaserId Id of the owner of the license
-     * @param courseTypesValues target activities
-     * @return OldestActivityDto
+     * @return List of OldestActivityDto
      */
-    public OldestActivityDto getOldestActivity(String salesforcePurchaserId, Set<Long> courseTypesValues) {
+    public List<OldestActivityDto> getOldestActivity(String salesforcePurchaserId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
 
-        LocalDateTime oldestActivity = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId, courseTypesValues);
+        List<OldestActivity> oldestActivities = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId);
 
-        return OldestActivityDto.builder()
-            .oldestActivityDate(oldestActivity)
-            .build();
+        return oldestActivities.stream()
+            .map(oldestActivity -> OldestActivityDto.builder()
+                .activityName(oldestActivity.getActivityName())
+                .oldestActivityDate(oldestActivity.getOldestActivityDate())
+                .build())
+            .collect(Collectors.toList());
     }
     /**
      * Sort the students from most active to less and retrieve the specified number

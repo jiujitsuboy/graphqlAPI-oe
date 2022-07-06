@@ -73,12 +73,7 @@ public class ActivityResolver {
     }
 
     @DgsData(parentType = "Query", field = "getOldestActivity")
-    public OldestActivityDto getOldestActivity(String salesforcePurchaserId, List<String> activities) {
-
-        Set<Long> courseTypesValues =  ActivityTypeMapper.convertActivityTypeToCourseType(activities).stream()
-            .map(CourseTypeEnum::getValue)
-            .collect(Collectors.toSet());
-
-        return activityService.getOldestActivity(salesforcePurchaserId, courseTypesValues);
+    public List<OldestActivityDto> getOldestActivity(String salesforcePurchaserId) {
+        return activityService.getOldestActivity(salesforcePurchaserId);
     }
 }

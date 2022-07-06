@@ -26,6 +26,7 @@
  }
 
  type OldestActivity{
+      activityName: String
       oldestActivityDate: String
    }
 

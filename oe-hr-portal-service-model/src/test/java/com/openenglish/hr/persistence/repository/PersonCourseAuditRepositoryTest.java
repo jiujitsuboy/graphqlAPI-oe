@@ -4,6 +4,7 @@ import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import com.openenglish.hr.persistence.entity.PersonCourseAudit;
+import com.openenglish.hr.persistence.entity.aggregation.OldestActivity;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import java.util.Collections;
 import org.junit.Test;
@@ -14,8 +15,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @DatabaseSetup(value = "classpath:personCourseAuditData.xml", type = DatabaseOperation.INSERT)
@@ -29,7 +28,7 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     public void findPersonCourseAuditForCertainYearAndLiveClasses() {
         String salesforcePurchaserId = "12347";
         final int NUMBER_RECORDS_EXPECTED = 4;
-        final long LIVE_CLASS_COURSE_TYPE = 1l;
+        final long LIVE_CLASS_COURSE_TYPE = 1L;
         Set<Long> courseTypeIds = Set.of(LIVE_CLASS_COURSE_TYPE);
         LocalDateTime startDate = LocalDateTime.of(2022, 1, 1, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
@@ -46,7 +45,7 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     public void findPersonCourseAuditForCertainYearAndPractices() {
         String salesforcePurchaserId = "12347";
         final int NUMBER_RECORDS_EXPECTED = 8;
-        final long PRACTICE_COURSE_TYPE = 3l;
+        final long PRACTICE_COURSE_TYPE = 3L;
         Set<Long> courseTypeIds = Set.of(PRACTICE_COURSE_TYPE);
         LocalDateTime startDate = LocalDateTime.of(2022, 1, 1, 0, 0);
         LocalDateTime endDate = startDate.plusYears(1).minusSeconds(1);
@@ -148,35 +147,27 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     }
 
     @Test
-    public void findMinActivityDateNoActivity(){
+    public void findMinActivityDate(){
         String salesforcePurchaserId = "12347";
-        Set<Long> courseTypeIds = Collections.emptySet();
-        LocalDateTime expectedlocalDateTime = LocalDateTime.of(2022,1,5,17,50,52,235000000);
+        final int NUMBER_RECORDS_EXPECTED = 9;
 
-        LocalDateTime oldestActivityDateTime = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId,courseTypeIds);
+        List<OldestActivity> oldestActivities = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId);
 
-        assertNotNull(oldestActivityDateTime);
-    }
-
-    @Test
-    public void findMinActivityDateLiveClasses(){
-        String salesforcePurchaserId = "12347";
-        final long LIVE_CLASS_COURSE_TYPE = 1l;
-        Set<Long> courseTypeIds = Set.of(LIVE_CLASS_COURSE_TYPE);
-
-        LocalDateTime expectedlocalDateTime = LocalDateTime.of(2022,03,15,17,50,52,235000000);
-
-        LocalDateTime oldestActivityDateTime =  personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId,courseTypeIds);
-
-        assertNotNull(oldestActivityDateTime);
+        assertEquals(NUMBER_RECORDS_EXPECTED, oldestActivities.size());
     }
 
     @Test
     public void findMinActivityDateEmptyResult(){
-        String salesforcePurchaserId = "12347";
-        Set<Long> courseTypeIds = Set.of(12L);
+        String salesforcePurchaserId = "12348";
+        final int NUMBER_RECORDS_EXPECTED = 9;
+        final String ZERO = "0";
 
-        LocalDateTime oldestActivityDateTime = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId,courseTypeIds);
-        assertNull(oldestActivityDateTime);
+        List<OldestActivity> oldestActivities = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId);
+
+        assertEquals(NUMBER_RECORDS_EXPECTED, oldestActivities.size());
+
+        oldestActivities.stream().forEach(oldestActivity -> {
+            assertEquals(ZERO, oldestActivity.getOldestActivityDate());
+        });
     }
 }

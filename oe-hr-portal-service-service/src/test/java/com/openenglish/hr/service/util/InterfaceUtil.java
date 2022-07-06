@@ -2,6 +2,7 @@ package com.openenglish.hr.service.util;
 
 import com.openenglish.hr.persistence.entity.aggregation.ContactBelongPurchaserId;
 import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
+import com.openenglish.hr.persistence.entity.aggregation.OldestActivity;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import java.time.LocalDateTime;
 
@@ -86,5 +87,19 @@ public class InterfaceUtil {
         return matchSalesForcePurchaserId;
       }
     };
+  }
+
+  public static OldestActivity createOldestActivity(String activityName, String oldestActivityDate){
+     return new OldestActivity(){
+       @Override
+       public String getActivityName() {
+         return activityName;
+       }
+
+       @Override
+       public String getOldestActivityDate() {
+         return oldestActivityDate;
+       }
+     };
   }
 }
