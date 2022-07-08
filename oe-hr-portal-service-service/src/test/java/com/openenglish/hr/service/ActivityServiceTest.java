@@ -1112,7 +1112,7 @@ public class ActivityServiceTest {
     @Test
     public void getOldestActivityDifferentActivities(){
 
-        final int TWO_ACTIVITY = 2;
+        final int TWO_ACTIVITY = 3;
         String salesforcePurchaserId = "12345";
         List<OldestActivity> expectedOldestActivities = List.of(InterfaceUtil.createOldestActivity(1L,LocalDateTime.of(2022,3,15,17,50,52)),
             InterfaceUtil.createOldestActivity(2L,LocalDateTime.of(2022,2,13,11,30,42)));
@@ -1128,7 +1128,7 @@ public class ActivityServiceTest {
 
     @Test
     public void getOldestActivityDifferentAllActivities() {
-        final int SIX_ACTIVITY = 6;
+        final int SIX_ACTIVITY = 7;
         String salesforcePurchaserId = "12345";
 
         List<OldestActivity> expectedOldestActivities = List.of(InterfaceUtil.createOldestActivity(1L, LocalDateTime.of(2022, 3, 14, 17, 50, 52, 235)),
@@ -1138,7 +1138,6 @@ public class ActivityServiceTest {
         InterfaceUtil.createOldestActivity(5L, null),
         InterfaceUtil.createOldestActivity(6L, null),
         InterfaceUtil.createOldestActivity(8L, null),
-        InterfaceUtil.createOldestActivity(9L, null),
         InterfaceUtil.createOldestActivity(10L, null));
 
         new Expectations() {{
@@ -1153,7 +1152,7 @@ public class ActivityServiceTest {
     @Test
     public void getOldestActivitySameActivities(){
 
-        final int ONE_ACTIVITY = 1;
+        final int ONE_ACTIVITY = 2;
         String salesforcePurchaserId = "12345";
         List<OldestActivity> expectedOldestActivities = List.of(InterfaceUtil.createOldestActivity(3L,LocalDateTime.of(2022,3,15,17,50,52)),
             InterfaceUtil.createOldestActivity(10L,LocalDateTime.of(2022,2,13,11,30,42)));
