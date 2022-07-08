@@ -142,27 +142,10 @@ public class PersonServiceTest {
 
         String salesforcePurchaserId = "12345";
 
-        List<PersonsPerLevel> personsPerLevelExpected = List.of(new PersonsPerLevel() {
-            @Override
-            public String getLevelName() {
-                return "Level 1";
-            }
-
-            @Override
-            public long getTotalNumber() {
-                return 42;
-            }
-        }, new PersonsPerLevel() {
-            @Override
-            public String getLevelName() {
-                return "Level 2";
-            }
-
-            @Override
-            public long getTotalNumber() {
-                return 56;
-            }
-        });
+        List<PersonsPerLevel> personsPerLevelExpected = List.of(
+            InterfaceUtil.createPersonPerLevel("level.1.uuid", 42),
+            InterfaceUtil.createPersonPerLevel("level.2.uuid", 56)
+        );
 
         new Expectations() {{
             personRepository.getAllPersonsPerLevel(anyString);
