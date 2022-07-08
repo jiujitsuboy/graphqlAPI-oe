@@ -44,7 +44,7 @@ public interface PersonCourseAuditRepository extends JpaRepository<PersonCourseA
         @Param("contactId") Set<String> contactId);
 
     @Query(value =
-        "SELECT ct.\"type\" AS activityName, COALESCE(to_char(dat.lastActivity, 'yyyy-mm-dd HH24:MI:SS'), '0') AS oldestActivityDate "
+        "SELECT ct.id AS courseTypeId, dat.lastActivity AS oldestActivityDate "
             + "FROM coursetype ct "
             + "LEFT JOIN ("
             + "SELECT c.coursetype_id,"

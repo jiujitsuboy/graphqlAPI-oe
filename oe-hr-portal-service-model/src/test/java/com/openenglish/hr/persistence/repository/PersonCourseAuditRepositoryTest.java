@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @DatabaseSetup(value = "classpath:personCourseAuditData.xml", type = DatabaseOperation.INSERT)
@@ -160,14 +161,13 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     public void findMinActivityDateEmptyResult(){
         String salesforcePurchaserId = "12348";
         final int NUMBER_RECORDS_EXPECTED = 9;
-        final String ZERO = "0";
 
         List<OldestActivity> oldestActivities = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId);
 
         assertEquals(NUMBER_RECORDS_EXPECTED, oldestActivities.size());
 
         oldestActivities.stream().forEach(oldestActivity -> {
-            assertEquals(ZERO, oldestActivity.getOldestActivityDate());
+            assertNull(oldestActivity.getOldestActivityDate());
         });
     }
 }

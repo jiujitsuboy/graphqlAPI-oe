@@ -3,10 +3,12 @@ package com.openenglish.hr.graphql.query;
 import com.jayway.jsonpath.TypeRef;
 import com.netflix.graphql.dgs.DgsQueryExecutor;
 import com.netflix.graphql.dgs.autoconfig.DgsAutoConfiguration;
+import com.openenglish.hr.common.api.model.ActivityTypeEnum;
 import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.*;
 import com.openenglish.hr.service.ActivityService;
 import com.openenglish.hr.service.mapper.MappingConfig;
+import java.time.LocalDateTime;
 import java.util.Map.Entry;
 import java.util.Optional;
 import org.junit.Test;
@@ -339,49 +341,50 @@ public class ActivityResolverTest {
     @Test
     public void getOldestActivity(){
 
+        LocalDateTime activityTime = LocalDateTime.of(2022,1,30,10,20,50);
+
         List<OldestActivityDto> expectedOldestActivityDto = List.of(OldestActivityDto.builder()
-            .activityName("Live Class")
-            .oldestActivityDate("2022-01-30 10:20:50")
-            .build(),
-            OldestActivityDto.builder()
-                .activityName("Private Class")
-                .oldestActivityDate("2022-01-30 10:20:50")
+                .activityType(ActivityTypeEnum.LIVE_CLASS)
+                .oldestActivityDate(activityTime)
+                .oldestActivityStr(activityTime.toString())
                 .build(),
             OldestActivityDto.builder()
-                .activityName("Practice")
-                .oldestActivityDate("2022-01-30 10:20:50")
+                .activityType(ActivityTypeEnum.PRACTICE)
+                .oldestActivityDate(activityTime)
+                .oldestActivityStr(activityTime.toString())
                 .build(),
             OldestActivityDto.builder()
-                .activityName("Lesson")
-                .oldestActivityDate("2022-01-30 10:20:50")
+                .activityType(ActivityTypeEnum.LESSON)
+                .oldestActivityDate(activityTime)
+                .oldestActivityStr(activityTime.toString())
                 .build(),
             OldestActivityDto.builder()
-                .activityName("Unit Assessment")
-                .oldestActivityDate("2022-01-30 10:20:50")
+                .activityType(ActivityTypeEnum.LEVEL)
+                .oldestActivityDate(activityTime)
+                .oldestActivityStr(activityTime.toString())
                 .build(),
             OldestActivityDto.builder()
-                .activityName("Level Assessment")
-                .oldestActivityDate("2022-01-30 10:20:50")
+                .activityType(ActivityTypeEnum.UNIT)
+                .oldestActivityDate(activityTime)
+                .oldestActivityStr(activityTime.toString())
                 .build(),
             OldestActivityDto.builder()
-                .activityName("News")
-                .oldestActivityDate("2022-01-30 10:20:50")
+                .activityType(ActivityTypeEnum.PRIVATE_CLASS)
+                .oldestActivityDate(activityTime)
+                .oldestActivityStr(activityTime.toString())
                 .build(),
             OldestActivityDto.builder()
-                .activityName("Level Zero")
-                .oldestActivityDate("2022-01-30 10:20:50")
-                .build(),
-            OldestActivityDto.builder()
-                .activityName("Idioms")
-                .oldestActivityDate("2022-01-30 10:20:50")
+                .activityType(ActivityTypeEnum.ACTIVE_HOURS)
+                .oldestActivityDate(activityTime)
+                .oldestActivityStr(activityTime.toString())
                 .build());
 
         Mockito.when(activityService.getOldestActivity(anyString())).thenReturn(expectedOldestActivityDto);
 
         String query = "{"
             + "     getOldestActivity(salesforcePurchaserId:\"12345\"){"
-            + "          activityName "
-            + "          oldestActivityDate"
+            + "          activityType "
+            + "          oldestActivityStr"
             + "     }"
             + "}";
         String projection = "data.getOldestActivity.[*]";
@@ -390,8 +393,8 @@ public class ActivityResolverTest {
         });
 
         for(int index = 0; index < oldestActivityDtos.size(); index++){
-            assertTrue(oldestActivityDtos.get(index).getActivityName().equals(expectedOldestActivityDto.get(index).getActivityName()));
-            assertTrue(oldestActivityDtos.get(index).getOldestActivityDate().equals(expectedOldestActivityDto.get(index).getOldestActivityDate()));
+            assertTrue(oldestActivityDtos.get(index).getActivityType().equals(expectedOldestActivityDto.get(index).getActivityType()));
+            assertTrue(oldestActivityDtos.get(index).getOldestActivityStr().equals(expectedOldestActivityDto.get(index).getOldestActivityStr()));
         }
     }
 }

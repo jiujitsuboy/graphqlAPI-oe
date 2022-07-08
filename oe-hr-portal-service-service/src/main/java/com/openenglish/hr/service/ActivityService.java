@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.oe.lp2.enums.CourseTypeEnum;
+import com.openenglish.hr.common.api.model.ActivityTypeEnum;
 import com.openenglish.hr.common.api.model.UsageLevelEnum;
 import com.openenglish.hr.common.dto.ActivitiesOverviewDto;
 import com.openenglish.hr.common.dto.MonthActivityStatisticsDto;
@@ -22,6 +23,7 @@ import com.openenglish.hr.persistence.repository.LevelTestRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseAuditRepository;
 import com.openenglish.hr.persistence.repository.PersonCourseSummaryRepository;
 import com.openenglish.hr.service.mapper.PersonUsageLevelDtoMapper;
+import com.openenglish.hr.service.util.ActivityTypeMapper;
 import com.openenglish.hr.service.util.NumberUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
@@ -287,12 +289,34 @@ public class ActivityService {
     public List<OldestActivityDto> getOldestActivity(String salesforcePurchaserId) {
         Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
 
+
         List<OldestActivity> oldestActivities = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId);
 
-        return oldestActivities.stream()
-            .map(oldestActivity -> OldestActivityDto.builder()
-                .activityName(oldestActivity.getActivityName())
-                .oldestActivityDate(oldestActivity.getOldestActivityDate())
+        Map<ActivityTypeEnum, String> oldestActivitiesDate = oldestActivities.stream()
+            .map(oldestActivity ->
+                ActivityTypeMapper.mapToActivityType(
+                    CourseTypeEnum.getStatusByValue(oldestActivity.getCourseTypeId()))
+                    .stream()
+                    .map(activityTypeEnum -> OldestActivityDto.builder()
+                        .activityType(activityTypeEnum)
+                        .oldestActivityDate(oldestActivity.getOldestActivityDate()).build())
+                    .collect(Collectors.toList())
+                )
+            .flatMap(List::stream)
+            .collect(Collectors.groupingBy(oldestActivityDto -> oldestActivityDto.getActivityType(),
+                Collectors.collectingAndThen(Collectors.minBy(Comparator.comparing(oldestActivityDto->oldestActivityDto.getOldestActivityDate()!=null?oldestActivityDto.getOldestActivityDate():LocalDateTime.MAX)),
+                    optOldestActivityDto -> optOldestActivityDto.map(oldestActivityDto->{
+                            LocalDateTime oldestActivityDate =  oldestActivityDto.getOldestActivityDate();
+                            return oldestActivityDate != null ? oldestActivityDate.toString() : null;
+                    }).orElse(null))
+                )
+            );
+
+
+        return oldestActivitiesDate.entrySet().stream()
+            .map(entry -> OldestActivityDto.builder()
+                .activityType(entry.getKey())
+                .oldestActivityStr(entry.getValue())
                 .build())
             .collect(Collectors.toList());
     }

@@ -1110,11 +1110,53 @@ public class ActivityServiceTest {
     }
 
     @Test
-    public void getOldestActivity(){
+    public void getOldestActivityDifferentActivities(){
 
+        final int TWO_ACTIVITY = 2;
         String salesforcePurchaserId = "12345";
-        List<OldestActivity> expectedOldestActivities = List.of(InterfaceUtil.createOldestActivity("Live Class","2022-03-15 17:50:52"),
-            InterfaceUtil.createOldestActivity("Private Class","2022-02-13 11:30:42"));
+        List<OldestActivity> expectedOldestActivities = List.of(InterfaceUtil.createOldestActivity(1L,LocalDateTime.of(2022,3,15,17,50,52)),
+            InterfaceUtil.createOldestActivity(2L,LocalDateTime.of(2022,2,13,11,30,42)));
+
+        new Expectations() {{
+            personCourseAuditRepository.findMinActivityDate(anyString);
+            returns(expectedOldestActivities);
+        }};
+
+        List<OldestActivityDto> oldestActivityDtos = activityService.getOldestActivity(salesforcePurchaserId);
+        assertEquals(TWO_ACTIVITY, oldestActivityDtos.size());
+    }
+
+    @Test
+    public void getOldestActivityDifferentAllActivities() {
+        final int SIX_ACTIVITY = 6;
+        String salesforcePurchaserId = "12345";
+
+        List<OldestActivity> expectedOldestActivities = List.of(InterfaceUtil.createOldestActivity(1L, LocalDateTime.of(2022, 3, 14, 17, 50, 52, 235)),
+        InterfaceUtil.createOldestActivity(2L, null),
+        InterfaceUtil.createOldestActivity(3L, LocalDateTime.of(2022, 2, 14, 17, 50, 52, 235)),
+        InterfaceUtil.createOldestActivity(4L, LocalDateTime.of(2022, 3, 14, 17, 50, 52, 235)),
+        InterfaceUtil.createOldestActivity(5L, null),
+        InterfaceUtil.createOldestActivity(6L, null),
+        InterfaceUtil.createOldestActivity(8L, null),
+        InterfaceUtil.createOldestActivity(9L, null),
+        InterfaceUtil.createOldestActivity(10L, null));
+
+        new Expectations() {{
+            personCourseAuditRepository.findMinActivityDate(anyString);
+            returns(expectedOldestActivities);
+        }};
+
+        List<OldestActivityDto> oldestActivityDtos = activityService.getOldestActivity(salesforcePurchaserId);
+        assertEquals(SIX_ACTIVITY, oldestActivityDtos.size());
+    }
+
+    @Test
+    public void getOldestActivitySameActivities(){
+
+        final int ONE_ACTIVITY = 1;
+        String salesforcePurchaserId = "12345";
+        List<OldestActivity> expectedOldestActivities = List.of(InterfaceUtil.createOldestActivity(3L,LocalDateTime.of(2022,3,15,17,50,52)),
+            InterfaceUtil.createOldestActivity(10L,LocalDateTime.of(2022,2,13,11,30,42)));
 
         new Expectations() {{
             personCourseAuditRepository.findMinActivityDate(anyString);
@@ -1123,9 +1165,7 @@ public class ActivityServiceTest {
 
         List<OldestActivityDto> oldestActivityDtos = activityService.getOldestActivity(salesforcePurchaserId);
 
-        for(int index = 0; index < oldestActivityDtos.size(); index++){
-            assertTrue(expectedOldestActivities.get(index).getOldestActivityDate().equals(oldestActivityDtos.get(index).getOldestActivityDate()));
-        }
+        assertEquals(ONE_ACTIVITY, oldestActivityDtos.size());
     }
 
     @Test

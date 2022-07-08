@@ -89,15 +89,15 @@ public class InterfaceUtil {
     };
   }
 
-  public static OldestActivity createOldestActivity(String activityName, String oldestActivityDate){
-     return new OldestActivity(){
+  public static OldestActivity createOldestActivity(Long courseTypeId, LocalDateTime oldestActivityDate){
+     return new OldestActivity() {
        @Override
-       public String getActivityName() {
-         return activityName;
+       public Long getCourseTypeId() {
+         return courseTypeId;
        }
 
        @Override
-       public String getOldestActivityDate() {
+       public LocalDateTime getOldestActivityDate() {
          return oldestActivityDate;
        }
      };

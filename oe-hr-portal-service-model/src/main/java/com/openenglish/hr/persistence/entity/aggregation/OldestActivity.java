@@ -1,6 +1,8 @@
 package com.openenglish.hr.persistence.entity.aggregation;
 
+import java.time.LocalDateTime;
+
 public interface OldestActivity {
-  String getActivityName();
-  String getOldestActivityDate();
+  Long getCourseTypeId();
+  LocalDateTime getOldestActivityDate();
 }

@@ -26,8 +26,8 @@
  }
 
  type OldestActivity{
-      activityName: String
-      oldestActivityDate: String
+      activityType: String
+      oldestActivityStr: String
    }
 
  enum ActivityType{
