@@ -48,7 +48,7 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
     @Test
     public void getAllPersonsPerLevel(){
 
-        String levelName = "Level 100";
+        String levelUuid = "level.100.uuid";
         String salesforcePurchaserId = "12347";
         long totalNumber = 3;
 
@@ -57,10 +57,10 @@ public class PersonRepositoryTest extends AbstractPersistenceTest {
         assertNotNull(personsPerLevel);
 
         personsPerLevel.stream()
-                .filter(temp -> temp.getLevelName().equals(levelName))
+                .filter(temp -> temp.getLevelUuid().equals(levelUuid))
                 .findFirst()
                 .ifPresentOrElse(level->{
-                    assertThat(level.getLevelName(),is(levelName));
+                    assertThat(level.getLevelUuid(),is(levelUuid));
                     assertThat(level.getTotalNumber(),is(totalNumber));
                 },Assert::fail);
     }

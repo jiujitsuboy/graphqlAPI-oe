@@ -13,7 +13,7 @@ import java.util.List;
 public interface PersonRepository extends JpaRepository<Person, Long> {
     List<Person> findPersonByDetailsSalesforcePurchaserId(String salesforcePurchaserId);
 
-    @Query(value = "select l.name AS levelName, count(*) AS totalNumber " +
+    @Query(value = "select l.uuid AS levelUuid, count(*) AS totalNumber " +
             "from person p " +
             "left join person_detail pd on p.id = pd.person_id " +
             "left join level l on p.workinglevel_id  = l.id " +

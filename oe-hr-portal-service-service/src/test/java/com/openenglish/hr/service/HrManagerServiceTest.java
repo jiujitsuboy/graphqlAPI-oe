@@ -106,9 +106,9 @@ public class HrManagerServiceTest {
         String language="en-US";
 
         List<ContactBelongPurchaserId> emailBelongPurchaserIdList = List.of(
-            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen801", "josephp431@unknowdomain.com", salesforcePurchaserId, true),
-            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen091", "mark0123452@unknowdomain.com", salesforcePurchaserId, true),
-            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen1001", "lauren0456763@unknowdomain.com", salesforcePurchaserId, true));
+            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen801", salesforcePurchaserId, true),
+            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen091", salesforcePurchaserId, true),
+            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen1001", salesforcePurchaserId, true));
 
 
         new Expectations() {{
@@ -131,9 +131,9 @@ public class HrManagerServiceTest {
         String language="en-US";
 
         List<ContactBelongPurchaserId> emailBelongPurchaserIdList = List.of(
-            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen801", "josephp431@unknowdomain.com", salesforcePurchaserId, true),
-            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen091", "mark0123452@unknowdomain.com", salesforcePurchaserId, true),
-            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen1001", "lauren0456763@unknowdomain.com", salesforcePurchaserId, true));
+            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen801", salesforcePurchaserId, true),
+            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen091", salesforcePurchaserId, true),
+            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen1001", salesforcePurchaserId, true));
 
 
         new Expectations() {{
@@ -160,9 +160,9 @@ public class HrManagerServiceTest {
         String language="en-US";
 
         List<ContactBelongPurchaserId> emailBelongPurchaserIdList = List.of(
-            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen801", "josephp431@unknowdomain.com", salesforcePurchaserId, false),
-            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen091", "mark0123452@unknowdomain.com", salesforcePurchaserId, true),
-            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen1001", "lauren0456763@unknowdomain.com", salesforcePurchaserId, true));
+            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen801", salesforcePurchaserId, false),
+            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen091", salesforcePurchaserId, true),
+            InterfaceUtil.createEmailBelongPurchaserId("sf_synegen1001", salesforcePurchaserId, true));
 
         final String errorMessage = String.format("%s does not belong to purchaser Id %s ", emailBelongPurchaserIdList.get(0).getContactId(), salesforcePurchaserId);
 
