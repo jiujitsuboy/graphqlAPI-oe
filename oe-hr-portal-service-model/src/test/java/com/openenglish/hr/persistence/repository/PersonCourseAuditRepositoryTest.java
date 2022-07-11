@@ -150,7 +150,7 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     @Test
     public void findMinActivityDate(){
         String salesforcePurchaserId = "12347";
-        final int NUMBER_RECORDS_EXPECTED = 9;
+        final int NUMBER_RECORDS_EXPECTED = 8;
 
         List<OldestActivity> oldestActivities = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId);
 
@@ -160,7 +160,7 @@ public class PersonCourseAuditRepositoryTest extends AbstractPersistenceTest {
     @Test
     public void findMinActivityDateEmptyResult(){
         String salesforcePurchaserId = "12348";
-        final int NUMBER_RECORDS_EXPECTED = 9;
+        final int NUMBER_RECORDS_EXPECTED = 8;
 
         List<OldestActivity> oldestActivities = personCourseAuditRepository.findMinActivityDate(salesforcePurchaserId);
 
