@@ -3,6 +3,7 @@ package com.openenglish.hr.service.util;
 import com.openenglish.hr.persistence.entity.aggregation.ContactBelongPurchaserId;
 import com.openenglish.hr.persistence.entity.aggregation.LevelsPassedByPerson;
 import com.openenglish.hr.persistence.entity.aggregation.OldestActivity;
+import com.openenglish.hr.persistence.entity.aggregation.PersonsPerLevel;
 import com.openenglish.hr.persistence.entity.aggregation.UsageLevel;
 import java.time.LocalDateTime;
 
@@ -68,7 +69,7 @@ public class InterfaceUtil {
     };
   }
 
-  public static ContactBelongPurchaserId createEmailBelongPurchaserId(String contactId, String email,
+  public static ContactBelongPurchaserId createEmailBelongPurchaserId(String contactId,
       String salesForcePurchaserId, boolean matchSalesForcePurchaserId){
 
     return new ContactBelongPurchaserId() {
@@ -101,5 +102,19 @@ public class InterfaceUtil {
          return oldestActivityDate;
        }
      };
+  }
+
+  public static PersonsPerLevel createPersonPerLevel(String levelUuid, int totalNumber) {
+    return new PersonsPerLevel() {
+      @Override
+      public String getLevelUuid() {
+        return levelUuid;
+      }
+
+      @Override
+      public long getTotalNumber() {
+        return totalNumber;
+      }
+    };
   }
 }

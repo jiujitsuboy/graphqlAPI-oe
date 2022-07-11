@@ -22,7 +22,7 @@
  }
 
  type PersonsPerLevel {
-    levelName: String
+    levelUuid: String
     totalNumber: Int
  }
 

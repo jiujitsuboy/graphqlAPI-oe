@@ -101,11 +101,11 @@ public class PersonResolverTest {
     public void getAllPersonsByLevel() {
         List<PersonsPerLevelDto> expectedPersonsPerLevelDtos = List.of(
             PersonsPerLevelDto.builder()
-                .levelName("Level 1")
+                .levelUuid("level.1.uuid")
                 .totalNumber(42)
                 .build(),
             PersonsPerLevelDto.builder()
-                .levelName("Level 2")
+                .levelUuid("level.1.uuid")
                 .totalNumber(56)
                 .build()
         );
@@ -114,7 +114,7 @@ public class PersonResolverTest {
 
         String query = "{ " +
                 "  getAllPersonsByLevel (salesforcePurchaserId: \"12345\"){ " +
-                "    levelName " +
+                "    levelUuid " +
                 "    totalNumber " +
                 "  }" +
                 "}";
@@ -131,7 +131,7 @@ public class PersonResolverTest {
             PersonsPerLevelDto expected = expectedPersonsPerLevelDtos.get(index);
             PersonsPerLevelDto received = personsPerLevelDtos.get(index);
 
-            assertEquals(expected.getLevelName(), received.getLevelName());
+            assertEquals(expected.getLevelUuid(), received.getLevelUuid());
             assertEquals(expected.getTotalNumber(), received.getTotalNumber());
         }
     }
