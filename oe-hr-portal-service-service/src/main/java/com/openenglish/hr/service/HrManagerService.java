@@ -6,6 +6,7 @@ import com.openenglish.hr.common.dto.MutationResultDto;
 import com.openenglish.hr.persistence.entity.aggregation.ContactBelongPurchaserId;
 import com.openenglish.hr.persistence.repository.PersonRepository;
 import com.openenglish.sfdc.client.SalesforceClient;
+import com.openenglish.sfdc.client.dto.SfAssignLicenseRequestDto;
 import com.openenglish.sfdc.client.dto.SfEncouragementEmailsDto;
 import com.openenglish.sfdc.client.dto.SfMessageToKeyAccountManagerDto;
 import java.util.List;
@@ -131,6 +132,38 @@ public class HrManagerService {
 
     try{
       doReassignLicense(licenseId, managerId,newAssignee);
+      mutationResultDto.setSuccess(true);
+    }
+    catch (Exception ex){
+      mutationResultDto.setSuccess(false);
+      mutationResultDto.setMessage(ex.getMessage());
+    }
+
+    return mutationResultDto;
+  }
+
+  /**
+   *
+   * @param salesforcePurchaserId id of the owner of the license
+   * @param licenseId license id number
+   * @param assignee new license student
+   * @return MutationResultDto
+   */
+  public MutationResultDto assignLicense(String salesforcePurchaserId, String licenseId, LicenseAssigneeDto assignee) {
+    Preconditions.checkArgument(StringUtils.isNotBlank(salesforcePurchaserId), "salesforcePurchaserId should not be null or empty");
+    Preconditions.checkArgument(StringUtils.isNotBlank(licenseId), "licenseId should not be null or empty");
+    Preconditions.checkArgument(assignee!= null && StringUtils.isNotBlank(assignee.getFirstName()), "assignee firstname should not be null or empty");
+    Preconditions.checkArgument(assignee!= null && StringUtils.isNotBlank(assignee.getEmail()), "assignee email should not be null or empty");
+
+    MutationResultDto  mutationResultDto = new MutationResultDto();
+
+    try{
+      SfAssignLicenseRequestDto sfAssignLicenseRequestDto = new SfAssignLicenseRequestDto();
+      sfAssignLicenseRequestDto.setFirstName(assignee.getFirstName());
+      sfAssignLicenseRequestDto.setLastName(assignee.getLastName());
+      sfAssignLicenseRequestDto.setEmail(assignee.getEmail());
+
+      salesforceClient.assignLicense(salesforcePurchaserId, licenseId, sfAssignLicenseRequestDto);
       mutationResultDto.setSuccess(true);
     }
     catch (Exception ex){

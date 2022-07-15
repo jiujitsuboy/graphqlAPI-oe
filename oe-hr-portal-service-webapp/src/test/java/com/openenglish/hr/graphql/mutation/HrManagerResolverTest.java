@@ -96,7 +96,7 @@ public class HrManagerResolverTest {
             + "                  currentAssignee: {"
             + "                       firstName: \"Lindsay\","
             + "                       lastName: \"Guerrero\","
-            + "                       email: \"mgcontradorpublico@gmail.com\""
+            + "                       email: \"lindsayguerrero@gmail.com\""
             + "                  }, "
             + "                  newAssignee: {"
             + "                       firstName: \"Jose\","
@@ -110,6 +110,38 @@ public class HrManagerResolverTest {
             + "}";
 
         String projection = "data.reassignLicense";
+
+        MutationResultDto result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(mutation, projection, MutationResultDto.class);
+
+        assertTrue(result.isSuccess());
+        assertNull(result.getMessage());
+
+    }
+
+    @Test
+    public void assignLicense() {
+        MutationResultDto expectedMutationResultDto = MutationResultDto.builder()
+            .success(true)
+            .build();
+
+        Mockito.when(
+            managerService.assignLicense(anyString(), anyString(), any(LicenseAssigneeDto.class))).thenReturn(expectedMutationResultDto);
+
+        String mutation = "mutation {"
+            + "  assignLicense(salesforcePurchaserId:\"12345\","
+            + "                  licenseId:\"1234545\", "
+            + "                  assignee: {"
+            + "                       firstName: \"Jose\","
+            + "                       lastName: \"Nino\","
+            + "                       email: \"josenino@gmail.com\""
+            + "                   }"
+            + "                  ){"
+            + "    success"
+            + "    message"
+            + "  }"
+            + "}";
+
+        String projection = "data.assignLicense";
 
         MutationResultDto result = dgsQueryExecutor.executeAndExtractJsonPathAsObject(mutation, projection, MutationResultDto.class);
 
